@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Framework.Audio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -18,13 +19,17 @@ namespace MoonLib.Entities.Levels
 		private List<Star> removal;
 		private IParticleEmitter[] emitters;
 		private ContentManager contentManager;
+		private IAudioHandler audioHandler;
+		private int currentStarPitch;
 
-		public StarHandler(ContentManager contentManager)
+		public StarHandler(ContentManager contentManager, IAudioHandler audioHandler)
 		{
 			this.contentManager = contentManager;
+			this.audioHandler = audioHandler;
 
 			Stars = new List<Star>();
 			removal = new List<Star>();
+			currentStarPitch = 1;
 
 			emitters = new IParticleEmitter[2];
 	
@@ -33,6 +38,11 @@ namespace MoonLib.Entities.Levels
 
 			emitters[1] = new StarSparkParticleEmitter();
 			emitters[1].Initialize(contentManager, 20);
+		}
+
+		public void ResetStarPitch()
+		{
+			currentStarPitch = 1;
 		}
 
 		public void CheckPlayerCollisions(Player player)
@@ -57,6 +67,16 @@ namespace MoonLib.Entities.Levels
 				emitters[1].Position = removal[i].Position;
 				emitters[1].Emit();
 			}
+
+			if (removal.Count > 0)
+			{
+				audioHandler.PlaySound("Star" + currentStarPitch, 1f, 0f, 0f);
+
+				if (currentStarPitch < 10)
+				{
+					currentStarPitch++;
+				}
+			}
 		}
 
 		public void CreateStar(Vector2 position, float angle)
@@ -72,6 +92,12 @@ namespace MoonLib.Entities.Levels
 
 		public void Update(GameTimerEventArgs e)
 		{
+			UpdateStarAngles(e);
+			UpdateParticles(e);
+		}
+
+		private void UpdateStarAngles(GameTimerEventArgs e)
+		{
 			// Calculate the time/movement scalar for this entity
 			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 1.5f);
 
@@ -81,7 +107,6 @@ namespace MoonLib.Entities.Levels
 			for (int i = 0; i < Stars.Count; i++)
 			{
 				Stars[i].Angle = starAngle;
-				Stars[i].Update(e);
 			}
 
 			// Update the current stars angle for the next update
@@ -91,8 +116,6 @@ namespace MoonLib.Entities.Levels
 			{
 				currentStarAngle -= 360f;
 			}
-
-			UpdateParticles(e);
 		}
 
 		private void UpdateParticles(GameTimerEventArgs e)

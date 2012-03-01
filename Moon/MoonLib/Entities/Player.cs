@@ -17,7 +17,10 @@ namespace MoonLib
 
 		public void SetVelocity(Vector2 velocity)
 		{
-			Velocity = velocity;
+			if (Velocity.Length() < 0.01f)
+			{
+				Velocity = velocity;
+			}
 		}
 
 		public void Update(GameTimerEventArgs e)
@@ -62,7 +65,7 @@ namespace MoonLib
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Texture, Position, Color.White);
+			spriteBatch.Draw(Texture, new Vector2((int)Position.X, (int)Position.Y), Color.White);
 		}
 	}
 }

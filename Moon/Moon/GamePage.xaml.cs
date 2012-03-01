@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Navigation;
+using System.Windows.Threading;
+using Framework.Audio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +17,8 @@ namespace Moon
 		private GameTimer timer;
 		private SpriteBatch spriteBatch;
     	private ILevel level;
+		private IAudioHandler audioHandler;
+		private DispatcherTimer levelCompletedTimer;
 
         public GamePage()
         {
@@ -29,11 +33,36 @@ namespace Moon
             timer.Update += OnUpdate;
             timer.Draw += OnDraw;
 
+			levelCompletedTimer = new DispatcherTimer();
+			levelCompletedTimer.Interval = TimeSpan.FromSeconds(2);
+
 			// Very important to display 32-bit colors instead of the default 16-bit which looks horrible with gradient images
 			SharedGraphicsDeviceManager.Current.PreferredBackBufferFormat = SurfaceFormat.Color;
 
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
+
+			InitializeAudio();
         }
+
+    	private void InitializeAudio()
+    	{
+			FrameworkDispatcher.Update();
+			audioHandler = new DefaultAudioHandler(contentManager, "");
+			audioHandler.LoadSong("BGM1", "Audio/BGM01");
+			audioHandler.LoadSound("Star1", "Audio/Star01");
+			audioHandler.LoadSound("Star2", "Audio/Star02");
+			audioHandler.LoadSound("Star3", "Audio/Star03");
+			audioHandler.LoadSound("Star4", "Audio/Star04");
+			audioHandler.LoadSound("Star5", "Audio/Star05");
+			audioHandler.LoadSound("Star6", "Audio/Star06");
+			audioHandler.LoadSound("Star7", "Audio/Star07");
+			audioHandler.LoadSound("Star8", "Audio/Star08");
+			audioHandler.LoadSound("Star9", "Audio/Star09");
+			audioHandler.LoadSound("Star10", "Audio/Star10");
+			audioHandler.MusicVolume = 0.33f;
+			audioHandler.SoundVolume = 1f;
+			audioHandler.PlaySong("BGM1", true);
+		}
 
     	protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -45,7 +74,7 @@ namespace Moon
 
 			// Initialize the level
 			level = new Level01();
-			level.Initialize(contentManager);
+			level.Initialize(contentManager, audioHandler);
 
             // Start the timer
             timer.Start();
@@ -70,22 +99,46 @@ namespace Moon
         /// </summary>
         private void OnUpdate(object sender, GameTimerEventArgs e)
         {
-			while (TouchPanel.IsGestureAvailable)
+			if (level.Completed)
 			{
-				var gesture = TouchPanel.ReadGesture();
-
-				switch (gesture.GestureType)
+				HandleLevelCompleted();
+			}
+			else
+			{
+				while (TouchPanel.IsGestureAvailable)
 				{
-					case GestureType.Flick:
-						level.Player.SetVelocity(gesture.Delta * 0.0001f);
-						break;
+					var gesture = TouchPanel.ReadGesture();
+
+					switch (gesture.GestureType)
+					{
+						case GestureType.Flick:
+							level.Player.SetVelocity(gesture.Delta * 0.0001f);
+							break;
+					}
 				}
 			}
 
 			level.Update(e);
+
+			audioHandler.Update(e);
         }
 
-        /// <summary>
+		private void HandleLevelCompleted()
+		{
+			if (!levelCompletedTimer.IsEnabled)
+			{
+				levelCompletedTimer.Tick += (o, args) =>
+				{
+					levelCompletedTimer.Stop();
+					level.Reset();
+					System.Diagnostics.Debug.WriteLine("A");
+				};
+
+				levelCompletedTimer.Start();
+			}
+		}
+
+    	/// <summary>
         /// Allows the page to draw itself.
         /// </summary>
         private void OnDraw(object sender, GameTimerEventArgs e)

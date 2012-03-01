@@ -1,3 +1,4 @@
+using Framework.Audio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,32 +10,55 @@ namespace MoonLib.Entities.Levels
 	public class Level01 : ILevel
 	{
 		public Player Player { get; set; }
+		public StarHandler StarHandler { get; set; }
 
+		private IAudioHandler audioHandler;
 		private DefaultBackground background;
-		private StarHandler starHandler;
 
-		public void Initialize(ContentManager contentManager)
+		public bool Completed
 		{
+			get
+			{
+				return StarHandler.Stars.Count == 0;
+			}
+		}
+
+		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
+		{
+			this.audioHandler = audioHandler;
+
 			// Initialize the background
 			background = new DefaultBackground();
 			background.Initialize(contentManager);
 
-			InitializeStars(contentManager);
+			StarHandler = new StarHandler(contentManager, audioHandler);
 
 			Player = new Player();
 			Player.Initialize(contentManager);
+
+			Reset();
+		}
+
+		public void Reset()
+		{
+			// Stars
+			InitializeStars();
+
+			// Player
+			Player.Velocity = Vector2.Zero;
 			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
 			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 64);
 		}
 
-		private void InitializeStars(ContentManager contentManager)
+		private void InitializeStars()
 		{
-			starHandler = new StarHandler(contentManager);
+			StarHandler.ResetStarPitch();
+			StarHandler.Stars.Clear();
 
 			int x = (480 / 2) - 16;
 			for (int y = 0; y < 8; y++)
 			{
-				starHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);
+				StarHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);
 			}
 		}
 
@@ -42,17 +66,17 @@ namespace MoonLib.Entities.Levels
 		{
 			background.Update(e);
 			Player.Update(e);
-			starHandler.Update(e);
+			StarHandler.Update(e);
 
 			// Remove stars that collide with the player
-			starHandler.CheckPlayerCollisions(Player);
+			StarHandler.CheckPlayerCollisions(Player);
 		}
 
 		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
 			background.Draw(device, spriteBatch);
 			Player.Draw(spriteBatch);
-			starHandler.Draw(spriteBatch);
+			StarHandler.Draw(spriteBatch);
 		}
 	}
 }

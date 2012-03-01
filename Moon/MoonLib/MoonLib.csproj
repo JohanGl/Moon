@@ -55,6 +55,9 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\Default\DefaultAudioHandler.cs" />
+    <Compile Include="Audio\Entities\FadeCancelOptions.cs" />
+    <Compile Include="Audio\IAudioHandler.cs" />
     <Compile Include="Entities\Backgrounds\DefaultBackground.cs" />
     <Compile Include="Entities\Items\Star.cs" />
     <Compile Include="Entities\Entity.cs" />
