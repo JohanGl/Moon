@@ -11,5 +11,7 @@ namespace MoonLib.Particles
 		public float Angle;
 		public float Life;
 		public float LifeBurnout;
+		public float Scale;
+		public float Opacity;
 	}
 }

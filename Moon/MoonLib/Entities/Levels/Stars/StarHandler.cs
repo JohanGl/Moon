@@ -16,7 +16,7 @@ namespace MoonLib.Entities.Levels
 		private float timeScalar;
 		private float currentStarAngle;
 		private List<Star> removal;
-		private ParticleEmitter emitter;
+		private IParticleEmitter[] emitters;
 		private ContentManager contentManager;
 
 		public StarHandler(ContentManager contentManager)
@@ -25,7 +25,14 @@ namespace MoonLib.Entities.Levels
 
 			Stars = new List<Star>();
 			removal = new List<Star>();
-			emitter = new ParticleEmitter(10, contentManager);
+
+			emitters = new IParticleEmitter[2];
+	
+			emitters[0] = new StarParticleEmitter();
+			emitters[0].Initialize(contentManager, 200);
+
+			emitters[1] = new StarSparkParticleEmitter();
+			emitters[1].Initialize(contentManager, 20);
 		}
 
 		public void CheckPlayerCollisions(Player player)
@@ -44,8 +51,11 @@ namespace MoonLib.Entities.Levels
 			{
 				Stars.Remove(removal[i]);
 
-				emitter.Position = removal[i].Position;
-				emitter.Emit();
+				emitters[0].Position = removal[i].Position;
+				emitters[0].Emit();
+
+				emitters[1].Position = removal[i].Position;
+				emitters[1].Emit();
 			}
 		}
 
@@ -63,7 +73,7 @@ namespace MoonLib.Entities.Levels
 		public void Update(GameTimerEventArgs e)
 		{
 			// Calculate the time/movement scalar for this entity
-			timeScalar = (float)e.ElapsedTime.TotalMilliseconds;
+			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 1.5f);
 
 			// Calculate the angle once and use it for all stars (the last multiplier limits how widely the stars rotate)
 			float starAngle = (float)Math.Sin(MathHelper.ToRadians(currentStarAngle)) * 0.6f;
@@ -88,7 +98,8 @@ namespace MoonLib.Entities.Levels
 		private void UpdateParticles(GameTimerEventArgs e)
 		{
 			// Update all particles
-			emitter.Update(e);
+			emitters[0].Update(e);
+			emitters[1].Update(e);
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -98,7 +109,8 @@ namespace MoonLib.Entities.Levels
 				Stars[i].Draw(spriteBatch);
 			}
 
-			emitter.Draw(spriteBatch);
+			emitters[0].Draw(spriteBatch);
+			emitters[1].Draw(spriteBatch);
 		}
 	}
 }

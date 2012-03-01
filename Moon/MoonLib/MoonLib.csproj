@@ -64,8 +64,10 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\EntityHelper.cs" />
-    <Compile Include="Particles\Particle.cs" />
-    <Compile Include="Particles\ParticleEmitter.cs" />
+    <Compile Include="Particles\StarSparkParticleEmitter.cs" />
+    <Compile Include="Particles\IParticleEmitter.cs" />
+    <Compile Include="Particles\Entities\Particle.cs" />
+    <Compile Include="Particles\StarParticleEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -51,8 +51,8 @@ namespace MoonLib.Entities.Levels
 		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
 			background.Draw(device, spriteBatch);
-			starHandler.Draw(spriteBatch);
 			Player.Draw(spriteBatch);
+			starHandler.Draw(spriteBatch);
 		}
 	}
 }
