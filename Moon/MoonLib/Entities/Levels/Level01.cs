@@ -12,7 +12,6 @@ namespace MoonLib.Entities.Levels
 		public Player Player { get; set; }
 		public StarHandler StarHandler { get; set; }
 
-		private IAudioHandler audioHandler;
 		private DefaultBackground background;
 
 		public bool Completed
@@ -25,8 +24,6 @@ namespace MoonLib.Entities.Levels
 
 		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
 		{
-			this.audioHandler = audioHandler;
-
 			// Initialize the background
 			background = new DefaultBackground();
 			background.Initialize(contentManager);

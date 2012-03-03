@@ -1,24 +1,35 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Navigation;
-using System.Windows.Threading;
 using Framework.Audio;
+using Framework.Core.Animations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using MoonLib;
 using MoonLib.Entities.Levels;
 
 namespace Moon
 {
-    public partial class GamePage
+	public enum AnimationType
+	{
+		LevelCompletedFade,
+		LevelCompletedPause
+	}
+
+	public partial class GamePage
     {
         private ContentManager contentManager;
 		private GameTimer timer;
 		private SpriteBatch spriteBatch;
     	private ILevel level;
 		private IAudioHandler audioHandler;
-		private DispatcherTimer levelCompletedTimer;
+
+		private bool initializeLevelCompleted;
+		private LevelCompleted levelCompleted;
+		private Texture2D background;
+		private AnimationHandler<AnimationType> animationHandler;
 
         public GamePage()
         {
@@ -33,13 +44,16 @@ namespace Moon
             timer.Update += OnUpdate;
             timer.Draw += OnDraw;
 
-			levelCompletedTimer = new DispatcherTimer();
-			levelCompletedTimer.Interval = TimeSpan.FromSeconds(2);
-
 			// Very important to display 32-bit colors instead of the default 16-bit which looks horrible with gradient images
 			SharedGraphicsDeviceManager.Current.PreferredBackBufferFormat = SurfaceFormat.Color;
 
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
+
+			animationHandler = new AnimationHandler<AnimationType>();
+			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(2)));
+			animationHandler.Animations.Add(AnimationType.LevelCompletedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(4)));
+
+			initializeLevelCompleted = true;
 
 			InitializeAudio();
         }
@@ -61,7 +75,7 @@ namespace Moon
 			audioHandler.LoadSound("Star10", "Audio/Star10");
 			audioHandler.MusicVolume = 0.33f;
 			audioHandler.SoundVolume = 1f;
-			audioHandler.PlaySong("BGM1", true);
+			//audioHandler.PlaySong("BGM1", true);
 		}
 
     	protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -72,15 +86,21 @@ namespace Moon
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
 
+			// Load textures
+			background = contentManager.Load<Texture2D>("Gui/BackgroundFade");
+
 			// Initialize the level
 			level = new Level01();
 			level.Initialize(contentManager, audioHandler);
 
-            // Start the timer
-            timer.Start();
+			levelCompleted = new LevelCompleted();
+			levelCompleted.Initialize(contentManager);
 
             base.OnNavigatedTo(e);
-        }
+
+			// Start the timer
+			timer.Start();
+		}
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
@@ -101,7 +121,7 @@ namespace Moon
         {
 			if (level.Completed)
 			{
-				HandleLevelCompleted();
+				HandleLevelCompleted(e);
 			}
 			else
 			{
@@ -123,18 +143,21 @@ namespace Moon
 			audioHandler.Update(e);
         }
 
-		private void HandleLevelCompleted()
+		private void HandleLevelCompleted(GameTimerEventArgs e)
 		{
-			if (!levelCompletedTimer.IsEnabled)
-			{
-				levelCompletedTimer.Tick += (o, args) =>
-				{
-					levelCompletedTimer.Stop();
-					level.Reset();
-					System.Diagnostics.Debug.WriteLine("A");
-				};
+			animationHandler.Update();
 
-				levelCompletedTimer.Start();
+			if (initializeLevelCompleted)
+			{
+				animationHandler.Animations[AnimationType.LevelCompletedPause].Start();
+				animationHandler.Animations[AnimationType.LevelCompletedFade].Start();
+				initializeLevelCompleted = false;
+			}
+
+			if (animationHandler.Animations[AnimationType.LevelCompletedPause].HasCompleted)
+			{
+				level.Reset();
+				initializeLevelCompleted = true;
 			}
 		}
 
@@ -149,7 +172,20 @@ namespace Moon
 
 			level.Draw(device, spriteBatch);
 
-			spriteBatch.End();
+			if (level.Completed)
+			{
+				DrawLevelCompleted();
+			}
+
+    		spriteBatch.End();
         }
+
+		private void DrawLevelCompleted()
+		{
+			float opacity = (animationHandler.Animations[AnimationType.LevelCompletedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelCompletedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelCompletedFade].To;
+			spriteBatch.Draw(background, new Rectangle(0, 0, 480, 800), null, Color.White * opacity);
+
+			levelCompleted.Draw(spriteBatch);
+		}
     }
 }

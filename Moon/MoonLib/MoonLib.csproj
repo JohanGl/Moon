@@ -55,12 +55,16 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animations\AnimationHandler.cs" />
+    <Compile Include="Animations\Entities\Animation.cs" />
     <Compile Include="Audio\Default\DefaultAudioHandler.cs" />
     <Compile Include="Audio\Entities\FadeCancelOptions.cs" />
     <Compile Include="Audio\IAudioHandler.cs" />
     <Compile Include="Entities\Backgrounds\DefaultBackground.cs" />
     <Compile Include="Entities\Items\Star.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Levels\Gui\StarRating.cs" />
+    <Compile Include="Entities\Levels\Gui\LevelCompleted.cs" />
     <Compile Include="Entities\Levels\Stars\StarHandler.cs" />
     <Compile Include="Entities\Levels\ILevel.cs" />
     <Compile Include="Entities\Levels\Level01.cs" />
