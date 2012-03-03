@@ -6,8 +6,8 @@ namespace MoonLib.Helpers
 	{
 		public static void Center(Entity entity)
 		{
-			var x = DeviceHelper.HalfWidth - (entity.Texture.Width / 2);
-			var y = DeviceHelper.HalfHeight - (entity.Texture.Height / 2);
+			var x = Device.HalfWidth - (entity.Texture.Width / 2);
+			var y = Device.HalfHeight - (entity.Texture.Height / 2);
 
 			entity.Position = new Vector2(x, y);
 		}
@@ -28,11 +28,11 @@ namespace MoonLib.Helpers
 					break;
 
 				case HorizontalAlignment.Center:
-					x = DeviceHelper.HalfWidth - (entity.Texture.Width / 2);
+					x = Device.HalfWidth - (entity.Texture.Width / 2);
 					break;
 
 				case HorizontalAlignment.Right:
-					x = DeviceHelper.Width - entity.Texture.Width - padding;
+					x = Device.Width - entity.Texture.Width - padding;
 					break;
 			}
 
@@ -55,11 +55,11 @@ namespace MoonLib.Helpers
 					break;
 
 				case VerticalAlignment.Center:
-					y = DeviceHelper.HalfHeight - (entity.Texture.Height / 2);
+					y = Device.HalfHeight - (entity.Texture.Height / 2);
 					break;
 
 				case VerticalAlignment.Bottom:
-					y = DeviceHelper.Height - entity.Texture.Height - padding;
+					y = Device.Height - entity.Texture.Height - padding;
 					break;
 			}
 

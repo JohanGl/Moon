@@ -63,13 +63,14 @@
     <Compile Include="Entities\Backgrounds\DefaultBackground.cs" />
     <Compile Include="Entities\Items\Star.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Levels\Level02.cs" />
     <Compile Include="Entities\Levels\Gui\StarRating.cs" />
     <Compile Include="Entities\Levels\Gui\LevelCompleted.cs" />
     <Compile Include="Entities\Levels\Stars\StarHandler.cs" />
     <Compile Include="Entities\Levels\ILevel.cs" />
     <Compile Include="Entities\Levels\Level01.cs" />
     <Compile Include="Entities\Player.cs" />
-    <Compile Include="Helpers\DeviceHelper.cs" />
+    <Compile Include="Helpers\Device.cs" />
     <Compile Include="Helpers\EntityHelper.cs" />
     <Compile Include="Particles\StarSparkParticleEmitter.cs" />
     <Compile Include="Particles\IParticleEmitter.cs" />

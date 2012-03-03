@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib;
 using MoonLib.Entities.Levels;
+using MoonLib.Helpers;
 
 namespace Moon
 {
@@ -25,6 +26,8 @@ namespace Moon
 		private SpriteBatch spriteBatch;
     	private ILevel level;
 		private IAudioHandler audioHandler;
+
+		private int currentLevel;
 
 		private bool initializeLevelCompleted;
 		private LevelCompleted levelCompleted;
@@ -75,7 +78,7 @@ namespace Moon
 			audioHandler.LoadSound("Star10", "Audio/Star10");
 			audioHandler.MusicVolume = 0.33f;
 			audioHandler.SoundVolume = 1f;
-			//audioHandler.PlaySong("BGM1", true);
+			audioHandler.PlaySong("BGM1", true);
 		}
 
     	protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -96,13 +99,41 @@ namespace Moon
 			levelCompleted = new LevelCompleted();
 			levelCompleted.Initialize(contentManager);
 
+			LoadLevel();
+
             base.OnNavigatedTo(e);
 
 			// Start the timer
 			timer.Start();
 		}
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+		private void NextLevel()
+		{
+			currentLevel++;
+
+			if (currentLevel > 1)
+			{
+				currentLevel = 0;
+			}
+		}
+
+		private void LoadLevel()
+		{
+			switch (currentLevel)
+			{
+				case 0:
+					level = new Level01();
+					break;
+
+				case 1:
+					level = new Level02();
+					break;
+			}
+
+			level.Initialize(contentManager, audioHandler);
+		}
+
+		protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             // Stop the timer
             timer.Stop();
@@ -156,7 +187,8 @@ namespace Moon
 
 			if (animationHandler.Animations[AnimationType.LevelCompletedPause].HasCompleted)
 			{
-				level.Reset();
+				NextLevel();
+				LoadLevel();
 				initializeLevelCompleted = true;
 			}
 		}
@@ -183,7 +215,7 @@ namespace Moon
 		private void DrawLevelCompleted()
 		{
 			float opacity = (animationHandler.Animations[AnimationType.LevelCompletedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelCompletedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelCompletedFade].To;
-			spriteBatch.Draw(background, new Rectangle(0, 0, 480, 800), null, Color.White * opacity);
+			spriteBatch.Draw(background, Device.Size, null, Color.White * opacity);
 
 			levelCompleted.Draw(spriteBatch);
 		}

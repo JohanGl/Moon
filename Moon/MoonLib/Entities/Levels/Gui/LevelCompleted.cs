@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Levels
 {
@@ -15,7 +16,7 @@ namespace MoonLib.Entities.Levels
 
 			starRatings = new List<StarRating>();
 
-			Position = new Vector2((480 / 2) - (Texture.Width / 2), (800 / 2) - (Texture.Height / 2));
+			Position = new Vector2(Device.HalfWidth - HalfSize.X, Device.HalfHeight - HalfSize.Y);
 
 			for (int i = 0; i < 3; i++)
 			{

@@ -7,7 +7,7 @@ using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Levels
 {
-	public class Level01 : ILevel
+	public class Level02 : ILevel
 	{
 		public Player Player { get; set; }
 		public StarHandler StarHandler { get; set; }
@@ -43,8 +43,8 @@ namespace MoonLib.Entities.Levels
 
 			// Player
 			Player.Velocity = Vector2.Zero;
-			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
-			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 64);
+			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Left, 8);
+			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 32);
 		}
 
 		private void InitializeStars()
@@ -52,10 +52,26 @@ namespace MoonLib.Entities.Levels
 			StarHandler.ResetStarPitch();
 			StarHandler.Stars.Clear();
 
-			int x = Device.HalfWidth - 16;
-			for (int y = 0; y < 8; y++)
+			float x = 74;
+			float xStep = (Device.HalfWidth - x) / 5f;
+
+			float y = 600f;
+			float yStep = (y - 16f) / 5f;
+
+			for (int i = 0; i < 5; i++)
 			{
-				StarHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);
+				StarHandler.CreateStar(new Vector2(x, y), 0);
+
+				x += xStep;
+				y -= yStep;
+			}
+
+			for (int i = 0; i <= 5; i++)
+			{
+				StarHandler.CreateStar(new Vector2(x, y), 0);
+
+				x += xStep;
+				y += yStep;
 			}
 		}
 

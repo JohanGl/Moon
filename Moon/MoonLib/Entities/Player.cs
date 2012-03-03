@@ -45,9 +45,9 @@ namespace MoonLib
 				Position += new Vector2(-Position.X, 0);
 				Velocity = new Vector2(-Velocity.X, Velocity.Y);
 			}
-			else if (Position.X + Texture.Width > DeviceHelper.Width)
+			else if (Position.X + Texture.Width > Device.Width)
 			{
-				Position -= new Vector2((Position.X + Texture.Width) - DeviceHelper.Width, 0);
+				Position -= new Vector2((Position.X + Texture.Width) - Device.Width, 0);
 				Velocity = new Vector2(-Velocity.X, Velocity.Y);
 			}
 
@@ -56,9 +56,9 @@ namespace MoonLib
 				Position += new Vector2(0, -Position.Y);
 				Velocity = new Vector2(Velocity.X, -Velocity.Y);
 			}
-			else if (Position.Y + Texture.Height > DeviceHelper.Height)
+			else if (Position.Y + Texture.Height > Device.Height)
 			{
-				Position -= new Vector2(0, (Position.Y + Texture.Height) - DeviceHelper.Height);
+				Position -= new Vector2(0, (Position.Y + Texture.Height) - Device.Height);
 				Velocity = new Vector2(Velocity.X, -Velocity.Y);
 			}
 		}

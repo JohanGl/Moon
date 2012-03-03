@@ -14,7 +14,7 @@ namespace MoonLib
 		{
 			get
 			{
-				return new Vector2(Texture.Width / 2, Texture.Height / 2);
+				return new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			}
 		}
 
