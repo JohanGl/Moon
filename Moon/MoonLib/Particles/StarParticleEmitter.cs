@@ -28,7 +28,7 @@ namespace MoonLib.Particles
 			int counter = 0;
 
 			float angle = random.Next(360);
-			float angleStep = 360 / 15f;
+			float angleStep = 360 / (float)total;
 
 			for (int i = 0; i < particles.Length; i++)
 			{

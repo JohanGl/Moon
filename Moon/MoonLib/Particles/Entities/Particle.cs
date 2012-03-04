@@ -13,5 +13,7 @@ namespace MoonLib.Particles
 		public float LifeBurnout;
 		public float Scale;
 		public float Opacity;
+
+		public int SpriteSheetIndex;
 	}
 }

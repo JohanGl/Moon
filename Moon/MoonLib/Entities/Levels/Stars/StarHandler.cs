@@ -33,13 +33,16 @@ namespace MoonLib.Entities.Levels
 			starsToRemove = new List<IStar>();
 			ResetStarPitch();
 
-			emitters = new IParticleEmitter[2];
+			emitters = new IParticleEmitter[3];
 	
 			emitters[0] = new StarParticleEmitter();
 			emitters[0].Initialize(contentManager, 200);
 
 			emitters[1] = new StarSparkParticleEmitter();
 			emitters[1].Initialize(contentManager, 20);
+
+			emitters[2] = new IceParticleEmitter();
+			emitters[2].Initialize(contentManager, 200);
 		}
 
 		public void ResetStarPitch()
@@ -122,6 +125,9 @@ namespace MoonLib.Entities.Levels
 			CreateStar(star.Position + new Vector2(star.HalfSize.X, star.HalfSize.Y), star.Angle);
 			(Stars[Stars.Count - 1] as Star).Velocity = velocity;
 
+			emitters[2].Position = star.Position + new Vector2(star.HalfSize.X, star.HalfSize.Y);
+			emitters[2].Emit();
+
 			audioHandler.PlaySound("IceStar");
 		}
 
@@ -192,9 +198,10 @@ namespace MoonLib.Entities.Levels
 
 		private void UpdateParticles(GameTimerEventArgs e)
 		{
-			// Update all particles
-			emitters[0].Update(e);
-			emitters[1].Update(e);
+			for (int i = 0; i < emitters.Length; i++)
+			{
+				emitters[i].Update(e);
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -204,8 +211,10 @@ namespace MoonLib.Entities.Levels
 				Stars[i].Draw(spriteBatch);
 			}
 
-			emitters[0].Draw(spriteBatch);
-			emitters[1].Draw(spriteBatch);
+			for (int i = 0; i < emitters.Length; i++)
+			{
+				emitters[i].Draw(spriteBatch);
+			}
 		}
 	}
 }

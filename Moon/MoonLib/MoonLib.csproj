@@ -77,6 +77,7 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Helpers\Device.cs" />
     <Compile Include="Helpers\EntityHelper.cs" />
+    <Compile Include="Particles\IceParticleEmitter.cs" />
     <Compile Include="Particles\StarSparkParticleEmitter.cs" />
     <Compile Include="Particles\IParticleEmitter.cs" />
     <Compile Include="Particles\Entities\Particle.cs" />
