@@ -12,11 +12,13 @@ namespace MoonLib.Entities.Levels
 {
 	public class StarHandler
 	{
-		public List<Star> Stars;
+		public List<IStar> Stars;
+		private List<IStar> starsToRemove;
+
+		private const int totalStarPitch = 16;
 
 		private float timeScalar;
 		private float currentStarAngle;
-		private List<Star> removal;
 		private IParticleEmitter[] emitters;
 		private ContentManager contentManager;
 		private IAudioHandler audioHandler;
@@ -27,9 +29,9 @@ namespace MoonLib.Entities.Levels
 			this.contentManager = contentManager;
 			this.audioHandler = audioHandler;
 
-			Stars = new List<Star>();
-			removal = new List<Star>();
-			currentStarPitch = 1;
+			Stars = new List<IStar>();
+			starsToRemove = new List<IStar>();
+			ResetStarPitch();
 
 			emitters = new IParticleEmitter[2];
 	
@@ -47,51 +49,111 @@ namespace MoonLib.Entities.Levels
 
 		public void CheckPlayerCollisions(Player player)
 		{
-			removal.Clear();
+			starsToRemove.Clear();
 
 			for (int i = 0; i < Stars.Count; i++)
 			{
-				if (EntityHelper.Instersects(player, Stars[i]))
+				var star = Stars[i];
+
+				if (star is Star)
 				{
-					removal.Add(Stars[i]);
+					if (EntityHelper.Instersects(player, (Entity)star))
+					{
+						starsToRemove.Add(Stars[i]);
+					}					
+				}
+				else if (star is IceStar)
+				{
+					if (EntityHelper.Instersects(player, (Entity)star))
+					{
+						var starVelocity = player.Velocity * 0.05f;
+
+						if (Math.Abs(player.Velocity.X) >= Math.Abs(player.Velocity.Y))
+						{
+							player.Velocity = new Vector2(-player.Velocity.X, player.Velocity.Y);
+						}
+						else
+						{
+							player.Velocity = new Vector2(player.Velocity.X, -player.Velocity.Y);
+						}
+
+						for (int t = 0; t < 10; t++)
+						{
+							player.Position += player.Velocity;
+							player.Velocity *= 0.9f;
+
+							if (!EntityHelper.Instersects(player, (Entity)star))
+							{
+								break;
+							}
+						}
+
+						BreakIceStar((IceStar)star, starVelocity);
+					}
 				}
 			}
 
-			for (int i = 0; i < removal.Count; i++)
+			for (int i = 0; i < starsToRemove.Count; i++)
 			{
-				Stars.Remove(removal[i]);
+				Stars.Remove(starsToRemove[i]);
 
-				emitters[0].Position = removal[i].Position;
+				emitters[0].Position = (starsToRemove[i] as Star).Position;
 				emitters[0].Emit();
 
-				emitters[1].Position = removal[i].Position;
+				emitters[1].Position = emitters[0].Position;
 				emitters[1].Emit();
 			}
 
-			if (removal.Count > 0)
+			if (starsToRemove.Count > 0)
 			{
 				audioHandler.PlaySound("Star" + currentStarPitch, 1f, 0f, 0f);
 
-				if (currentStarPitch < 10)
+				if (currentStarPitch < totalStarPitch)
 				{
 					currentStarPitch++;
 				}
 			}
 		}
 
+		private void BreakIceStar(IceStar star, Vector2 velocity)
+		{
+			Stars.Remove((IStar)star);
+			
+			CreateStar(star.Position + new Vector2(star.HalfSize.X, star.HalfSize.Y), star.Angle);
+			(Stars[Stars.Count - 1] as Star).Velocity = velocity;
+
+			audioHandler.PlaySound("IceStar");
+		}
+
 		public void CreateStar(Vector2 position, float angle)
 		{
 			var star = new Star();
 			star.Initialize(contentManager);
-			star.Position = position;
+			star.Position = new Vector2((int)(position.X - star.HalfSize.X), (int)(position.Y - star.HalfSize.Y));
 			star.Angle = angle;
 			star.CollisionRadius = 12;
 
 			Stars.Add(star);
 		}
 
+		public void CreateIceStar(Vector2 position, float angle)
+		{
+			var star = new IceStar();
+			star.Initialize(contentManager, Stars.Count);
+			star.Position = new Vector2((int)(position.X - star.HalfSize.X), (int)(position.Y - star.HalfSize.Y));
+			star.Angle = angle;
+			star.CollisionRadius = 30;
+
+			Stars.Add(star);
+		}
+
 		public void Update(GameTimerEventArgs e)
 		{
+			for (int i = 0; i < Stars.Count; i++)
+			{
+				Stars[i].Update(e);
+			}
+
 			UpdateStarAngles(e);
 			UpdateParticles(e);
 		}
@@ -103,10 +165,20 @@ namespace MoonLib.Entities.Levels
 
 			// Calculate the angle once and use it for all stars (the last multiplier limits how widely the stars rotate)
 			float starAngle = (float)Math.Sin(MathHelper.ToRadians(currentStarAngle)) * 0.6f;
+			float iceStarAngle = (float)Math.Sin(MathHelper.ToRadians(currentStarAngle)) * 0.1f;
 
 			for (int i = 0; i < Stars.Count; i++)
 			{
-				Stars[i].Angle = starAngle;
+				var star = Stars[i];
+
+				if (star is Star)
+				{
+					(star as Star).Angle = starAngle;	
+				}
+				else if (star is IceStar)
+				{
+					(star as IceStar).Angle = iceStarAngle;					
+				}
 			}
 
 			// Update the current stars angle for the next update

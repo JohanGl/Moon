@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Entities.Backgrounds;
+using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Levels
@@ -52,7 +53,7 @@ namespace MoonLib.Entities.Levels
 			StarHandler.ResetStarPitch();
 			StarHandler.Stars.Clear();
 
-			int x = Device.HalfWidth - 16;
+			int x = Device.HalfWidth;
 			for (int y = 0; y < 8; y++)
 			{
 				StarHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);

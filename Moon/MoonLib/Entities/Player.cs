@@ -11,7 +11,7 @@ namespace MoonLib
 
 		public void Initialize(ContentManager contentManager)
 		{
-			Texture = contentManager.Load<Texture2D>("Moon");
+			Texture = contentManager.Load<Texture2D>("Player/Moon");
 			CollisionRadius = Texture.Width / 2f;
 		}
 

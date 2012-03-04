@@ -61,8 +61,13 @@
     <Compile Include="Audio\Entities\FadeCancelOptions.cs" />
     <Compile Include="Audio\IAudioHandler.cs" />
     <Compile Include="Entities\Backgrounds\DefaultBackground.cs" />
+    <Compile Include="Entities\Items\BlackHole.cs" />
+    <Compile Include="Entities\Items\IceStar.cs" />
+    <Compile Include="Entities\Items\IStar.cs" />
     <Compile Include="Entities\Items\Star.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Levels\Level04.cs" />
+    <Compile Include="Entities\Levels\Level03.cs" />
     <Compile Include="Entities\Levels\Level02.cs" />
     <Compile Include="Entities\Levels\Gui\StarRating.cs" />
     <Compile Include="Entities\Levels\Gui\LevelCompleted.cs" />

@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
-using MoonLib;
 using MoonLib.Entities.Levels;
 using MoonLib.Helpers;
 
@@ -20,32 +19,34 @@ namespace Moon
 	}
 
 	public partial class GamePage
-    {
-        private ContentManager contentManager;
+	{
+		private ContentManager contentManager;
 		private GameTimer timer;
 		private SpriteBatch spriteBatch;
-    	private ILevel level;
+		private ILevel level;
 		private IAudioHandler audioHandler;
 
-		private int currentLevel;
+		private int currentLevel = 1;
+		private const int totalLevels = 4;
 
 		private bool initializeLevelCompleted;
+		private bool tapToContinue;
 		private LevelCompleted levelCompleted;
 		private Texture2D background;
 		private AnimationHandler<AnimationType> animationHandler;
 
-        public GamePage()
-        {
-            InitializeComponent();
+		public GamePage()
+		{
+			InitializeComponent();
 
-            // Get the content manager from the application
-            contentManager = (Application.Current as App).Content;
+			// Get the content manager from the application
+			contentManager = (Application.Current as App).Content;
 
-            // Create a timer for this page running at 30 fps
-            timer = new GameTimer();
-        	timer.UpdateInterval = TimeSpan.FromTicks(33333);
-            timer.Update += OnUpdate;
-            timer.Draw += OnDraw;
+			// Create a timer for this page running at 30 fps
+			timer = new GameTimer();
+			timer.UpdateInterval = TimeSpan.FromTicks(33333);
+			timer.Update += OnUpdate;
+			timer.Draw += OnDraw;
 
 			// Very important to display 32-bit colors instead of the default 16-bit which looks horrible with gradient images
 			SharedGraphicsDeviceManager.Current.PreferredBackBufferFormat = SurfaceFormat.Color;
@@ -53,41 +54,39 @@ namespace Moon
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
 
 			animationHandler = new AnimationHandler<AnimationType>();
-			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(2)));
-			animationHandler.Animations.Add(AnimationType.LevelCompletedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(4)));
+			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
+			animationHandler.Animations.Add(AnimationType.LevelCompletedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(1)));
 
 			initializeLevelCompleted = true;
 
 			InitializeAudio();
-        }
+		}
 
-    	private void InitializeAudio()
-    	{
+		private void InitializeAudio()
+		{
 			FrameworkDispatcher.Update();
 			audioHandler = new DefaultAudioHandler(contentManager, "");
 			audioHandler.LoadSong("BGM1", "Audio/BGM01");
-			audioHandler.LoadSound("Star1", "Audio/Star01");
-			audioHandler.LoadSound("Star2", "Audio/Star02");
-			audioHandler.LoadSound("Star3", "Audio/Star03");
-			audioHandler.LoadSound("Star4", "Audio/Star04");
-			audioHandler.LoadSound("Star5", "Audio/Star05");
-			audioHandler.LoadSound("Star6", "Audio/Star06");
-			audioHandler.LoadSound("Star7", "Audio/Star07");
-			audioHandler.LoadSound("Star8", "Audio/Star08");
-			audioHandler.LoadSound("Star9", "Audio/Star09");
-			audioHandler.LoadSound("Star10", "Audio/Star10");
+
+			for (int i = 1; i <= 16; i++)
+			{
+				audioHandler.LoadSound("Star" + i, string.Format("Audio/Star{0:00}", i));				
+			}
+	
+			audioHandler.LoadSound("IceStar", "Audio/IceStar");
+
 			audioHandler.MusicVolume = 0.33f;
 			audioHandler.SoundVolume = 1f;
 			audioHandler.PlaySong("BGM1", true);
 		}
 
-    	protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            // Set the sharing mode of the graphics device to turn on XNA rendering
-            SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(true);
+		protected override void OnNavigatedTo(NavigationEventArgs e)
+		{
+			// Set the sharing mode of the graphics device to turn on XNA rendering
+			SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(true);
 
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
+			// Create a new SpriteBatch, which can be used to draw textures.
+			spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
 
 			// Load textures
 			background = contentManager.Load<Texture2D>("Gui/BackgroundFade");
@@ -101,7 +100,7 @@ namespace Moon
 
 			LoadLevel();
 
-            base.OnNavigatedTo(e);
+			base.OnNavigatedTo(e);
 
 			// Start the timer
 			timer.Start();
@@ -111,45 +110,40 @@ namespace Moon
 		{
 			currentLevel++;
 
-			if (currentLevel > 1)
+			if (currentLevel > totalLevels)
 			{
-				currentLevel = 0;
+				currentLevel = 1;
 			}
+
+			//currentLevel = 3;
 		}
 
 		private void LoadLevel()
 		{
-			switch (currentLevel)
-			{
-				case 0:
-					level = new Level01();
-					break;
-
-				case 1:
-					level = new Level02();
-					break;
-			}
+			var type = Type.GetType(string.Format("MoonLib.Entities.Levels.Level{0:00}, MoonLib", currentLevel));
+			level = (ILevel)Activator.CreateInstance(type);
 
 			level.Initialize(contentManager, audioHandler);
+			tapToContinue = false;
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            // Stop the timer
-            timer.Stop();
+		{
+			// Stop the timer
+			timer.Stop();
 
-            // Set the sharing mode of the graphics device to turn off XNA rendering
-            SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(false);
+			// Set the sharing mode of the graphics device to turn off XNA rendering
+			SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(false);
 
-            base.OnNavigatedFrom(e);
-        }
+			base.OnNavigatedFrom(e);
+		}
 
-        /// <summary>
-        /// Allows the page to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        private void OnUpdate(object sender, GameTimerEventArgs e)
-        {
+		/// <summary>
+		/// Allows the page to run logic such as updating the world,
+		/// checking for collisions, gathering input, and playing audio.
+		/// </summary>
+		private void OnUpdate(object sender, GameTimerEventArgs e)
+		{
 			if (level.Completed)
 			{
 				HandleLevelCompleted(e);
@@ -172,7 +166,7 @@ namespace Moon
 			level.Update(e);
 
 			audioHandler.Update(e);
-        }
+		}
 
 		private void HandleLevelCompleted(GameTimerEventArgs e)
 		{
@@ -183,22 +177,38 @@ namespace Moon
 				animationHandler.Animations[AnimationType.LevelCompletedPause].Start();
 				animationHandler.Animations[AnimationType.LevelCompletedFade].Start();
 				initializeLevelCompleted = false;
+				tapToContinue = false;
 			}
 
 			if (animationHandler.Animations[AnimationType.LevelCompletedPause].HasCompleted)
 			{
-				NextLevel();
-				LoadLevel();
-				initializeLevelCompleted = true;
+				tapToContinue = true;
+			}
+
+			while (TouchPanel.IsGestureAvailable)
+			{
+				var gesture = TouchPanel.ReadGesture();
+
+				switch (gesture.GestureType)
+				{
+					case GestureType.Tap:
+						if (tapToContinue)
+						{
+							NextLevel();
+							LoadLevel();
+							initializeLevelCompleted = true;
+						}
+						break;
+				}
 			}
 		}
 
-    	/// <summary>
-        /// Allows the page to draw itself.
-        /// </summary>
-        private void OnDraw(object sender, GameTimerEventArgs e)
-        {
-        	var device = SharedGraphicsDeviceManager.Current.GraphicsDevice;
+		/// <summary>
+		/// Allows the page to draw itself.
+		/// </summary>
+		private void OnDraw(object sender, GameTimerEventArgs e)
+		{
+			var device = SharedGraphicsDeviceManager.Current.GraphicsDevice;
 
 			spriteBatch.Begin();
 
@@ -209,8 +219,8 @@ namespace Moon
 				DrawLevelCompleted();
 			}
 
-    		spriteBatch.End();
-        }
+			spriteBatch.End();
+		}
 
 		private void DrawLevelCompleted()
 		{
@@ -219,5 +229,5 @@ namespace Moon
 
 			levelCompleted.Draw(spriteBatch);
 		}
-    }
+	}
 }

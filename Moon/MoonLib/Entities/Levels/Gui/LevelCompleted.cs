@@ -16,7 +16,7 @@ namespace MoonLib.Entities.Levels
 
 			starRatings = new List<StarRating>();
 
-			Position = new Vector2(Device.HalfWidth - HalfSize.X, Device.HalfHeight - HalfSize.Y);
+			Position = new Vector2((int)(Device.HalfWidth - HalfSize.X), (int)(Device.HalfHeight - HalfSize.Y));
 
 			for (int i = 0; i < 3; i++)
 			{
