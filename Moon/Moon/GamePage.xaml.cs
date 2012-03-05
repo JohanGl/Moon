@@ -75,9 +75,9 @@ namespace Moon
 	
 			audioHandler.LoadSound("IceStar", "Audio/IceStar");
 
-			audioHandler.MusicVolume = 0.33f;
-			audioHandler.SoundVolume = 1f;
 			audioHandler.PlaySong("BGM1", true);
+			audioHandler.MusicVolume = 1f;
+			audioHandler.SoundVolume = 1f;
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -157,7 +157,7 @@ namespace Moon
 					switch (gesture.GestureType)
 					{
 						case GestureType.Flick:
-							level.Player.SetVelocity(gesture.Delta * 0.0001f);
+							level.Move(gesture.Delta * 0.0001f);
 							break;
 					}
 				}

@@ -10,10 +10,10 @@ namespace MoonLib.Entities.Levels
 {
 	public class Level04 : ILevel
 	{
-		public Player Player { get; set; }
 		public StarHandler StarHandler { get; set; }
-		private BlackHole blackHole;
 
+		private BlackHole blackHole;
+		private Player Player { get; set; }
 		private DefaultBackground background;
 
 		public bool Completed
@@ -78,6 +78,11 @@ namespace MoonLib.Entities.Levels
 			blackHole.Draw(spriteBatch);
 			Player.Draw(spriteBatch);
 			StarHandler.Draw(spriteBatch);
+		}
+
+		public void Move(Vector2 velocity)
+		{
+			Player.SetVelocity(velocity);
 		}
 	}
 }

@@ -3,16 +3,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Entities.Backgrounds;
-using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Levels
 {
 	public class Level03 : ILevel
 	{
-		public Player Player { get; set; }
 		public StarHandler StarHandler { get; set; }
 
+		private Player Player { get; set; }
 		private DefaultBackground background;
 
 		public bool Completed
@@ -74,6 +73,11 @@ namespace MoonLib.Entities.Levels
 			background.Draw(device, spriteBatch);
 			Player.Draw(spriteBatch);
 			StarHandler.Draw(spriteBatch);
+		}
+
+		public void Move(Vector2 velocity)
+		{
+			Player.SetVelocity(velocity);
 		}
 	}
 }
