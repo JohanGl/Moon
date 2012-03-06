@@ -13,6 +13,7 @@
 *.cache
 *.cachefile
 *.user
+*.crc
 
 # Packages #
 ############
