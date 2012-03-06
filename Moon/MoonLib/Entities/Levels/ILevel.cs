@@ -7,7 +7,6 @@ namespace MoonLib.Entities.Levels
 {
 	public interface ILevel
 	{
-		Player Player { get; set; }
 		StarHandler StarHandler { get; set; }
 
 		bool Completed { get; }
@@ -16,5 +15,6 @@ namespace MoonLib.Entities.Levels
 		void Reset();
 		void Update(GameTimerEventArgs e);
 		void Draw(GraphicsDevice device, SpriteBatch spriteBatch);
+		void Move(Vector2 velocity);
 	}
 }

@@ -66,6 +66,7 @@
     <Compile Include="Entities\Items\IStar.cs" />
     <Compile Include="Entities\Items\Star.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Levels\Gui\PlayerInfo.cs" />
     <Compile Include="Entities\Levels\Level04.cs" />
     <Compile Include="Entities\Levels\Level03.cs" />
     <Compile Include="Entities\Levels\Level02.cs" />

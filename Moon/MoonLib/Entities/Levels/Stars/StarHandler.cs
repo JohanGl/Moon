@@ -83,7 +83,7 @@ namespace MoonLib.Entities.Levels
 						for (int t = 0; t < 10; t++)
 						{
 							player.Position += player.Velocity;
-							player.Velocity *= 0.9f;
+							player.Velocity *= 0.875f;
 
 							if (!EntityHelper.Instersects(player, (Entity)star))
 							{

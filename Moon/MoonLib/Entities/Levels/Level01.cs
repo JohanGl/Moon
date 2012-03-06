@@ -3,17 +3,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Entities.Backgrounds;
-using MoonLib.Entities.Items;
+using MoonLib.Entities.Levels.Gui;
 using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Levels
 {
 	public class Level01 : ILevel
 	{
-		public Player Player { get; set; }
 		public StarHandler StarHandler { get; set; }
 
+		private Player Player { get; set; }
 		private DefaultBackground background;
+		private PlayerInfo playerInfo;
 
 		public bool Completed
 		{
@@ -33,6 +34,9 @@ namespace MoonLib.Entities.Levels
 
 			Player = new Player();
 			Player.Initialize(contentManager);
+
+			playerInfo = new PlayerInfo();
+			playerInfo.Initialize(contentManager, 3);
 
 			Reset();
 		}
@@ -75,6 +79,13 @@ namespace MoonLib.Entities.Levels
 			background.Draw(device, spriteBatch);
 			Player.Draw(spriteBatch);
 			StarHandler.Draw(spriteBatch);
+
+			playerInfo.Draw(spriteBatch);
+		}
+
+		public void Move(Vector2 velocity)
+		{
+			Player.SetVelocity(velocity);
 		}
 	}
 }
