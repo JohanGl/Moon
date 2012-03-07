@@ -8,10 +8,13 @@ namespace MoonLib.Entities.Items
 	public class Star : Entity, IStar
 	{
 		private float timeScalar;
+		private Vector2 fixedHalfSize;
 
 		public void Initialize(ContentManager contentManager)
 		{
 			Texture = contentManager.Load<Texture2D>("Items/Star");
+			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
+			fixedHalfSize = new Vector2((int)HalfSize.X, (int)HalfSize.Y);
 		}
 
 		public void Update(GameTimerEventArgs e)
@@ -56,7 +59,7 @@ namespace MoonLib.Entities.Items
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Texture, Position + HalfSize, null, Color.White, Angle, new Vector2(16, 16), 1f, SpriteEffects.None, 0f);
+			spriteBatch.Draw(Texture, Position + fixedHalfSize, null, Color.White, Angle, fixedHalfSize, 1f, SpriteEffects.None, 0f);
 		}
 	}
 }

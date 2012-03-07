@@ -7,14 +7,23 @@ namespace MoonLib.Entities.Items
 {
 	public class IceStar : Entity, IStar
 	{
+		public bool IsCracked { get; set; }
+
 		private float timeScalar;
 		private Rectangle source;
+		private Rectangle sourceCracked;
+		private Vector2 fixedHalfSize;
 
 		public void Initialize(ContentManager contentManager, int type)
 		{
 			Texture = contentManager.Load<Texture2D>("Items/IceStar");
+			HalfSize = new Vector2(Texture.Height / 2f, Texture.Height / 2f);
+			fixedHalfSize = new Vector2((int)HalfSize.X, (int)HalfSize.Y);
 
-			source = new Rectangle(Texture.Height * (type%4), 0, Texture.Height, Texture.Height);
+			source = new Rectangle(Texture.Height * (type % 4), 0, Texture.Height, Texture.Height);
+			sourceCracked = new Rectangle(source.X + 256, 0, source.Width, source.Height);
+
+			IsCracked = false;
 		}
 
 		public void Update(GameTimerEventArgs e)
@@ -39,9 +48,9 @@ namespace MoonLib.Entities.Items
 				Position += new Vector2(-Position.X, 0);
 				Velocity = new Vector2(-Velocity.X, Velocity.Y);
 			}
-			else if (Position.X + Texture.Width > Device.Width)
+			else if (Position.X + Texture.Height > Device.Width)
 			{
-				Position -= new Vector2((Position.X + Texture.Width) - Device.Width, 0);
+				Position -= new Vector2((Position.X + Texture.Height) - Device.Width, 0);
 				Velocity = new Vector2(-Velocity.X, Velocity.Y);
 			}
 
@@ -59,7 +68,14 @@ namespace MoonLib.Entities.Items
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Texture, Position + HalfSize, source, Color.White, Angle, new Vector2((int)HalfSize.Y, (int)HalfSize.Y), 1f, SpriteEffects.None, 0f);
+			if (IsCracked)
+			{
+				spriteBatch.Draw(Texture, Position + fixedHalfSize, sourceCracked, Color.White, Angle, fixedHalfSize, 1f, SpriteEffects.None, 0f);
+			}
+			else
+			{
+				spriteBatch.Draw(Texture, Position + fixedHalfSize, source, Color.White, Angle, fixedHalfSize, 1f, SpriteEffects.None, 0f);
+			}
 		}
 	}
 }

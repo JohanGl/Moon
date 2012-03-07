@@ -70,6 +70,7 @@ namespace MoonLib.Entities.Levels
 					if (EntityHelper.Instersects(player, (Entity)star))
 					{
 						var starVelocity = player.Velocity * 0.05f;
+						(star as IceStar).Velocity = player.Velocity * 0.05f;
 
 						if (Math.Abs(player.Velocity.X) >= Math.Abs(player.Velocity.Y))
 						{
@@ -80,10 +81,11 @@ namespace MoonLib.Entities.Levels
 							player.Velocity = new Vector2(player.Velocity.X, -player.Velocity.Y);
 						}
 
-						for (int t = 0; t < 10; t++)
+						player.Velocity *= 0.9f;
+
+						for (int t = 0; t < 100; t++)
 						{
 							player.Position += player.Velocity;
-							player.Velocity *= 0.875f;
 
 							if (!EntityHelper.Instersects(player, (Entity)star))
 							{
@@ -91,7 +93,15 @@ namespace MoonLib.Entities.Levels
 							}
 						}
 
-						BreakIceStar((IceStar)star, starVelocity);
+						if (!(star as IceStar).IsCracked)
+						{
+							(star as IceStar).IsCracked = true;
+						}
+						else
+						{
+							
+							BreakIceStar((IceStar)star, starVelocity);
+						}
 					}
 				}
 			}

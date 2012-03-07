@@ -9,7 +9,7 @@ namespace MoonLib.Entities.Levels
 {
 	public class Level03 : ILevel
 	{
-		public StarHandler StarHandler { get; set; }
+		private StarHandler starHandler { get; set; }
 
 		private Player Player { get; set; }
 		private DefaultBackground background;
@@ -18,7 +18,7 @@ namespace MoonLib.Entities.Levels
 		{
 			get
 			{
-				return StarHandler.Stars.Count == 0;
+				return starHandler.Stars.Count == 0;
 			}
 		}
 
@@ -28,7 +28,7 @@ namespace MoonLib.Entities.Levels
 			background = new DefaultBackground();
 			background.Initialize(contentManager);
 
-			StarHandler = new StarHandler(contentManager, audioHandler);
+			starHandler = new StarHandler(contentManager, audioHandler);
 
 			Player = new Player();
 			Player.Initialize(contentManager);
@@ -49,30 +49,30 @@ namespace MoonLib.Entities.Levels
 
 		private void InitializeStars()
 		{
-			StarHandler.ResetStarPitch();
-			StarHandler.Stars.Clear();
+			starHandler.ResetStarPitch();
+			starHandler.Stars.Clear();
 
-			StarHandler.CreateIceStar(new Vector2(Device.HalfWidth - 96, Device.HalfHeight - 128), 0);
-			StarHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 128), 0);
-			StarHandler.CreateIceStar(new Vector2(Device.HalfWidth + 96, Device.HalfHeight - 128), 0);
-			StarHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 256), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth - 96, Device.HalfHeight - 128), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 128), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth + 96, Device.HalfHeight - 128), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 256), 0);
 		}
 
 		public void Update(GameTimerEventArgs e)
 		{
 			background.Update(e);
 			Player.Update(e);
-			StarHandler.Update(e);
+			starHandler.Update(e);
 
 			// Remove stars that collide with the player
-			StarHandler.CheckPlayerCollisions(Player);
+			starHandler.CheckPlayerCollisions(Player);
 		}
 
 		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
 			background.Draw(device, spriteBatch);
 			Player.Draw(spriteBatch);
-			StarHandler.Draw(spriteBatch);
+			starHandler.Draw(spriteBatch);
 		}
 
 		public void Move(Vector2 velocity)

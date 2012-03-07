@@ -26,7 +26,7 @@ namespace Moon
 		private ILevel level;
 		private IAudioHandler audioHandler;
 
-		private int currentLevel = 1;
+		private int currentLevel = 3;
 		private const int totalLevels = 4;
 
 		private bool initializeLevelCompleted;
@@ -92,12 +92,8 @@ namespace Moon
 			background = contentManager.Load<Texture2D>("Gui/BackgroundFade");
 
 			// Initialize the level
-			level = new Level01();
-			level.Initialize(contentManager, audioHandler);
-
 			levelCompleted = new LevelCompleted();
 			levelCompleted.Initialize(contentManager);
-
 			LoadLevel();
 
 			base.OnNavigatedTo(e);
@@ -115,7 +111,7 @@ namespace Moon
 				currentLevel = 1;
 			}
 
-			//currentLevel = 3;
+			currentLevel = 3;
 		}
 
 		private void LoadLevel()

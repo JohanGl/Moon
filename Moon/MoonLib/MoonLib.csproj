@@ -87,8 +87,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MoonLibContent\MoonLibContent.contentproj">
-      <Name>MoonLibContent</Name>
+      <Name>MoonLibContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

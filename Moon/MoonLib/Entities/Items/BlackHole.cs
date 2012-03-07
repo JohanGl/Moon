@@ -15,6 +15,7 @@ namespace MoonLib.Entities.Items
 		public void Initialize(ContentManager contentManager)
 		{
 			Texture = contentManager.Load<Texture2D>("Items/BlackHole");
+			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 
 			sourceHole = new Rectangle(0, 0, Texture.Height, Texture.Height);
 			sourceCorona1 = new Rectangle(Texture.Height, 0, Texture.Height, Texture.Height);

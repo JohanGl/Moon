@@ -13,6 +13,7 @@ namespace MoonLib.Entities.Levels
 		public void Initialize(ContentManager contentManager)
 		{
 			Texture = contentManager.Load<Texture2D>("Gui/LevelCompleted");
+			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 
 			starRatings = new List<StarRating>();
 

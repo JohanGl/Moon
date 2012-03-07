@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moon", "Moon\Moon\Moon.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonLib", "Moon\MoonLib\MoonLib.csproj", "{64D87B9C-F07A-42DF-883A-4866B5CFAE93}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "MoonLibContent", "Moon\MoonLibContent\MoonLibContent.contentproj", "{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonLibContent", "Moon\MoonLibContent\MoonLibContent.contentproj", "{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

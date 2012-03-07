@@ -10,7 +10,7 @@ namespace MoonLib.Entities.Levels
 {
 	public class Level01 : ILevel
 	{
-		public StarHandler StarHandler { get; set; }
+		private StarHandler starHandler { get; set; }
 
 		private Player Player { get; set; }
 		private DefaultBackground background;
@@ -20,7 +20,7 @@ namespace MoonLib.Entities.Levels
 		{
 			get
 			{
-				return StarHandler.Stars.Count == 0;
+				return starHandler.Stars.Count == 0;
 			}
 		}
 
@@ -30,7 +30,7 @@ namespace MoonLib.Entities.Levels
 			background = new DefaultBackground();
 			background.Initialize(contentManager);
 
-			StarHandler = new StarHandler(contentManager, audioHandler);
+			starHandler = new StarHandler(contentManager, audioHandler);
 
 			Player = new Player();
 			Player.Initialize(contentManager);
@@ -54,13 +54,13 @@ namespace MoonLib.Entities.Levels
 
 		private void InitializeStars()
 		{
-			StarHandler.ResetStarPitch();
-			StarHandler.Stars.Clear();
+			starHandler.ResetStarPitch();
+			starHandler.Stars.Clear();
 
 			int x = Device.HalfWidth;
 			for (int y = 0; y < 8; y++)
 			{
-				StarHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);
+				starHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);
 			}
 		}
 
@@ -68,17 +68,17 @@ namespace MoonLib.Entities.Levels
 		{
 			background.Update(e);
 			Player.Update(e);
-			StarHandler.Update(e);
+			starHandler.Update(e);
 
 			// Remove stars that collide with the player
-			StarHandler.CheckPlayerCollisions(Player);
+			starHandler.CheckPlayerCollisions(Player);
 		}
 
 		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
 		{
 			background.Draw(device, spriteBatch);
 			Player.Draw(spriteBatch);
-			StarHandler.Draw(spriteBatch);
+			starHandler.Draw(spriteBatch);
 
 			playerInfo.Draw(spriteBatch);
 		}
