@@ -68,7 +68,36 @@ namespace MoonLib.Helpers
 
 		public static bool Instersects(Entity a, Entity b)
 		{
-			return Vector2.Distance(a.Position + a.HalfSize, b.Position + b.HalfSize) < (a.CollisionRadius + b.CollisionRadius);
+			return Vector2.Distance(a.Center, b.Center) < (a.CollisionRadius + b.CollisionRadius);
+		}
+
+		public static void ResolveCollisions(Entity a, Entity b)
+		{
+			//Vector2 collision = a.Center - b.Center;
+			//float distance = collision.Length();
+
+			//if (distance == 0.0)
+			//{              // hack to avoid div by zero
+			//    collision = Vector(1.0, 0.0);
+			//    distance = 1.0;
+			//}
+			//if (distance > 1.0)
+			//    return;
+
+			//// Get the components of the velocity vectors which are parallel to the collision.
+			//// The perpendicular component remains the same for both fish
+			//collision = collision / distance;
+			//double aci = a.velocity().dot(collision);
+			//double bci = b.velocity().dot(collision);
+
+			//// Solve for the new velocities using the 1-dimensional elastic collision equations.
+			//// Turns out it's really simple when the masses are the same.
+			//double acf = bci;
+			//double bcf = aci;
+
+			//// Replace the collision velocity components with the new ones
+			//a.velocity() += (acf - aci) * collision;
+			//b.velocity() += (bcf - bci) * collision;
 		}
 	}
 

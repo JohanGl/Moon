@@ -10,6 +10,14 @@ namespace MoonLib
 		public float Angle { get; set; }
 		public float CollisionRadius { get; set; }
 
+		public Vector2 Center
+		{
+			get
+			{
+				return Position + HalfSize;
+			}
+		}
+
 		public Vector2 HalfSize { get; set; }
 
 		public Texture2D Texture;
