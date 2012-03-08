@@ -8,6 +8,7 @@ namespace MoonLib.Entities.Levels
 	public interface ILevel
 	{
 		bool Completed { get; }
+		bool Failed { get; }
 
 		void Initialize(ContentManager contentManager, IAudioHandler audioHandler);
 		void Reset();

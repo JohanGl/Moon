@@ -15,7 +15,9 @@ namespace Moon
 	public enum AnimationType
 	{
 		LevelCompletedFade,
-		LevelCompletedPause
+		LevelCompletedPause,
+		LevelFailedFade,
+		LevelFailedPause
 	}
 
 	public partial class GamePage
@@ -26,12 +28,16 @@ namespace Moon
 		private ILevel level;
 		private IAudioHandler audioHandler;
 
-		private int currentLevel = 3;
+		private int currentLevel = 1;
 		private const int totalLevels = 4;
 
 		private bool initializeLevelCompleted;
-		private bool tapToContinue;
 		private LevelCompleted levelCompleted;
+
+		private bool initializeLevelFailed;
+		private LevelFailed levelFailed;
+
+		private bool tapToContinue;
 		private Texture2D background;
 		private AnimationHandler<AnimationType> animationHandler;
 
@@ -56,8 +62,11 @@ namespace Moon
 			animationHandler = new AnimationHandler<AnimationType>();
 			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
 			animationHandler.Animations.Add(AnimationType.LevelCompletedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(1)));
+			animationHandler.Animations.Add(AnimationType.LevelFailedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
+			animationHandler.Animations.Add(AnimationType.LevelFailedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(1)));
 
 			initializeLevelCompleted = true;
+			initializeLevelFailed = true;
 
 			InitializeAudio();
 		}
@@ -75,7 +84,7 @@ namespace Moon
 	
 			audioHandler.LoadSound("IceStar", "Audio/IceStar");
 
-			audioHandler.PlaySong("BGM1", true);
+			//audioHandler.PlaySong("BGM1", true);
 			audioHandler.MusicVolume = 1f;
 			audioHandler.SoundVolume = 1f;
 		}
@@ -91,9 +100,13 @@ namespace Moon
 			// Load textures
 			background = contentManager.Load<Texture2D>("Gui/BackgroundFade");
 
-			// Initialize the level
+			// Initialize the level data
 			levelCompleted = new LevelCompleted();
 			levelCompleted.Initialize(contentManager);
+			
+			levelFailed = new LevelFailed();
+			levelFailed.Initialize(contentManager);
+
 			LoadLevel();
 
 			base.OnNavigatedTo(e);
@@ -111,7 +124,7 @@ namespace Moon
 				currentLevel = 1;
 			}
 
-			currentLevel = 3;
+			//currentLevel = 3;
 		}
 
 		private void LoadLevel()
@@ -143,6 +156,10 @@ namespace Moon
 			if (level.Completed)
 			{
 				HandleLevelCompleted(e);
+			}
+			else if (level.Failed)
+			{
+				HandleLevelFailed(e);
 			}
 			else
 			{
@@ -199,6 +216,40 @@ namespace Moon
 			}
 		}
 
+		private void HandleLevelFailed(GameTimerEventArgs e)
+		{
+			animationHandler.Update();
+
+			if (initializeLevelFailed)
+			{
+				animationHandler.Animations[AnimationType.LevelFailedPause].Start();
+				animationHandler.Animations[AnimationType.LevelFailedFade].Start();
+				initializeLevelFailed = false;
+				tapToContinue = false;
+			}
+
+			if (animationHandler.Animations[AnimationType.LevelFailedPause].HasCompleted)
+			{
+				tapToContinue = true;
+			}
+
+			while (TouchPanel.IsGestureAvailable)
+			{
+				var gesture = TouchPanel.ReadGesture();
+
+				switch (gesture.GestureType)
+				{
+					case GestureType.Tap:
+						if (tapToContinue)
+						{
+							LoadLevel();
+							initializeLevelFailed = true;
+						}
+						break;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Allows the page to draw itself.
 		/// </summary>
@@ -214,6 +265,10 @@ namespace Moon
 			{
 				DrawLevelCompleted();
 			}
+			else if (level.Failed)
+			{
+				DrawLevelFailed();
+			}
 
 			spriteBatch.End();
 		}
@@ -224,6 +279,14 @@ namespace Moon
 			spriteBatch.Draw(background, Device.Size, null, Color.White * opacity);
 
 			levelCompleted.Draw(spriteBatch);
+		}
+
+		private void DrawLevelFailed()
+		{
+			float opacity = (animationHandler.Animations[AnimationType.LevelFailedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelFailedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelFailedFade].To;
+			spriteBatch.Draw(background, Device.Size, null, Color.White * opacity);
+
+			levelFailed.Draw(spriteBatch);
 		}
 	}
 }

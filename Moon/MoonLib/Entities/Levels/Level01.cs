@@ -24,6 +24,14 @@ namespace MoonLib.Entities.Levels
 			}
 		}
 
+		public bool Failed
+		{
+			get
+			{
+				return (Player.IsStationary && !playerInfo.GotMovesLeft);
+			}
+		}
+
 		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
 		{
 			// Initialize the background
@@ -36,7 +44,7 @@ namespace MoonLib.Entities.Levels
 			Player.Initialize(contentManager);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(contentManager, 3);
+			playerInfo.Initialize(contentManager, 5);
 
 			Reset();
 		}
@@ -85,7 +93,11 @@ namespace MoonLib.Entities.Levels
 
 		public void Move(Vector2 velocity)
 		{
-			Player.SetVelocity(velocity);
+			if (Player.IsStationary && playerInfo.GotMovesLeft)
+			{
+				Player.SetVelocity(velocity);
+				playerInfo.Move();
+			}
 		}
 	}
 }

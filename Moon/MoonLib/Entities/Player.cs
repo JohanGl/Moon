@@ -9,6 +9,14 @@ namespace MoonLib
 	{
 		private float timeScalar;
 
+		public bool IsStationary
+		{
+			get
+			{
+				return Velocity.Length() < 0.01f;
+			}
+		}
+
 		public void Initialize(ContentManager contentManager)
 		{
 			Texture = contentManager.Load<Texture2D>("Player/Moon");
@@ -18,10 +26,7 @@ namespace MoonLib
 
 		public void SetVelocity(Vector2 velocity)
 		{
-			if (Velocity.Length() < 0.01f)
-			{
-				Velocity = velocity;
-			}
+			Velocity = velocity;
 		}
 
 		public void Update(GameTimerEventArgs e)

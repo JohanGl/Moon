@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Entities.Backgrounds;
 using MoonLib.Entities.Items;
+using MoonLib.Entities.Levels.Gui;
 using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Levels
@@ -15,12 +16,21 @@ namespace MoonLib.Entities.Levels
 		private BlackHole blackHole;
 		private Player Player { get; set; }
 		private DefaultBackground background;
+		private PlayerInfo playerInfo;
 
 		public bool Completed
 		{
 			get
 			{
 				return starHandler.Stars.Count == 0;
+			}
+		}
+
+		public bool Failed
+		{
+			get
+			{
+				return (Player.IsStationary && !playerInfo.GotMovesLeft);
 			}
 		}
 
@@ -34,6 +44,9 @@ namespace MoonLib.Entities.Levels
 
 			Player = new Player();
 			Player.Initialize(contentManager);
+
+			playerInfo = new PlayerInfo();
+			playerInfo.Initialize(contentManager, 3);
 
 			blackHole = new BlackHole();
 			blackHole.Initialize(contentManager);
@@ -78,11 +91,17 @@ namespace MoonLib.Entities.Levels
 			blackHole.Draw(spriteBatch);
 			Player.Draw(spriteBatch);
 			starHandler.Draw(spriteBatch);
+
+			playerInfo.Draw(spriteBatch);
 		}
 
 		public void Move(Vector2 velocity)
 		{
-			Player.SetVelocity(velocity);
+			if (Player.IsStationary && playerInfo.GotMovesLeft)
+			{
+				Player.SetVelocity(velocity);
+				playerInfo.Move();
+			}
 		}
 	}
 }
