@@ -86,7 +86,7 @@ namespace Moon
 
 			//audioHandler.PlaySong("BGM1", true);
 			audioHandler.MusicVolume = 1f;
-			audioHandler.SoundVolume = 1f;
+			audioHandler.SoundVolume = 0.75f;
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -102,7 +102,7 @@ namespace Moon
 
 			// Initialize the level data
 			levelCompleted = new LevelCompleted();
-			levelCompleted.Initialize(contentManager);
+			levelCompleted.Initialize(contentManager, audioHandler);
 			
 			levelFailed = new LevelFailed();
 			levelFailed.Initialize(contentManager);
@@ -124,7 +124,7 @@ namespace Moon
 				currentLevel = 1;
 			}
 
-			//currentLevel = 3;
+			currentLevel = 1;
 		}
 
 		private void LoadLevel()
@@ -184,11 +184,13 @@ namespace Moon
 		private void HandleLevelCompleted(GameTimerEventArgs e)
 		{
 			animationHandler.Update();
+			levelCompleted.Update(e);
 
 			if (initializeLevelCompleted)
 			{
 				animationHandler.Animations[AnimationType.LevelCompletedPause].Start();
 				animationHandler.Animations[AnimationType.LevelCompletedFade].Start();
+				levelCompleted.Show(level.Score);
 				initializeLevelCompleted = false;
 				tapToContinue = false;
 			}
@@ -219,6 +221,7 @@ namespace Moon
 		private void HandleLevelFailed(GameTimerEventArgs e)
 		{
 			animationHandler.Update();
+			levelFailed.Update(e);
 
 			if (initializeLevelFailed)
 			{

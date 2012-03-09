@@ -9,6 +9,7 @@ namespace MoonLib.Entities.Levels
 	{
 		bool Completed { get; }
 		bool Failed { get; }
+		int Score { get; }
 
 		void Initialize(ContentManager contentManager, IAudioHandler audioHandler);
 		void Reset();

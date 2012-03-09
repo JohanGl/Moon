@@ -32,6 +32,14 @@ namespace MoonLib.Entities.Levels
 			}
 		}
 
+		public int Score
+		{
+			get
+			{
+				return 0;
+			}
+		}
+
 		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
 		{
 			// Initialize the background
