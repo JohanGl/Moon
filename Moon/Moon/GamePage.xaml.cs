@@ -2,44 +2,22 @@
 using System.Windows;
 using System.Windows.Navigation;
 using Framework.Audio;
-using Framework.Core.Animations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
-using MoonLib.Entities.Levels;
-using MoonLib.Helpers;
+using MoonLib.Scenes;
 
 namespace Moon
 {
-	public enum AnimationType
-	{
-		LevelCompletedFade,
-		LevelCompletedPause,
-		LevelFailedFade,
-		LevelFailedPause
-	}
-
 	public partial class GamePage
 	{
+		private IScene scene;
+
 		private ContentManager contentManager;
 		private GameTimer timer;
 		private SpriteBatch spriteBatch;
-		private ILevel level;
 		private IAudioHandler audioHandler;
-
-		private int currentLevel = 1;
-		private const int totalLevels = 4;
-
-		private bool initializeLevelCompleted;
-		private LevelCompleted levelCompleted;
-
-		private bool initializeLevelFailed;
-		private LevelFailed levelFailed;
-
-		private bool tapToContinue;
-		private Texture2D background;
-		private AnimationHandler<AnimationType> animationHandler;
 
 		public GamePage()
 		{
@@ -58,15 +36,6 @@ namespace Moon
 			SharedGraphicsDeviceManager.Current.PreferredBackBufferFormat = SurfaceFormat.Color;
 
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
-
-			animationHandler = new AnimationHandler<AnimationType>();
-			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
-			animationHandler.Animations.Add(AnimationType.LevelCompletedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(1)));
-			animationHandler.Animations.Add(AnimationType.LevelFailedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
-			animationHandler.Animations.Add(AnimationType.LevelFailedPause, new Animation(0f, 1f, TimeSpan.FromSeconds(1)));
-
-			initializeLevelCompleted = true;
-			initializeLevelFailed = true;
 
 			InitializeAudio();
 		}
@@ -97,43 +66,17 @@ namespace Moon
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
 
-			// Load textures
-			background = contentManager.Load<Texture2D>("Gui/BackgroundFade");
+			// Initialize the level scene
+			//scene = new LevelScene();
+			//scene.Initialize(contentManager, audioHandler);
 
-			// Initialize the level data
-			levelCompleted = new LevelCompleted();
-			levelCompleted.Initialize(contentManager, audioHandler);
-			
-			levelFailed = new LevelFailed();
-			levelFailed.Initialize(contentManager);
-
-			LoadLevel();
+			scene = new LevelSelectScene();
+			scene.Initialize(contentManager, audioHandler);
 
 			base.OnNavigatedTo(e);
 
 			// Start the timer
 			timer.Start();
-		}
-
-		private void NextLevel()
-		{
-			currentLevel++;
-
-			if (currentLevel > totalLevels)
-			{
-				currentLevel = 1;
-			}
-
-			currentLevel = 1;
-		}
-
-		private void LoadLevel()
-		{
-			var type = Type.GetType(string.Format("MoonLib.Entities.Levels.Level{0:00}, MoonLib", currentLevel));
-			level = (ILevel)Activator.CreateInstance(type);
-
-			level.Initialize(contentManager, audioHandler);
-			tapToContinue = false;
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -153,104 +96,10 @@ namespace Moon
 		/// </summary>
 		private void OnUpdate(object sender, GameTimerEventArgs e)
 		{
-			if (level.Completed)
-			{
-				HandleLevelCompleted(e);
-			}
-			else if (level.Failed)
-			{
-				HandleLevelFailed(e);
-			}
-			else
-			{
-				while (TouchPanel.IsGestureAvailable)
-				{
-					var gesture = TouchPanel.ReadGesture();
+			HandleSceneMessages();
 
-					switch (gesture.GestureType)
-					{
-						case GestureType.Flick:
-							level.Move(gesture.Delta * 0.0001f);
-							break;
-					}
-				}
-			}
-
-			level.Update(e);
-
+			scene.Update(e);
 			audioHandler.Update(e);
-		}
-
-		private void HandleLevelCompleted(GameTimerEventArgs e)
-		{
-			animationHandler.Update();
-			levelCompleted.Update(e);
-
-			if (initializeLevelCompleted)
-			{
-				animationHandler.Animations[AnimationType.LevelCompletedPause].Start();
-				animationHandler.Animations[AnimationType.LevelCompletedFade].Start();
-				levelCompleted.Show(level.Score);
-				initializeLevelCompleted = false;
-				tapToContinue = false;
-			}
-
-			if (animationHandler.Animations[AnimationType.LevelCompletedPause].HasCompleted)
-			{
-				tapToContinue = true;
-			}
-
-			while (TouchPanel.IsGestureAvailable)
-			{
-				var gesture = TouchPanel.ReadGesture();
-
-				switch (gesture.GestureType)
-				{
-					case GestureType.Tap:
-						if (tapToContinue)
-						{
-							NextLevel();
-							LoadLevel();
-							initializeLevelCompleted = true;
-						}
-						break;
-				}
-			}
-		}
-
-		private void HandleLevelFailed(GameTimerEventArgs e)
-		{
-			animationHandler.Update();
-			levelFailed.Update(e);
-
-			if (initializeLevelFailed)
-			{
-				animationHandler.Animations[AnimationType.LevelFailedPause].Start();
-				animationHandler.Animations[AnimationType.LevelFailedFade].Start();
-				initializeLevelFailed = false;
-				tapToContinue = false;
-			}
-
-			if (animationHandler.Animations[AnimationType.LevelFailedPause].HasCompleted)
-			{
-				tapToContinue = true;
-			}
-
-			while (TouchPanel.IsGestureAvailable)
-			{
-				var gesture = TouchPanel.ReadGesture();
-
-				switch (gesture.GestureType)
-				{
-					case GestureType.Tap:
-						if (tapToContinue)
-						{
-							LoadLevel();
-							initializeLevelFailed = true;
-						}
-						break;
-				}
-			}
 		}
 
 		/// <summary>
@@ -261,35 +110,32 @@ namespace Moon
 			var device = SharedGraphicsDeviceManager.Current.GraphicsDevice;
 
 			spriteBatch.Begin();
-
-			level.Draw(device, spriteBatch);
-
-			if (level.Completed)
-			{
-				DrawLevelCompleted();
-			}
-			else if (level.Failed)
-			{
-				DrawLevelFailed();
-			}
-
+			scene.Draw(device, spriteBatch);
 			spriteBatch.End();
 		}
 
-		private void DrawLevelCompleted()
+		private void HandleSceneMessages()
 		{
-			float opacity = (animationHandler.Animations[AnimationType.LevelCompletedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelCompletedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelCompletedFade].To;
-			spriteBatch.Draw(background, Device.Size, null, Color.White * opacity);
+			if (scene.Messages.Count == 0)
+			{
+				return;
+			}
 
-			levelCompleted.Draw(spriteBatch);
-		}
+			for (int i = 0; i < scene.Messages.Count; i++)
+			{
+				var message = scene.Messages[i];
 
-		private void DrawLevelFailed()
-		{
-			float opacity = (animationHandler.Animations[AnimationType.LevelFailedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelFailedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelFailedFade].To;
-			spriteBatch.Draw(background, Device.Size, null, Color.White * opacity);
+				if (scene is LevelSelectScene)
+				{
+					if (message is LevelSelectedMessage)
+					{
+						scene = new LevelScene((message as LevelSelectedMessage).LevelIndex);
+						scene.Initialize(contentManager, audioHandler);
 
-			levelFailed.Draw(spriteBatch);
+						return;
+					}
+				}
+			}
 		}
 	}
 }

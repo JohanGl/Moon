@@ -36,7 +36,7 @@ namespace MoonLib.Entities.Levels
 		{
 			get
 			{
-				return 0;
+				return playerInfo.CalculateRating();
 			}
 		}
 
@@ -89,9 +89,9 @@ namespace MoonLib.Entities.Levels
 			starHandler.CheckPlayerCollisions(Player);
 		}
 
-		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
+		public void Draw(SpriteBatch spriteBatch)
 		{
-			background.Draw(device, spriteBatch);
+			background.Draw(spriteBatch);
 			Player.Draw(spriteBatch);
 			starHandler.Draw(spriteBatch);
 

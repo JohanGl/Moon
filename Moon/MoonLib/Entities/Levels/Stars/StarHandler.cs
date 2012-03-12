@@ -69,6 +69,8 @@ namespace MoonLib.Entities.Levels
 				{
 					if (EntityHelper.Instersects(player, (Entity)star))
 					{
+						//EntityHelper.ResolveCollisions(player, (Entity)star);
+
 						var starVelocity = player.Velocity * 0.05f;
 						(star as IceStar).Velocity = player.Velocity * 0.05f;
 
@@ -93,15 +95,14 @@ namespace MoonLib.Entities.Levels
 							}
 						}
 
-						if (!(star as IceStar).IsCracked)
-						{
-							(star as IceStar).IsCracked = true;
-						}
-						else
-						{
-							
+						//if (!(star as IceStar).IsCracked)
+						//{
+						//    (star as IceStar).IsCracked = true;
+						//}
+						//else
+						//{
 							BreakIceStar((IceStar)star, starVelocity);
-						}
+						//}
 					}
 				}
 			}

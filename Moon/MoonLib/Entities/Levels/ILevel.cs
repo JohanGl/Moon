@@ -14,7 +14,7 @@ namespace MoonLib.Entities.Levels
 		void Initialize(ContentManager contentManager, IAudioHandler audioHandler);
 		void Reset();
 		void Update(GameTimerEventArgs e);
-		void Draw(GraphicsDevice device, SpriteBatch spriteBatch);
+		void Draw(SpriteBatch spriteBatch);
 		void Move(Vector2 velocity);
 	}
 }

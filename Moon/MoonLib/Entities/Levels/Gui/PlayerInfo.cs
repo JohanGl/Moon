@@ -40,13 +40,16 @@ namespace MoonLib.Entities.Levels.Gui
 
 		public int CalculateRating()
 		{
-			var percentage = moves / (double)totalMoves;
+			var percentage = (moves + 1) / (double)totalMoves;
 			var rating = (float)(6 * percentage);
 
-			//for (int i = 0; i <= 6; i++)
-			//{
-			//    if (rating)
-			//}
+			for (int i = 0; i <= 6; i++)
+			{
+				if (i >= rating)
+				{
+					return i;
+				}
+			}
 
 			return 0;
 		}

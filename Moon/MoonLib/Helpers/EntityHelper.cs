@@ -73,30 +73,40 @@ namespace MoonLib.Helpers
 
 		public static void ResolveCollisions(Entity a, Entity b)
 		{
-			//Vector2 collision = a.Center - b.Center;
-			//float distance = collision.Length();
+			Vector2 collision = a.Center - b.Center;
+			float distance = collision.Length();
 
-			//if (distance == 0.0)
-			//{              // hack to avoid div by zero
-			//    collision = Vector(1.0, 0.0);
-			//    distance = 1.0;
-			//}
-			//if (distance > 1.0)
-			//    return;
+			if (distance == 0.0f)
+			{
+				// hack to avoid div by zero
+				collision = new Vector2(1, 0);
+				distance = 1;
+			}
+			else if (distance > (a.CollisionRadius + b.CollisionRadius))
+			{
+				return;
+			}
 
-			//// Get the components of the velocity vectors which are parallel to the collision.
-			//// The perpendicular component remains the same for both fish
-			//collision = collision / distance;
-			//double aci = a.velocity().dot(collision);
-			//double bci = b.velocity().dot(collision);
+			// Get the components of the velocity vectors which are parallel to the collision.
+			// The perpendicular component remains the same for both fish
+			collision = collision / distance;
+			float aci = Vector2.Dot(a.Velocity, collision);
+			float bci = Vector2.Dot(collision, a.Velocity);
+			//double aci = a.Velocity.dot(collision);
+			//double bci = b.Velocity.dot(collision);
 
-			//// Solve for the new velocities using the 1-dimensional elastic collision equations.
-			//// Turns out it's really simple when the masses are the same.
-			//double acf = bci;
-			//double bcf = aci;
+			// Solve for the new velocities using the 1-dimensional elastic collision equations.
+			// Turns out it's really simple when the masses are the same.
+			float acf = bci;
+			float bcf = aci;
 
-			//// Replace the collision velocity components with the new ones
-			//a.velocity() += (acf - aci) * collision;
+			var velocityA = new Vector2((acf - aci) * collision.X, (acf - aci) * collision.Y);
+			var velocityB = new Vector2((bcf - bci) * collision.X, (bcf - bci) * collision.Y);
+
+			// Replace the collision velocity components with the new ones
+			a.Velocity += velocityA;
+			b.Velocity += velocityB;
+			//a.Velocity += (acf - aci) * collision;
 			//b.velocity() += (bcf - bci) * collision;
 		}
 	}
