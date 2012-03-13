@@ -117,7 +117,8 @@ namespace Framework.Audio
 		{
 			if (songs.ContainsKey(songName))
 			{
-				throw new InvalidOperationException(string.Format("Song '{0}' has already been loaded", songName));
+				return;
+				//throw new InvalidOperationException(string.Format("Song '{0}' has already been loaded", songName));
 			}
 
 			songs.Add(songName, contentManager.Load<Song>(songPath));
@@ -141,7 +142,8 @@ namespace Framework.Audio
 		{
 			if (sounds.ContainsKey(soundName))
 			{
-				throw new InvalidOperationException(string.Format("Sound '{0}' has already been loaded", soundName));
+				return;
+				//throw new InvalidOperationException(string.Format("Sound '{0}' has already been loaded", soundName));
 			}
 
 			sounds.Add(soundName, contentManager.Load<SoundEffect>(soundPath));

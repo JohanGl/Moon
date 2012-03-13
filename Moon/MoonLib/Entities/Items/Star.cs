@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Items
@@ -10,9 +10,9 @@ namespace MoonLib.Entities.Items
 		private float timeScalar;
 		private Vector2 fixedHalfSize;
 
-		public void Initialize(ContentManager contentManager)
+		public void Initialize(GameContext context)
 		{
-			Texture = contentManager.Load<Texture2D>("Items/Star");
+			Texture = context.Content.Load<Texture2D>("Items/Star");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			fixedHalfSize = new Vector2((int)HalfSize.X, (int)HalfSize.Y);
 		}

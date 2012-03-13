@@ -4,18 +4,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
 using MoonLib.Scenes;
-using MoonLib.Scenes.Levels;
 using MoonLib.Services;
 
 namespace Moon
 {
-	public partial class GamePage
+	public partial class LevelSelectPage
 	{
 		private IScene scene;
 		private GameContext gameContext;
 		private GameTimer timer;
 
-		public GamePage()
+		public LevelSelectPage()
 		{
 			InitializeComponent();
 
@@ -28,38 +27,12 @@ namespace Moon
 			timer.Draw += OnDraw;
 
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
-
-			InitializeAudio();
-		}
-
-		private void InitializeAudio()
-		{
-			FrameworkDispatcher.Update();
-			var audioHandler = gameContext.AudioHandler;
-			audioHandler.LoadSong("BGM1", "Audio/BGM01");
-
-			for (int i = 1; i <= 16; i++)
-			{
-				audioHandler.LoadSound("Star" + i, string.Format("Audio/Star{0:00}", i));
-			}
-
-			audioHandler.LoadSound("IceStar", "Audio/IceStar");
-
-			//audioHandler.PlaySong("BGM1", true);
-			audioHandler.MusicVolume = 1f;
-			audioHandler.SoundVolume = 0.75f;
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			App.InitializeGamePageGraphics(gameContext);
-
-			var level = int.Parse(NavigationContext.QueryString["level"]);
-
-			// Initialize the level scene
-			scene = new LevelScene(level);
-			scene.Initialize(gameContext);
-
+			InitializeScene();
 			base.OnNavigatedTo(e);
 			timer.Start();
 		}
@@ -79,6 +52,8 @@ namespace Moon
 		/// </summary>
 		private void OnUpdate(object sender, GameTimerEventArgs e)
 		{
+			HandleSceneMessages();
+
 			scene.Update(e);
 			gameContext.AudioHandler.Update(e);
 		}
@@ -91,6 +66,35 @@ namespace Moon
 			gameContext.SpriteBatch.Begin();
 			scene.Draw(gameContext.SpriteBatch);
 			gameContext.SpriteBatch.End();
+		}
+
+		private void InitializeScene()
+		{
+			scene = new LevelSelectScene();
+			scene.Initialize(gameContext);
+		}
+
+		private void HandleSceneMessages()
+		{
+			if (scene.Messages.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = 0; i < scene.Messages.Count; i++)
+			{
+				var message = scene.Messages[i];
+
+				if (scene is LevelSelectScene)
+				{
+					if (message is LevelSelectedMessage)
+					{
+						int levelIndex = (message as LevelSelectedMessage).LevelIndex;
+						var uri = new Uri(string.Format("/GamePage.xaml?level={0}", levelIndex), UriKind.Relative);
+						NavigationService.Navigate(uri);
+					}
+				}
+			}
 		}
 	}
 }

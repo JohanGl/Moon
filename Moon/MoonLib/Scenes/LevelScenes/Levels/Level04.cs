@@ -1,17 +1,16 @@
-using Framework.Audio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
-using MoonLib.Entities.Levels.Gui;
+using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
-	public class Level02 : ILevel
+	public class Level04 : ILevel
 	{
 		private StarHandler starHandler { get; set; }
-
+		private BlackHole blackHole;
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
@@ -40,19 +39,23 @@ namespace MoonLib.Entities.Levels
 			}
 		}
 
-		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
+		public void Initialize(GameContext context)
 		{
 			// Initialize the background
 			background = new DefaultBackground();
-			background.Initialize(contentManager);
+			background.Initialize(context);
 
-			starHandler = new StarHandler(contentManager, audioHandler);
+			starHandler = new StarHandler(context);
 
 			Player = new Player();
-			Player.Initialize(contentManager);
+			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(contentManager, 4);
+			playerInfo.Initialize(context, 3);
+
+			blackHole = new BlackHole();
+			blackHole.Initialize(context);
+			blackHole.Position = new Vector2(Device.HalfWidth, Device.HalfHeight);
 
 			Reset();
 		}
@@ -64,8 +67,8 @@ namespace MoonLib.Entities.Levels
 
 			// Player
 			Player.Velocity = Vector2.Zero;
-			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Left, 16);
-			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 16);
+			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
+			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 64);
 		}
 
 		private void InitializeStars()
@@ -73,32 +76,13 @@ namespace MoonLib.Entities.Levels
 			starHandler.ResetStarPitch();
 			starHandler.Stars.Clear();
 
-			float x = 90;
-			float xStep = (Device.HalfWidth - x) / 5f;
-
-			float y = 640f;
-			float yStep = (y - 32f) / 5f;
-
-			for (int i = 0; i < 5; i++)
-			{
-				starHandler.CreateStar(new Vector2(x, y), 0);
-
-				x += xStep;
-				y -= yStep;
-			}
-
-			for (int i = 0; i <= 5; i++)
-			{
-				starHandler.CreateStar(new Vector2(x, y), 0);
-
-				x += xStep;
-				y += yStep;
-			}
+			starHandler.CreateStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 64), 0);
 		}
 
 		public void Update(GameTimerEventArgs e)
 		{
 			background.Update(e);
+			blackHole.Update(e);
 			Player.Update(e);
 			starHandler.Update(e);
 
@@ -109,6 +93,7 @@ namespace MoonLib.Entities.Levels
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			background.Draw(spriteBatch);
+			blackHole.Draw(spriteBatch);
 			Player.Draw(spriteBatch);
 			starHandler.Draw(spriteBatch);
 

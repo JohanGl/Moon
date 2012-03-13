@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 
 namespace MoonLib.Entities.Backgrounds
 {
@@ -9,10 +9,10 @@ namespace MoonLib.Entities.Backgrounds
 	{
 		private List<Texture2D> overlays;
 
-		public void Initialize(ContentManager contentManager)
+		public void Initialize(GameContext context)
 		{
 			overlays = new List<Texture2D>();
-			overlays.Add(contentManager.Load<Texture2D>("Backgrounds/Background01"));
+			overlays.Add(context.Content.Load<Texture2D>("Backgrounds/Background01"));
 		}
 
 		public void Update(GameTimerEventArgs e)

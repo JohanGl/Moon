@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 
 namespace MoonLib.Particles
 {
@@ -10,15 +11,16 @@ namespace MoonLib.Particles
 		public Vector2 Position { get; set; }
 		private Particle[] particles { get; set; }
 
-		private ContentManager contentManager;
 		private float timeScalar;
 		private float timeScalarLife;
 		private Random random;
+		private GameContext gameContext;
 
-		public void Initialize(ContentManager contentManager, int particleCapacity)
+		public void Initialize(GameContext context, int particleCapacity)
 		{
+			gameContext = context;
+
 			particles = new Particle[particleCapacity];
-			this.contentManager = contentManager;
 			random = new Random(DateTime.Now.Millisecond);
 		}
 
@@ -36,7 +38,7 @@ namespace MoonLib.Particles
 				{
 					particles[i].Life = 1f;
 					particles[i].LifeBurnout = 0.00175f;
-					particles[i].Texture = contentManager.Load<Texture2D>("Effects/particles/IceParticles");
+					particles[i].Texture = gameContext.Content.Load<Texture2D>("Effects/particles/IceParticles");
 					particles[i].Position = Position - new Vector2(8, 8);
 					particles[i].Velocity = RandomCircularVelocity(angle);
 					particles[i].Scale = 1f + (float)(random.NextDouble() * 0.5f);

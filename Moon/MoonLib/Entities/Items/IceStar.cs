@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Helpers;
 
 namespace MoonLib.Entities.Items
@@ -14,9 +14,9 @@ namespace MoonLib.Entities.Items
 		private Rectangle sourceCracked;
 		private Vector2 fixedHalfSize;
 
-		public void Initialize(ContentManager contentManager, int type)
+		public void Initialize(GameContext context, int type)
 		{
-			Texture = contentManager.Load<Texture2D>("Items/IceStar");
+			Texture = context.Content.Load<Texture2D>("Items/IceStar");
 			HalfSize = new Vector2(Texture.Height / 2f, Texture.Height / 2f);
 			fixedHalfSize = new Vector2((int)HalfSize.X, (int)HalfSize.Y);
 

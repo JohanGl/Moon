@@ -136,7 +136,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\BackgroundFade.png">
+    <Compile Include="Backgrounds\BackgroundFade.png">
       <Name>BackgroundFade</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

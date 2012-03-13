@@ -1,15 +1,15 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Helpers;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
 	public class LevelFailed : Entity
 	{
-		public void Initialize(ContentManager contentManager)
+		public void Initialize(GameContext context)
 		{
-			Texture = contentManager.Load<Texture2D>("Gui/LevelFailed");
+			Texture = context.Content.Load<Texture2D>("Gui/LevelFailed");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 
 			Position = new Vector2((int)(Device.HalfWidth - HalfSize.X), (int)(Device.HalfHeight - HalfSize.Y));

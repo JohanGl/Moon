@@ -4,11 +4,12 @@ using Framework.Audio;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 using MoonLib.Particles;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
 	public class StarHandler
 	{
@@ -16,18 +17,16 @@ namespace MoonLib.Entities.Levels
 		private List<IStar> starsToRemove;
 
 		private const int totalStarPitch = 16;
-
 		private float timeScalar;
 		private float currentStarAngle;
 		private IParticleEmitter[] emitters;
-		private ContentManager contentManager;
-		private IAudioHandler audioHandler;
 		private int currentStarPitch;
 
-		public StarHandler(ContentManager contentManager, IAudioHandler audioHandler)
+		private GameContext gameContext;
+
+		public StarHandler(GameContext context)
 		{
-			this.contentManager = contentManager;
-			this.audioHandler = audioHandler;
+			gameContext = context;
 
 			Stars = new List<IStar>();
 			starsToRemove = new List<IStar>();
@@ -36,13 +35,13 @@ namespace MoonLib.Entities.Levels
 			emitters = new IParticleEmitter[3];
 	
 			emitters[0] = new StarParticleEmitter();
-			emitters[0].Initialize(contentManager, 200);
+			emitters[0].Initialize(gameContext, 200);
 
 			emitters[1] = new StarSparkParticleEmitter();
-			emitters[1].Initialize(contentManager, 20);
+			emitters[1].Initialize(gameContext, 20);
 
 			emitters[2] = new IceParticleEmitter();
-			emitters[2].Initialize(contentManager, 200);
+			emitters[2].Initialize(gameContext, 200);
 		}
 
 		public void ResetStarPitch()
@@ -67,43 +66,47 @@ namespace MoonLib.Entities.Levels
 				}
 				else if (star is IceStar)
 				{
-					if (EntityHelper.Instersects(player, (Entity)star))
+					if (EntityHelper.IntersectsWithBallBounceResolve(player, (Entity)star))
 					{
-						//EntityHelper.ResolveCollisions(player, (Entity)star);
-
-						var starVelocity = player.Velocity * 0.05f;
-						(star as IceStar).Velocity = player.Velocity * 0.05f;
-
-						if (Math.Abs(player.Velocity.X) >= Math.Abs(player.Velocity.Y))
-						{
-							player.Velocity = new Vector2(-player.Velocity.X, player.Velocity.Y);
-						}
-						else
-						{
-							player.Velocity = new Vector2(player.Velocity.X, -player.Velocity.Y);
-						}
-
-						player.Velocity *= 0.9f;
-
-						for (int t = 0; t < 100; t++)
-						{
-							player.Position += player.Velocity;
-
-							if (!EntityHelper.Instersects(player, (Entity)star))
-							{
-								break;
-							}
-						}
-
-						//if (!(star as IceStar).IsCracked)
-						//{
-						//    (star as IceStar).IsCracked = true;
-						//}
-						//else
-						//{
-							BreakIceStar((IceStar)star, starVelocity);
-						//}
 					}
+
+					//if (EntityHelper.Instersects(player, (Entity)star))
+					//{
+					//    //EntityHelper.ResolveCollisions(player, (Entity)star);
+
+					//    var starVelocity = player.Velocity * 0.05f;
+					//    (star as IceStar).Velocity = player.Velocity * 0.05f;
+
+					//    if (Math.Abs(player.Velocity.X) >= Math.Abs(player.Velocity.Y))
+					//    {
+					//        player.Velocity = new Vector2(-player.Velocity.X, player.Velocity.Y);
+					//    }
+					//    else
+					//    {
+					//        player.Velocity = new Vector2(player.Velocity.X, -player.Velocity.Y);
+					//    }
+
+					//    player.Velocity *= 0.9f;
+
+					//    for (int t = 0; t < 100; t++)
+					//    {
+					//        player.Position += player.Velocity;
+
+					//        if (!EntityHelper.Instersects(player, (Entity)star))
+					//        {
+					//            break;
+					//        }
+					//    }
+
+					//    //if (!(star as IceStar).IsCracked)
+					//    //{
+					//    //    (star as IceStar).IsCracked = true;
+					//    //}
+					//    //else
+					//    //{
+					//        BreakIceStar((IceStar)star, starVelocity);
+					//    //}
+					//}
 				}
 			}
 
@@ -120,7 +123,7 @@ namespace MoonLib.Entities.Levels
 
 			if (starsToRemove.Count > 0)
 			{
-				audioHandler.PlaySound("Star" + currentStarPitch, 1f, 0f, 0f);
+				gameContext.AudioHandler.PlaySound("Star" + currentStarPitch, 1f, 0f, 0f);
 
 				if (currentStarPitch < totalStarPitch)
 				{
@@ -139,13 +142,13 @@ namespace MoonLib.Entities.Levels
 			emitters[2].Position = star.Position + new Vector2(star.HalfSize.X, star.HalfSize.Y);
 			emitters[2].Emit();
 
-			audioHandler.PlaySound("IceStar");
+			gameContext.AudioHandler.PlaySound("IceStar");
 		}
 
 		public void CreateStar(Vector2 position, float angle)
 		{
 			var star = new Star();
-			star.Initialize(contentManager);
+			star.Initialize(gameContext);
 			star.Position = new Vector2((int)(position.X - star.HalfSize.X), (int)(position.Y - star.HalfSize.Y));
 			star.Angle = angle;
 			star.CollisionRadius = 12;
@@ -156,7 +159,7 @@ namespace MoonLib.Entities.Levels
 		public void CreateIceStar(Vector2 position, float angle)
 		{
 			var star = new IceStar();
-			star.Initialize(contentManager, Stars.Count);
+			star.Initialize(gameContext, Stars.Count);
 			star.Position = new Vector2((int)(position.X - star.HalfSize.X), (int)(position.Y - star.HalfSize.Y));
 			star.Angle = angle;
 			star.CollisionRadius = 30;

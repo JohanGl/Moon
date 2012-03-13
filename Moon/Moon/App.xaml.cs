@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Framework.Audio;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
+using MoonLib.Services;
 
 namespace Moon
 {
@@ -58,6 +52,8 @@ namespace Moon
             // XNA initialization
             InitializeXnaApplication();
 
+			InitializeGame();
+
             // Show graphics profiling information while debugging.
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -79,7 +75,38 @@ namespace Moon
             }
         }
 
-        // Code to execute when the application is launching (eg, from Start)
+    	private void InitializeGame()
+    	{
+			// Initialize the game context
+			var context = new GameContext();
+			context.Content = Content;
+			context.AudioHandler = new DefaultAudioHandler(Content, "");
+
+			ServiceLocator.Register(context);
+    	}
+
+		public static void InitializeGamePageGraphics(GameContext context)
+		{
+			// Very important to display 32-bit colors instead of the default 16-bit which looks horrible with gradient images
+			SharedGraphicsDeviceManager.Current.PreferredBackBufferFormat = SurfaceFormat.Color;
+
+			// Set the sharing mode of the graphics device to turn on XNA rendering
+			SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(true);
+
+			context.GraphicsDevice = SharedGraphicsDeviceManager.Current.GraphicsDevice;
+
+			if (context.SpriteBatch == null)
+			{
+				context.SpriteBatch = new SpriteBatch(context.GraphicsDevice);
+			}
+		}
+
+		public static void UnInitializeGamePageGraphics(GameContext context)
+		{
+			context.GraphicsDevice.SetSharingMode(false);
+		}
+
+    	// Code to execute when the application is launching (eg, from Start)
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {

@@ -1,35 +1,34 @@
 using System;
 using System.Collections.Generic;
-using Framework.Audio;
 using Framework.Core.Animations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Helpers;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
 	public class LevelCompleted : Entity
 	{
 		private int rating;
 		private List<StarRating> starRatings;
 		private AnimationHandler<int> animationHandler;
-		private IAudioHandler audioHandler;
+		private GameContext gameContext;
 		
-		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
+		public void Initialize(GameContext context)
 		{
-			Texture = contentManager.Load<Texture2D>("Gui/LevelCompleted");
+			gameContext = context;
+
+			Texture = context.Content.Load<Texture2D>("Gui/LevelCompleted");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			Position = new Vector2((int)(Device.HalfWidth - HalfSize.X), (int)(Device.HalfHeight - HalfSize.Y));
-
-			this.audioHandler = audioHandler;
 
 			starRatings = new List<StarRating>();
 
 			for (int i = 0; i < 3; i++)
 			{
 				var starRating = new StarRating();
-				starRating.Initialize(contentManager);
+				starRating.Initialize(gameContext);
 				starRating.Position = Position + new Vector2(114, 68) + new Vector2(34 * i, 0);
 				starRatings.Add(starRating);
 			}
@@ -73,7 +72,7 @@ namespace MoonLib.Entities.Levels
 					animationHandler.Animations.Remove(i);
 					starRatings[i].Rating = GetSingleStarRatingByIndex(i);
 					starRatings[i].IsVisible = true;
-					audioHandler.PlaySound("Star" + (i + 1));
+					gameContext.AudioHandler.PlaySound("Star" + (i + 1));
 				}
 			}
 		}

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace MoonLib.Helpers
@@ -71,43 +72,28 @@ namespace MoonLib.Helpers
 			return Vector2.Distance(a.Center, b.Center) < (a.CollisionRadius + b.CollisionRadius);
 		}
 
-		public static void ResolveCollisions(Entity a, Entity b)
+		public static bool IntersectsWithBallBounceResolve(Entity a, Entity b)
 		{
-			Vector2 collision = a.Center - b.Center;
-			float distance = collision.Length();
+			var distance = Vector2.Distance(a.Center, b.Center);
+			bool intersects = distance < (a.CollisionRadius + b.CollisionRadius);
 
-			if (distance == 0.0f)
+			if (intersects)
 			{
-				// hack to avoid div by zero
-				collision = new Vector2(1, 0);
-				distance = 1;
+				var direction = b.Center - a.Center;
+				direction = Vector2.Normalize(direction);
+				b.Velocity = direction * 0.1f;
+
+				if (Math.Abs(a.Velocity.X) > Math.Abs(a.Velocity.Y))
+				{
+					a.Velocity = new Vector2(b.Velocity.X, -b.Velocity.Y);
+				}
+				else
+				{
+					a.Velocity = new Vector2(-b.Velocity.X, b.Velocity.Y);
+				}
 			}
-			else if (distance > (a.CollisionRadius + b.CollisionRadius))
-			{
-				return;
-			}
 
-			// Get the components of the velocity vectors which are parallel to the collision.
-			// The perpendicular component remains the same for both fish
-			collision = collision / distance;
-			float aci = Vector2.Dot(a.Velocity, collision);
-			float bci = Vector2.Dot(collision, a.Velocity);
-			//double aci = a.Velocity.dot(collision);
-			//double bci = b.Velocity.dot(collision);
-
-			// Solve for the new velocities using the 1-dimensional elastic collision equations.
-			// Turns out it's really simple when the masses are the same.
-			float acf = bci;
-			float bcf = aci;
-
-			var velocityA = new Vector2((acf - aci) * collision.X, (acf - aci) * collision.Y);
-			var velocityB = new Vector2((bcf - bci) * collision.X, (bcf - bci) * collision.Y);
-
-			// Replace the collision velocity components with the new ones
-			a.Velocity += velocityA;
-			b.Velocity += velocityB;
-			//a.Velocity += (acf - aci) * collision;
-			//b.velocity() += (bcf - bci) * collision;
+			return intersects;
 		}
 	}
 

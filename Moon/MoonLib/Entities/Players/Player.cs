@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Helpers;
 
 namespace MoonLib
@@ -17,9 +17,9 @@ namespace MoonLib
 			}
 		}
 
-		public void Initialize(ContentManager contentManager)
+		public void Initialize(GameContext context)
 		{
-			Texture = contentManager.Load<Texture2D>("Player/Moon");
+			Texture = context.Content.Load<Texture2D>("Player/Moon");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			CollisionRadius = Texture.Width / 2f;
 		}

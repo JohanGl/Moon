@@ -1,9 +1,8 @@
-using Framework.Audio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
 	public interface ILevel
 	{
@@ -11,7 +10,7 @@ namespace MoonLib.Entities.Levels
 		bool Failed { get; }
 		int Score { get; }
 
-		void Initialize(ContentManager contentManager, IAudioHandler audioHandler);
+		void Initialize(GameContext context);
 		void Reset();
 		void Update(GameTimerEventArgs e);
 		void Draw(SpriteBatch spriteBatch);

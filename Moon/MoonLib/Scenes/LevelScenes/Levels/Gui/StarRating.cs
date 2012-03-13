@@ -1,17 +1,17 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
 	public class StarRating : Entity
 	{
 		public bool IsVisible { get; set; }
 		public int Rating { get; set; }
 
-		public void Initialize(ContentManager contentManager)
+		public void Initialize(GameContext context)
 		{
-			Texture = contentManager.Load<Texture2D>("Gui/StarRating");
+			Texture = context.Content.Load<Texture2D>("Gui/StarRating");
 		}
 
 		public void Update(GameTimerEventArgs e)

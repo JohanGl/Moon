@@ -1,17 +1,14 @@
-using Framework.Audio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
-using MoonLib.Entities.Levels.Gui;
 using MoonLib.Helpers;
 
-namespace MoonLib.Entities.Levels
+namespace MoonLib.Scenes.Levels
 {
 	public class Level03 : ILevel
 	{
 		private StarHandler starHandler { get; set; }
-
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
@@ -40,19 +37,19 @@ namespace MoonLib.Entities.Levels
 			}
 		}
 
-		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
+		public void Initialize(GameContext context)
 		{
 			// Initialize the background
 			background = new DefaultBackground();
-			background.Initialize(contentManager);
+			background.Initialize(context);
 
-			starHandler = new StarHandler(contentManager, audioHandler);
+			starHandler = new StarHandler(context);
 
 			Player = new Player();
-			Player.Initialize(contentManager);
+			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(contentManager, 8);
+			playerInfo.Initialize(context, 8);
 
 			Reset();
 		}

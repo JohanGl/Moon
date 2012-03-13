@@ -1,8 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 
-namespace MoonLib.Entities.Levels.Gui
+namespace MoonLib.Scenes.Levels
 {
 	public class PlayerInfo
 	{
@@ -18,11 +19,11 @@ namespace MoonLib.Entities.Levels.Gui
 			}
 		}
 
-		public void Initialize(ContentManager contentManager, int totalMoves)
+		public void Initialize(GameContext context, int totalMoves)
 		{
 			this.totalMoves = totalMoves;
 			moves = totalMoves;
-			font = contentManager.Load<SpriteFont>("Fonts/Default");
+			font = context.Content.Load<SpriteFont>("Fonts/Default");
 		}
 
 		public void Move()

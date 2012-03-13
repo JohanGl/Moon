@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using Framework.Audio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MoonLib.Contexts;
 
 namespace MoonLib.Scenes
 {
@@ -10,9 +9,10 @@ namespace MoonLib.Scenes
 	{
 		List<ISceneMessage> Messages { get; set; }
 
-		void Initialize(ContentManager contentManager, IAudioHandler audioHandler);
+		void Initialize(GameContext gameContext);
+		void Unload();
 		void Update(GameTimerEventArgs e);
-		void Draw(GraphicsDevice device, SpriteBatch spriteBatch);
+		void Draw(SpriteBatch spriteBatch);
 	}
 
 	public interface ISceneMessage

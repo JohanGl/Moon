@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using MoonLib.Contexts;
 
 namespace MoonLib.Scenes
 {
@@ -19,6 +20,8 @@ namespace MoonLib.Scenes
 		private float timeScalar;
 		private Color challengeDescriptionColor = Color.FromNonPremultiplied(120, 120, 120, 255);
 
+		private GameContext gameContext;
+
 		public List<ISceneMessage> Messages { get; set; }
 
 		public LevelSelectScene()
@@ -26,29 +29,35 @@ namespace MoonLib.Scenes
 			Messages = new List<ISceneMessage>();
 		}
 
-		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
+		public void Initialize(GameContext context)
 		{
-			InitializeLevels(contentManager);
+			gameContext = context;
+
+			InitializeLevels();
 
 			SetIndex(0);
 			offset = new Vector2(0, 0);
 
-			fontDefault = contentManager.Load<SpriteFont>("Fonts/DefaultBold");
-			fontChallenges = contentManager.Load<SpriteFont>("Fonts/Challenges");
+			fontDefault = gameContext.Content.Load<SpriteFont>("Fonts/DefaultBold");
+			fontChallenges = gameContext.Content.Load<SpriteFont>("Fonts/Challenges");
 		}
 
-		private void InitializeLevels(ContentManager contentManager)
+		public void Unload()
+		{
+		}
+
+		private void InitializeLevels()
 		{
 			levels = new List<LevelInfo>();
 
-			var levelsContent = contentManager.Load<List<LevelInfoContent>>("Levels");
+			var levelsContent = gameContext.Content.Load<List<LevelInfoContent>>("Levels");
 			var currentPosition = new Vector2(0, 45);
 
 			foreach (var levelContent in levelsContent)
 			{
 				var level = new LevelInfo();
 				level.Name = levelContent.Name;
-				level.Texture = contentManager.Load<Texture2D>(levelContent.Texture);
+				level.Texture = gameContext.Content.Load<Texture2D>(levelContent.Texture);
 				level.Position = currentPosition;
 				level.Bounds = new Rectangle((int)level.Position.X, (int)level.Position.Y, level.Texture.Width, level.Texture.Height);
 
@@ -114,10 +123,24 @@ namespace MoonLib.Scenes
 					case GestureType.Flick:
 						if (gesture.Delta.X > 0)
 						{
+							// Extra power flips through multiple levels at once
+							if (gesture.Delta.X > 3500)
+							{
+								MoveIndex(-1);
+								MoveIndex(-1);
+							}
+
 							MoveIndex(-1);
 						}
 						else if (gesture.Delta.X < 0)
 						{
+							// Extra power flips through multiple levels at once
+							if (gesture.Delta.X < -3500)
+							{
+								MoveIndex(1);
+								MoveIndex(1);
+							}
+
 							MoveIndex(1);
 						}
 						break;
@@ -131,9 +154,9 @@ namespace MoonLib.Scenes
 			}
 		}
 
-		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
+		public void Draw(SpriteBatch spriteBatch)
 		{
-			device.Clear(Color.Black);
+			gameContext.GraphicsDevice.Clear(Color.Black);
 
 			Vector2 position;
 

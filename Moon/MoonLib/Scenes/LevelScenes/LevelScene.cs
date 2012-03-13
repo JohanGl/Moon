@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Framework.Audio;
 using Framework.Core.Animations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
-using MoonLib.Entities.Levels;
+using MoonLib.Contexts;
 using MoonLib.Helpers;
 
-namespace MoonLib.Scenes
+namespace MoonLib.Scenes.Levels
 {
 	public class LevelScene : IScene
 	{
@@ -20,9 +18,6 @@ namespace MoonLib.Scenes
 			LevelFailedFade,
 			LevelFailedPause
 		}
-
-		private ContentManager contentManager;
-		private IAudioHandler audioHandler;
 
 		private int currentLevel = 1;
 		private const int totalLevels = 4;
@@ -37,6 +32,8 @@ namespace MoonLib.Scenes
 		private Texture2D backgroundFadeOut;
 		private AnimationHandler<AnimationType> animationHandler;
 
+		private GameContext gameContext;
+
 		public ILevel Level { get; set; }
 		public List<ISceneMessage> Messages { get; set; }
 
@@ -46,10 +43,9 @@ namespace MoonLib.Scenes
 			this.currentLevel = currentLevel + 1;
 		}
 
-		public void Initialize(ContentManager contentManager, IAudioHandler audioHandler)
+		public void Initialize(GameContext context)
 		{
-			this.contentManager = contentManager;
-			this.audioHandler = audioHandler;
+			gameContext = context;
 
 			animationHandler = new AnimationHandler<AnimationType>();
 			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
@@ -61,16 +57,20 @@ namespace MoonLib.Scenes
 			initializeLevelFailed = true;
 
 			// Load textures
-			backgroundFadeOut = contentManager.Load<Texture2D>("Gui/BackgroundFade");
+			backgroundFadeOut = gameContext.Content.Load<Texture2D>("Backgrounds/BackgroundFade");
 
 			// Initialize the level data
 			levelCompleted = new LevelCompleted();
-			levelCompleted.Initialize(contentManager, audioHandler);
+			levelCompleted.Initialize(context);
 
 			levelFailed = new LevelFailed();
-			levelFailed.Initialize(contentManager);
+			levelFailed.Initialize(gameContext);
 
 			LoadLevel();
+		}
+
+		public void Unload()
+		{
 		}
 
 		public void Update(GameTimerEventArgs e)
@@ -101,7 +101,7 @@ namespace MoonLib.Scenes
 			Level.Update(e);
 		}
 
-		public void Draw(GraphicsDevice device, SpriteBatch spriteBatch)
+		public void Draw(SpriteBatch spriteBatch)
 		{
 			Level.Draw(spriteBatch);
 
@@ -201,10 +201,10 @@ namespace MoonLib.Scenes
 
 		private void LoadLevel()
 		{
-			var type = Type.GetType(string.Format("MoonLib.Entities.Levels.Level{0:00}, MoonLib", currentLevel));
+			var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", currentLevel));
 
 			Level = (ILevel)Activator.CreateInstance(type);
-			Level.Initialize(contentManager, audioHandler);
+			Level.Initialize(gameContext);
 
 			tapToContinue = false;
 		}
