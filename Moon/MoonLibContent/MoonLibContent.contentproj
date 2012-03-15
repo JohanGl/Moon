@@ -124,12 +124,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\LevelCompleted.png">
+    <Compile Include="Scenes\Levels\LevelCompleted.png">
       <Name>LevelCompleted</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Gui\StarRating.png">
+    <Compile Include="Scenes\Levels\StarRating.png">
       <Name>StarRating</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -217,32 +217,32 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\LevelFailed.png">
+    <Compile Include="Scenes\Levels\LevelFailed.png">
       <Name>LevelFailed</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\LevelSelect\Level01.png">
+    <Compile Include="Scenes\LevelSelect\Level01.png">
       <Name>Level01</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\LevelSelect\Level02.png">
+    <Compile Include="Scenes\LevelSelect\Level02.png">
       <Name>Level02</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Gui\LevelSelect\Level03.png">
+    <Compile Include="Scenes\LevelSelect\Level03.png">
       <Name>Level03</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Gui\LevelSelect\Level04.png">
-      <Name>Level04</Name>
+    <Compile Include="Scenes\LevelSelect\Level08.png">
+      <Name>Level08</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -273,6 +273,34 @@
       <Project>{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}</Project>
       <Name>ContentLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scenes\LevelSelect\Level06.png">
+      <Name>Level06</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scenes\LevelSelect\LevelTemplate.png">
+      <Name>LevelTemplate</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scenes\LevelSelect\Level04.png">
+      <Name>Level04</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Audio\BGM02.mp3">
+      <Name>BGM02</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 

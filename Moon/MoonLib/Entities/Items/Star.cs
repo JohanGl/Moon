@@ -7,6 +7,8 @@ namespace MoonLib.Entities.Items
 {
 	public class Star : Entity, IStar
 	{
+		public int Id { get; set; }
+
 		private float timeScalar;
 		private Vector2 fixedHalfSize;
 

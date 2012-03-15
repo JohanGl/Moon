@@ -68,45 +68,30 @@ namespace MoonLib.Scenes.Levels
 				{
 					if (EntityHelper.IntersectsWithBallBounceResolve(player, (Entity)star))
 					{
+						HandleIceStarImpact((IceStar)star);
 					}
+					else
+					{
+						for (int j = 0; j < Stars.Count; j++)
+						{
+							var secondStar = Stars[j];
 
-					//if (EntityHelper.Instersects(player, (Entity)star))
-					//{
-					//    //EntityHelper.ResolveCollisions(player, (Entity)star);
+							if (i != j && secondStar is IceStar)
+							{
+								if (EntityHelper.IntersectsWithBallBounceResolve((Entity)star, (Entity)secondStar))
+								{
+									HandleIceStarImpact((IceStar)secondStar);
 
-					//    var starVelocity = player.Velocity * 0.05f;
-					//    (star as IceStar).Velocity = player.Velocity * 0.05f;
+									bool wasDestroyed = HandleIceStarImpact((IceStar)star);
 
-					//    if (Math.Abs(player.Velocity.X) >= Math.Abs(player.Velocity.Y))
-					//    {
-					//        player.Velocity = new Vector2(-player.Velocity.X, player.Velocity.Y);
-					//    }
-					//    else
-					//    {
-					//        player.Velocity = new Vector2(player.Velocity.X, -player.Velocity.Y);
-					//    }
-
-					//    player.Velocity *= 0.9f;
-
-					//    for (int t = 0; t < 100; t++)
-					//    {
-					//        player.Position += player.Velocity;
-
-					//        if (!EntityHelper.Instersects(player, (Entity)star))
-					//        {
-					//            break;
-					//        }
-					//    }
-
-					//    //if (!(star as IceStar).IsCracked)
-					//    //{
-					//    //    (star as IceStar).IsCracked = true;
-					//    //}
-					//    //else
-					//    //{
-					//        BreakIceStar((IceStar)star, starVelocity);
-					//    //}
-					//}
+									if (wasDestroyed)
+									{
+										break;
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 
@@ -132,9 +117,28 @@ namespace MoonLib.Scenes.Levels
 			}
 		}
 
+		/// <summary>
+		/// Handles ice star collision logic
+		/// </summary>
+		/// <param name="star"></param>
+		/// <returns>True if the star was destroyed, false if cracked</returns>
+		private bool HandleIceStarImpact(IceStar star)
+		{
+			if (!star.IsCracked)
+			{
+				star.IsCracked = true;
+			}
+			else
+			{
+				BreakIceStar(star, star.Velocity * 0.5f);
+			}
+
+			return star.IsCracked;
+		}
+
 		private void BreakIceStar(IceStar star, Vector2 velocity)
 		{
-			Stars.Remove((IStar)star);
+			Stars.Remove(star);
 			
 			CreateStar(star.Position + new Vector2(star.HalfSize.X, star.HalfSize.Y), star.Angle);
 			(Stars[Stars.Count - 1] as Star).Velocity = velocity;

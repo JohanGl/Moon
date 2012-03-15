@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
 using MoonLib.Scenes;
+using MoonLib.Scenes.LevelScenes.Levels.Snapshots;
 using MoonLib.Services;
 
 namespace Moon
@@ -26,7 +27,17 @@ namespace Moon
 			timer.Update += OnUpdate;
 			timer.Draw += OnDraw;
 
+			InitializeAudio();
+
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
+		}
+
+		private void InitializeAudio()
+		{
+			FrameworkDispatcher.Update();
+
+			var audioHandler = gameContext.AudioHandler;
+			audioHandler.LoadSong("BGM2", "Audio/BGM02");
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -35,6 +46,11 @@ namespace Moon
 			InitializeScene();
 			base.OnNavigatedTo(e);
 			timer.Start();
+
+			var audioHandler = gameContext.AudioHandler;
+			audioHandler.StopSong();
+			audioHandler.PlaySong("BGM2", true);
+			audioHandler.MusicVolume = 1f;
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)

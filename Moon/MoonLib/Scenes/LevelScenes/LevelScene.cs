@@ -195,8 +195,6 @@ namespace MoonLib.Scenes.Levels
 			{
 				currentLevel = 1;
 			}
-
-			//currentLevel = 3;
 		}
 
 		private void LoadLevel()
@@ -205,6 +203,9 @@ namespace MoonLib.Scenes.Levels
 
 			Level = (ILevel)Activator.CreateInstance(type);
 			Level.Initialize(gameContext);
+
+			// Update the currently selected level in the level-select scene
+			LevelSelectScene.LevelIndex = currentLevel - 1;
 
 			tapToContinue = false;
 		}

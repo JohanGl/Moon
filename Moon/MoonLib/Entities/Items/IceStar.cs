@@ -7,6 +7,7 @@ namespace MoonLib.Entities.Items
 {
 	public class IceStar : Entity, IStar
 	{
+		public int Id { get; set; }
 		public bool IsCracked { get; set; }
 
 		private float timeScalar;

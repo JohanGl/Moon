@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -12,6 +13,8 @@ namespace MoonLib.Scenes.Levels
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
+		private float timeScalar;
+		private float movementAngle;
 
 		public bool Completed
 		{
@@ -49,7 +52,7 @@ namespace MoonLib.Scenes.Levels
 			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(context, 8);
+			playerInfo.Initialize(context, 2);
 
 			Reset();
 		}
@@ -70,20 +73,47 @@ namespace MoonLib.Scenes.Levels
 			starHandler.ResetStarPitch();
 			starHandler.Stars.Clear();
 
-			starHandler.CreateIceStar(new Vector2(Device.HalfWidth - 96, Device.HalfHeight - 128), 0);
-			starHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 128), 0);
-			starHandler.CreateIceStar(new Vector2(Device.HalfWidth + 96, Device.HalfHeight - 128), 0);
-			starHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 256), 0);
+			movementAngle = 0;
+
+			for (int i = 0; i < 8; i++)
+			{
+				starHandler.CreateStar(new Vector2(-32, -32), 0);
+				starHandler.Stars[starHandler.Stars.Count - 1].Id = (360 / 8) * i;
+			}
 		}
 
 		public void Update(GameTimerEventArgs e)
 		{
+			rotateStars(e);
+
 			background.Update(e);
 			Player.Update(e);
 			starHandler.Update(e);
 
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
+		}
+
+		private void rotateStars(GameTimerEventArgs e)
+		{
+			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 0.075f);
+
+			movementAngle += timeScalar;
+
+			if (movementAngle >= 360f)
+			{
+				movementAngle -= 360f;
+			}
+
+			for (int i = 0; i < starHandler.Stars.Count; i++)
+			{
+				var star = starHandler.Stars[i];
+
+				float x = Device.HalfWidth + 160 * (float)Math.Cos(MathHelper.ToRadians(movementAngle + star.Id));
+				float y = (140 + 128) + 160 * (float)Math.Sin(MathHelper.ToRadians(movementAngle + star.Id));
+
+				(star as Entity).Position = new Vector2(x - 16, y - 16);
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)

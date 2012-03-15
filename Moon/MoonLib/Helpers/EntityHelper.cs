@@ -75,13 +75,29 @@ namespace MoonLib.Helpers
 		public static bool IntersectsWithBallBounceResolve(Entity a, Entity b)
 		{
 			var distance = Vector2.Distance(a.Center, b.Center);
-			bool intersects = distance < (a.CollisionRadius + b.CollisionRadius);
+			var combinedRadius = a.CollisionRadius + b.CollisionRadius;
+			bool intersects = distance < combinedRadius;
 
 			if (intersects)
 			{
+				// Move the first item back to the point where they didnt intersect (not the most optimal solution with the for loop, but it works)
+				a.Velocity.Normalize();
+
+				for (int i = 0; i < 100; i++)
+				{
+					a.Position -= a.Velocity;
+
+					if (!Instersects(a, b))
+					{
+						break;
+					}
+				}
+
+				var power = a.Velocity.Length();
+
 				var direction = b.Center - a.Center;
 				direction = Vector2.Normalize(direction);
-				b.Velocity = direction * 0.1f;
+				b.Velocity = direction * power;
 
 				if (Math.Abs(a.Velocity.X) > Math.Abs(a.Velocity.Y))
 				{
@@ -91,6 +107,8 @@ namespace MoonLib.Helpers
 				{
 					a.Velocity = new Vector2(-b.Velocity.X, b.Velocity.Y);
 				}
+
+				a.Velocity *= power;
 			}
 
 			return intersects;

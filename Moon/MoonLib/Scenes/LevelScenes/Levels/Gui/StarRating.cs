@@ -11,7 +11,7 @@ namespace MoonLib.Scenes.Levels
 
 		public void Initialize(GameContext context)
 		{
-			Texture = context.Content.Load<Texture2D>("Gui/StarRating");
+			Texture = context.Content.Load<Texture2D>("Scenes/Levels/StarRating");
 		}
 
 		public void Update(GameTimerEventArgs e)

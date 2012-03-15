@@ -1,24 +1,26 @@
+using System;
 using System.Collections.Generic;
 using ContentLib;
-using Framework.Audio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
+using MoonLib.Scenes.Levels;
 
 namespace MoonLib.Scenes
 {
 	public class LevelSelectScene : IScene
 	{
-		private int index;
+		public static int LevelIndex = 0;
+		
 		private Vector2 offset;
 		private Vector2 targetOffset;
 		private List<LevelInfo> levels;
 		private SpriteFont fontDefault;
 		private SpriteFont fontChallenges;
 		private float timeScalar;
-		private Color challengeDescriptionColor = Color.FromNonPremultiplied(120, 120, 120, 255);
+		private Color challengeDescriptionColor = Color.FromNonPremultiplied(140, 140, 140, 255);
+		private StarRating rating;
 
 		private GameContext gameContext;
 
@@ -35,8 +37,12 @@ namespace MoonLib.Scenes
 
 			InitializeLevels();
 
-			SetIndex(0);
-			offset = new Vector2(0, 0);
+			SetIndex(LevelIndex);
+			offset = targetOffset;
+
+			rating = new StarRating();
+			rating.Initialize(context);
+			rating.IsVisible = true;
 
 			fontDefault = gameContext.Content.Load<SpriteFont>("Fonts/DefaultBold");
 			fontChallenges = gameContext.Content.Load<SpriteFont>("Fonts/Challenges");
@@ -78,23 +84,23 @@ namespace MoonLib.Scenes
 
 		private void MoveIndex(int direction)
 		{
-			if (index + direction < 0)
+			if (LevelIndex + direction < 0)
 			{
 				SetIndex(0);
 			}
-			else if (index + direction > levels.Count - 1)
+			else if (LevelIndex + direction > levels.Count - 1)
 			{
 				SetIndex(levels.Count - 1);
 			}
 			else
 			{
-				SetIndex(index + direction);
+				SetIndex(LevelIndex + direction);
 			}
 		}
 
 		private void SetIndex(int newIndex)
 		{
-			index = newIndex;
+			LevelIndex = newIndex;
 
 			float x = (192 + 10) * newIndex;
 			x -= 144;
@@ -114,9 +120,9 @@ namespace MoonLib.Scenes
 				switch (gesture.GestureType)
 				{
 					case GestureType.Tap:
-						if (levels[index].Bounds.Contains((int)(gesture.Position.X + offset.X), (int)gesture.Position.Y))
+						if (levels[LevelIndex].Bounds.Contains((int)(gesture.Position.X + offset.X), (int)gesture.Position.Y))
 						{
-							Messages.Add(new LevelSelectedMessage() { LevelIndex = index });
+							Messages.Add(new LevelSelectedMessage() { LevelIndex = LevelIndex });
 						}
 						break;
 
@@ -158,27 +164,52 @@ namespace MoonLib.Scenes
 		{
 			gameContext.GraphicsDevice.Clear(Color.Black);
 
-			Vector2 position;
+			Vector2 position = Vector2.Zero;
 
 			for (int i = 0; i < levels.Count; i++)
 			{
+				float alpha = 1f;
+
+				if (i != LevelIndex)
+				{
+					alpha = Math.Max(0f, 1f - (0.75f * Math.Abs(LevelIndex - i)));
+				}
+
 				var level = levels[i];
 				position = level.Position - offset;
 
-				spriteBatch.Draw(levels[i].Texture, position - new Vector2(-2, -24), Color.White);
+				spriteBatch.Draw(levels[i].Texture, position - new Vector2(-2, -24), Color.White * alpha);
 				spriteBatch.DrawString(fontDefault, level.Name, position, Color.White);
 			}
 
+			DrawChallenges(spriteBatch);
+		}
+
+		private void DrawChallenges(SpriteBatch spriteBatch)
+		{
+			// Nothing to draw
+			if (levels[LevelIndex].Challenges.Count == 0)
+			{
+				return;
+			}
+
 			// Challenges
-			position = new Vector2(10, 415);
+			var position = new Vector2(40, 415);
 			spriteBatch.DrawString(fontDefault, "Level Challenges", position, Color.White);
 			position += new Vector2(40, 50);
 
-			for (int i = 0; i < levels[index].Challenges.Count; i++)
+			for (int i = 0; i < levels[LevelIndex].Challenges.Count; i++)
 			{
-				var challenge = levels[index].Challenges[i];
+				var challenge = levels[LevelIndex].Challenges[i];
 
+				// Title
 				spriteBatch.DrawString(fontDefault, challenge.Name, position, Color.White);
+
+				// Rating
+				rating.Position = position - new Vector2(38, -6);
+				rating.Rating = 0;
+				rating.Draw(spriteBatch);
+
 				position += new Vector2(0, 24);
 
 				// Description rows

@@ -19,7 +19,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			gameContext = context;
 
-			Texture = context.Content.Load<Texture2D>("Gui/LevelCompleted");
+			Texture = context.Content.Load<Texture2D>("Scenes/Levels/LevelCompleted");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			Position = new Vector2((int)(Device.HalfWidth - HalfSize.X), (int)(Device.HalfHeight - HalfSize.Y));
 

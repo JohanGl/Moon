@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -7,14 +6,12 @@ using MoonLib.Helpers;
 
 namespace MoonLib.Scenes.Levels
 {
-	public class Level04 : ILevel
+	public class Level06 : ILevel
 	{
 		private StarHandler starHandler { get; set; }
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
-		private float timeScalar;
-		private float movementAngle;
 
 		public bool Completed
 		{
@@ -52,7 +49,7 @@ namespace MoonLib.Scenes.Levels
 			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(context, 3);
+			playerInfo.Initialize(context, 8);
 
 			Reset();
 		}
@@ -65,7 +62,7 @@ namespace MoonLib.Scenes.Levels
 			// Player
 			Player.Velocity = Vector2.Zero;
 			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
-			EntityHelper.VerticalAlign(Player, VerticalAlignment.Center);
+			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 64);
 		}
 
 		private void InitializeStars()
@@ -73,79 +70,20 @@ namespace MoonLib.Scenes.Levels
 			starHandler.ResetStarPitch();
 			starHandler.Stars.Clear();
 
-			movementAngle = 0;
-
-			for (int i = 0; i < 6; i++)
-			{
-				starHandler.CreateStar(new Vector2(-32, -32), 0);
-				starHandler.Stars[starHandler.Stars.Count - 1].Id = i;
-			}
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth - 96, Device.HalfHeight - 128), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 128), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth + 96, Device.HalfHeight - 128), 0);
+			starHandler.CreateIceStar(new Vector2(Device.HalfWidth, Device.HalfHeight - 256), 0);
 		}
 
 		public void Update(GameTimerEventArgs e)
 		{
-			moveStars(e);
-
 			background.Update(e);
 			Player.Update(e);
 			starHandler.Update(e);
 
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
-		}
-
-		private void moveStars(GameTimerEventArgs e)
-		{
-			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 0.05f);
-
-			movementAngle += timeScalar;
-
-			if (movementAngle >= 360f)
-			{
-				movementAngle -= 360f;
-			}
-
-			for (int i = 0; i < starHandler.Stars.Count; i++)
-			{
-				var star = starHandler.Stars[i];
-				float x = 0;
-				float y = 0;
-				int margin = 40;
-				int margin2 = 64;
-
-				if (star.Id == 0)
-				{
-					x = margin;
-					y = Device.HalfHeight + 270 * (float)Math.Sin(MathHelper.ToRadians(movementAngle));
-				}
-				else if (star.Id == 1)
-				{
-					x = Device.Width - margin;
-					y = Device.HalfHeight + 270 * (float)Math.Sin(MathHelper.ToRadians(movementAngle + 180));
-				}
-				else if (star.Id == 2)
-				{
-					x = margin + margin2;
-					y = Device.HalfHeight + 200 * (float)Math.Cos(MathHelper.ToRadians(movementAngle));
-				}
-				else if (star.Id == 3)
-				{
-					x = Device.Width - margin - margin2;
-					y = Device.HalfHeight + 200 * (float)Math.Cos(MathHelper.ToRadians(movementAngle + 180));
-				}
-				else if (star.Id == 4)
-				{
-					x = Device.HalfWidth + 100 * (float)Math.Sin(MathHelper.ToRadians(movementAngle));
-					y = margin;
-				}
-				else if (star.Id == 5)
-				{
-					x = Device.HalfWidth + 100 * (float)Math.Cos(MathHelper.ToRadians(movementAngle));
-					y = Device.Height - margin;
-				}
-				
-				(star as Entity).Position = new Vector2(x - 16, y - 16);
-			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)

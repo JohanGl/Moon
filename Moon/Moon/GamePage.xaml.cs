@@ -45,7 +45,7 @@ namespace Moon
 
 			audioHandler.LoadSound("IceStar", "Audio/IceStar");
 
-			//audioHandler.PlaySong("BGM1", true);
+			audioHandler.PlaySong("BGM1", true);
 			audioHandler.MusicVolume = 1f;
 			audioHandler.SoundVolume = 0.75f;
 		}

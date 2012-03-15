@@ -9,7 +9,7 @@ namespace MoonLib.Scenes.Levels
 	{
 		public void Initialize(GameContext context)
 		{
-			Texture = context.Content.Load<Texture2D>("Gui/LevelFailed");
+			Texture = context.Content.Load<Texture2D>("Scenes/Levels/LevelFailed");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 
 			Position = new Vector2((int)(Device.HalfWidth - HalfSize.X), (int)(Device.HalfHeight - HalfSize.Y));
