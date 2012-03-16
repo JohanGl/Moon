@@ -47,7 +47,7 @@ namespace Moon
 
 			audioHandler.PlaySong("BGM1", true);
 			audioHandler.MusicVolume = 1f;
-			audioHandler.SoundVolume = 0.75f;
+			audioHandler.SoundVolume = 1f;
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
