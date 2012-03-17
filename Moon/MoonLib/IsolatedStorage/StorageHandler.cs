@@ -31,6 +31,32 @@ namespace MoonLib.IsolatedStorage
 			return levels.Completed.ContainsKey(levelId);
 		}
 
+		public int GetLevelScore(int levelId)
+		{
+			var levels = (LevelsInfo)settings[levelsKey];
+			
+			if (levels.Score.ContainsKey(levelId))
+			{
+				return levels.Score[levelId];
+			}
+
+			return 0;
+		}
+
+		public void SetLevelScore(int levelId, int score)
+		{
+			var levels = (LevelsInfo)settings[levelsKey];
+
+			if (!levels.Score.ContainsKey(levelId))
+			{
+				levels.Score.Add(levelId, score);
+			}
+			else if (score > levels.Score[levelId])
+			{
+				levels.Score[levelId] = score;
+			}
+		}
+
 		public bool IsChallengeCompleted(int challengeId)
 		{
 			var challenges = (ChallengesInfo)settings[challengesKey];

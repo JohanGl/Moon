@@ -10,7 +10,7 @@ namespace MoonLib.Scenes.LevelSelectScenes
 		public Rectangle Bounds { get; set; }
 		public string Name { get; set; }
 		public Texture2D Texture { get; set; }
-		public int? StarRating { get; set; }
+		public int Score { get; set; }
 
 		public List<LevelChallengePresentation> Challenges { get; set; }
 

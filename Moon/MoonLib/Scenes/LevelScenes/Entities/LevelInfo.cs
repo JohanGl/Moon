@@ -6,7 +6,8 @@ namespace MoonLib.Scenes.Levels
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
-		public string Overview { get; set; }
+		public string TexturePath { get; set; }
+		public int Score { get; set; }
 		public List<LevelChallenge> Challenges { get; set; }
 
 		public LevelInfo()

@@ -28,7 +28,8 @@ namespace MoonLib.Scenes.Levels
 					{
 						Id = 1001,
 						Name = "Level 1",
-						Overview = "Scenes/LevelSelect/Level01",
+						Score = storage.GetLevelScore(1001),
+						TexturePath = "Scenes/LevelSelect/Level01",
 						Challenges =
 						{
 							new LevelChallenge()

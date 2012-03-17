@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
 using MoonLib.Helpers;
+using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -33,6 +34,7 @@ namespace MoonLib.Scenes.Levels
 		private AnimationHandler<AnimationType> animationHandler;
 
 		private GameContext gameContext;
+		private StorageHandler storage;
 
 		public ILevel Level { get; set; }
 		public List<ISceneMessage> Messages { get; set; }
@@ -46,6 +48,8 @@ namespace MoonLib.Scenes.Levels
 		public void Initialize(GameContext context)
 		{
 			gameContext = context;
+
+			storage = new StorageHandler();
 
 			animationHandler = new AnimationHandler<AnimationType>();
 			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
@@ -125,6 +129,7 @@ namespace MoonLib.Scenes.Levels
 				animationHandler.Animations[AnimationType.LevelCompletedPause].Start();
 				animationHandler.Animations[AnimationType.LevelCompletedFade].Start();
 				levelCompleted.Show(Level.Score);
+				storage.SetLevelScore(Level.Info.Id, Level.Score);
 				initializeLevelCompleted = false;
 				tapToContinue = false;
 			}

@@ -63,7 +63,8 @@ namespace MoonLib.Scenes
 			{
 				var level = new LevelInfoPresentation();
 				level.Name = info.Name;
-				level.Texture = gameContext.Content.Load<Texture2D>(info.Overview);
+				level.Score = info.Score;
+				level.Texture = gameContext.Content.Load<Texture2D>(info.TexturePath);
 				level.Position = currentPosition;
 				level.Bounds = new Rectangle((int)level.Position.X, (int)level.Position.Y, level.Texture.Width, level.Texture.Height);
 
@@ -209,16 +210,18 @@ namespace MoonLib.Scenes
 			spriteBatch.DrawString(fontDefault, "Level Score", position, Color.White);
 			position += new Vector2(0, 30);
 
+			int score = levels[LevelIndex].Score;
+
 			rating.Position = position;
-			rating.Rating = 2;
+			rating.SetSingleStarRatingByIndex(0, score);
 			rating.Draw(spriteBatch);
 
 			rating.Position += new Vector2(34, 0);
-			rating.Rating = 2;
+			rating.SetSingleStarRatingByIndex(1, score);
 			rating.Draw(spriteBatch);
 
 			rating.Position += new Vector2(34, 0);
-			rating.Rating = 2;
+			rating.SetSingleStarRatingByIndex(2, score);
 			rating.Draw(spriteBatch);
 		}
 

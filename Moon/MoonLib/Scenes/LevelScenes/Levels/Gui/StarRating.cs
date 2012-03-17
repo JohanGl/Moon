@@ -30,5 +30,32 @@ namespace MoonLib.Scenes.Levels
 
 			spriteBatch.Draw(Texture, destination, source, Color.White);
 		}
+
+		public void SetSingleStarRatingByIndex(int index, int rating)
+		{
+			int customRating = rating;
+
+			if (index == 1)
+			{
+				customRating -= 2;
+			}
+			else if (index == 2)
+			{
+				customRating -= 4;
+			}
+
+			if (customRating >= 2)
+			{
+				Rating = 2;
+			}
+			else if (customRating < 0)
+			{
+				Rating = 0;
+			}
+			else
+			{
+				Rating = customRating;	
+			}
+		}
 	}
 }

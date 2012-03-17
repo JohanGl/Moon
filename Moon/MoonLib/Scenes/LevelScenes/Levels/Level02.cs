@@ -21,7 +21,7 @@ namespace MoonLib.Scenes.Levels
 				return new LevelInfo()
 				{
 					Name = "Level 2",
-					Overview = "Scenes/LevelSelect/Level02",
+					TexturePath = "Scenes/LevelSelect/Level02",
 				};
 			}
 		}

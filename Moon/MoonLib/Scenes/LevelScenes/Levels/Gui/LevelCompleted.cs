@@ -70,36 +70,12 @@ namespace MoonLib.Scenes.Levels
 					animationHandler.Animations[i].HasCompleted)
 				{
 					animationHandler.Animations.Remove(i);
-					starRatings[i].Rating = GetSingleStarRatingByIndex(i);
+					starRatings[i].SetSingleStarRatingByIndex(i, rating);
 					starRatings[i].IsVisible = true;
 					gameContext.AudioHandler.PlaySound("Star" + (i + 1));
+					System.Diagnostics.Debug.WriteLine("Rating: " + starRatings[i].Rating + ", total: " + rating);
 				}
 			}
-		}
-
-		private int GetSingleStarRatingByIndex(int index)
-		{
-			int customRating = rating;
-
-			if (index == 1)
-			{
-				customRating -= 2;
-			}
-			else if (index == 2)
-			{
-				customRating -= 4;
-			}
-
-			if (customRating >= 2)
-			{
-				return 2;
-			}
-			else if (customRating < 0)
-			{
-				return 0;
-			}
-
-			return customRating;
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
