@@ -14,13 +14,4 @@ namespace MoonLib.Scenes
 		void Update(GameTimerEventArgs e);
 		void Draw(SpriteBatch spriteBatch);
 	}
-
-	public interface ISceneMessage
-	{
-	}
-
-	public class LevelSelectedMessage : ISceneMessage
-	{
-		public int LevelIndex { get; set; }
-	}
 }

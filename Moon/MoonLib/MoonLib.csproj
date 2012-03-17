@@ -49,6 +49,7 @@
     <Reference Include="Microsoft.Xna.Framework.Input.Touch" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
+    <Reference Include="System.Windows, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -67,6 +68,10 @@
     <Compile Include="Entities\Items\IStar.cs" />
     <Compile Include="Entities\Items\Star.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="IsolatedStorage\Entities\ChallengesInfo.cs" />
+    <Compile Include="IsolatedStorage\Entities\LevelsInfo.cs" />
+    <Compile Include="IsolatedStorage\StorageHandler.cs" />
+    <Compile Include="Scenes\Messages\ISceneMessage.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level04.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level03.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Gui\LevelFailed.cs" />
@@ -76,6 +81,8 @@
     <Compile Include="Scenes\LevelScenes\Levels\Level02.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Gui\StarRating.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Gui\LevelCompleted.cs" />
+    <Compile Include="Scenes\LevelScenes\Entities\LevelInfo.cs" />
+    <Compile Include="Scenes\LevelScenes\Entities\LevelChallenge.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Snapshots\LevelSnapshotHandler.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Stars\StarHandler.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\ILevel.cs" />
@@ -91,8 +98,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenes\LevelScenes\LevelScene.cs" />
     <Compile Include="Scenes\IScene.cs" />
-    <Compile Include="Scenes\LevelSelectScenes\Entities\LevelChallenge.cs" />
-    <Compile Include="Scenes\LevelSelectScenes\Entities\LevelInfo.cs" />
+    <Compile Include="Scenes\Messages\LevelSelectedMessage.cs" />
+    <Compile Include="Scenes\LevelSelectScenes\Entities\LevelChallengePresentation.cs" />
+    <Compile Include="Scenes\LevelSelectScenes\Entities\LevelInfoPresentation.cs" />
     <Compile Include="Scenes\LevelSelectScenes\LevelSelectScene.cs" />
     <Compile Include="Services\ServiceLocator.cs" />
   </ItemGroup>

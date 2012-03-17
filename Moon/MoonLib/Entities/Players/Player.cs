@@ -13,19 +13,31 @@ namespace MoonLib
 		{
 			get
 			{
+				return Velocity.Length() < 0.0001f;
+			}
+		}
+
+		public bool IsAllowedToMove
+		{
+			get
+			{
 				return Velocity.Length() < 0.01f;
 			}
 		}
+
+		public int BouncesDuringLastMove { get; private set; }
 
 		public void Initialize(GameContext context)
 		{
 			Texture = context.Content.Load<Texture2D>("Player/Moon");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			CollisionRadius = Texture.Width / 2f;
+			BouncesDuringLastMove = 0;
 		}
 
 		public void SetVelocity(Vector2 velocity)
 		{
+			BouncesDuringLastMove = 0;
 			Velocity = velocity;
 		}
 
@@ -50,22 +62,26 @@ namespace MoonLib
 			{
 				Position += new Vector2(-Position.X, 0);
 				Velocity = new Vector2(-Velocity.X, Velocity.Y);
+				BouncesDuringLastMove++;
 			}
 			else if (Position.X + Texture.Width > Device.Width)
 			{
 				Position -= new Vector2((Position.X + Texture.Width) - Device.Width, 0);
 				Velocity = new Vector2(-Velocity.X, Velocity.Y);
+				BouncesDuringLastMove++;
 			}
 
 			if (Position.Y < 0)
 			{
 				Position += new Vector2(0, -Position.Y);
 				Velocity = new Vector2(Velocity.X, -Velocity.Y);
+				BouncesDuringLastMove++;
 			}
 			else if (Position.Y + Texture.Height > Device.Height)
 			{
 				Position -= new Vector2(0, (Position.Y + Texture.Height) - Device.Height);
 				Velocity = new Vector2(Velocity.X, -Velocity.Y);
+				BouncesDuringLastMove++;
 			}
 		}
 

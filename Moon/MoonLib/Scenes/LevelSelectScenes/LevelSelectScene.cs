@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
+using MoonLib.Scenes.LevelSelectScenes;
 using MoonLib.Scenes.Levels;
 
 namespace MoonLib.Scenes
@@ -15,7 +16,7 @@ namespace MoonLib.Scenes
 		
 		private Vector2 offset;
 		private Vector2 targetOffset;
-		private List<LevelInfo> levels;
+		private List<LevelInfoPresentation> levels;
 		private SpriteFont fontDefault;
 		private SpriteFont fontChallenges;
 		private float timeScalar;
@@ -54,32 +55,45 @@ namespace MoonLib.Scenes
 
 		private void InitializeLevels()
 		{
-			levels = new List<LevelInfo>();
+			levels = new List<LevelInfoPresentation>();
 
-			var levelsContent = gameContext.Content.Load<List<LevelInfoContent>>("Levels");
 			var currentPosition = new Vector2(0, 45);
 
-			foreach (var levelContent in levelsContent)
+			foreach (var info in GetLevelInfo())
 			{
-				var level = new LevelInfo();
-				level.Name = levelContent.Name;
-				level.Texture = gameContext.Content.Load<Texture2D>(levelContent.Texture);
+				var level = new LevelInfoPresentation();
+				level.Name = info.Name;
+				level.Texture = gameContext.Content.Load<Texture2D>(info.Overview);
 				level.Position = currentPosition;
 				level.Bounds = new Rectangle((int)level.Position.X, (int)level.Position.Y, level.Texture.Width, level.Texture.Height);
 
-				foreach (var challengeContent in levelContent.Challenges)
+				foreach (var challengeContent in info.Challenges)
 				{
-					var challenge = new LevelChallenge();
+					var challenge = new LevelChallengePresentation();
 					challenge.Name = challengeContent.Name;
 					challenge.Description = challengeContent.Description;
-
+					challenge.IsCompleted = challengeContent.IsCompleted;
 					level.Challenges.Add(challenge);
 				}
 
 				levels.Add(level);
-
 				currentPosition += new Vector2(192 + 10, 0);
 			}
+		}
+
+		private List<LevelInfo> GetLevelInfo()
+		{
+			var result = new List<LevelInfo>();
+
+			for (int i = 1; i <= 4; i++)
+			{
+				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i));
+				var level = (ILevel)Activator.CreateInstance(type);
+
+				result.Add(level.Info);
+			}
+
+			return result;
 		}
 
 		private void MoveIndex(int direction)
@@ -164,25 +178,48 @@ namespace MoonLib.Scenes
 		{
 			gameContext.GraphicsDevice.Clear(Color.Black);
 
-			Vector2 position = Vector2.Zero;
-
 			for (int i = 0; i < levels.Count; i++)
 			{
-				float alpha = 1f;
-
-				if (i != LevelIndex)
-				{
-					alpha = Math.Max(0f, 1f - (0.75f * Math.Abs(LevelIndex - i)));
-				}
-
 				var level = levels[i];
-				position = level.Position - offset;
+				var position = level.Position - offset;
 
-				spriteBatch.Draw(levels[i].Texture, position - new Vector2(-2, -24), Color.White * alpha);
+				spriteBatch.Draw(levels[i].Texture, position - new Vector2(-2, -24), GetLevelColor(i));
 				spriteBatch.DrawString(fontDefault, level.Name, position, Color.White);
 			}
 
+			DrawScore(spriteBatch);
 			DrawChallenges(spriteBatch);
+		}
+
+		private Color GetLevelColor(int index)
+		{
+			float alpha = 1f;
+
+			if (index != LevelIndex)
+			{
+				alpha = Math.Max(0f, 1f - (0.75f * Math.Abs(LevelIndex - index)));
+			}
+
+			return Color.White * alpha;
+		}
+
+		private void DrawScore(SpriteBatch spriteBatch)
+		{
+			var position = new Vector2(40, 420);
+			spriteBatch.DrawString(fontDefault, "Level Score", position, Color.White);
+			position += new Vector2(0, 30);
+
+			rating.Position = position;
+			rating.Rating = 2;
+			rating.Draw(spriteBatch);
+
+			rating.Position += new Vector2(34, 0);
+			rating.Rating = 2;
+			rating.Draw(spriteBatch);
+
+			rating.Position += new Vector2(34, 0);
+			rating.Rating = 2;
+			rating.Draw(spriteBatch);
 		}
 
 		private void DrawChallenges(SpriteBatch spriteBatch)
@@ -194,20 +231,20 @@ namespace MoonLib.Scenes
 			}
 
 			// Challenges
-			var position = new Vector2(40, 415);
+			var position = new Vector2(40, 510);
 			spriteBatch.DrawString(fontDefault, "Level Challenges", position, Color.White);
-			position += new Vector2(40, 50);
+			position += new Vector2(0, 30);
 
 			for (int i = 0; i < levels[LevelIndex].Challenges.Count; i++)
 			{
 				var challenge = levels[LevelIndex].Challenges[i];
 
 				// Title
-				spriteBatch.DrawString(fontDefault, challenge.Name, position, Color.White);
+				spriteBatch.DrawString(fontDefault, challenge.Name, position + new Vector2(40, 0), Color.White);
 
 				// Rating
-				rating.Position = position - new Vector2(38, -6);
-				rating.Rating = 0;
+				rating.Position = position - new Vector2(0, -6);
+				rating.Rating = challenge.IsCompleted ? 2 : 0;
 				rating.Draw(spriteBatch);
 
 				position += new Vector2(0, 24);
@@ -216,7 +253,7 @@ namespace MoonLib.Scenes
 				var rows = challenge.Description.Split(new char[] { '|' });
 				for (int j = 0; j < rows.Length; j++)
 				{
-					spriteBatch.DrawString(fontChallenges, rows[j], position, challengeDescriptionColor);
+					spriteBatch.DrawString(fontChallenges, rows[j], position + new Vector2(40, 0), challengeDescriptionColor);
 					position += new Vector2(0, 24);
 				}
 

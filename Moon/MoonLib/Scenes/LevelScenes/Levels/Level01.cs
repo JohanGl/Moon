@@ -1,8 +1,10 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
 using MoonLib.Helpers;
+using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -12,6 +14,44 @@ namespace MoonLib.Scenes.Levels
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
+		private DateTime levelStartTime;
+		private StorageHandler storage;
+
+		private LevelInfo info;
+		public LevelInfo Info
+		{
+			get
+			{
+				if (info == null)
+				{
+					info = new LevelInfo()
+					{
+						Id = 1001,
+						Name = "Level 1",
+						Overview = "Scenes/LevelSelect/Level01",
+						Challenges =
+						{
+							new LevelChallenge()
+							{
+								Id = 1001,
+								Name = "Bouncer",
+								Description = "Get all stars in one shot with at least two wall bounces",
+								IsCompleted = storage.IsChallengeCompleted(1001)
+							},
+							new LevelChallenge()
+							{
+								Id = 1002,
+								Name = "Speed king",
+								Description = "Complete the level within 1 second",
+								IsCompleted = storage.IsChallengeCompleted(1002)
+							}
+						}
+					};
+				}
+
+				return info;
+			}
+		}
 
 		public bool Completed
 		{
@@ -35,6 +75,11 @@ namespace MoonLib.Scenes.Levels
 			{
 				return playerInfo.CalculateRating();
 			}
+		}
+
+		public Level01()
+		{
+			storage = new StorageHandler();
 		}
 
 		public void Initialize(GameContext context)
@@ -63,6 +108,8 @@ namespace MoonLib.Scenes.Levels
 			Player.Velocity = Vector2.Zero;
 			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
 			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 64);
+
+			levelStartTime = DateTime.Now;
 		}
 
 		private void InitializeStars()
@@ -85,6 +132,36 @@ namespace MoonLib.Scenes.Levels
 
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
+
+			CheckChallenges();
+		}
+
+		private void CheckChallenges()
+		{
+			if (!Completed)
+			{
+				return;
+			}
+
+			// First challenge
+			if (!Info.Challenges[0].IsCompleted)
+			{
+				if (playerInfo.UsedMoves == 1 && Player.BouncesDuringLastMove >= 2)
+				{
+					Info.Challenges[0].IsCompleted = true;
+					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+				}
+			}
+
+			// Second challenge
+			if (!Info.Challenges[1].IsCompleted)
+			{
+				if ((DateTime.Now - levelStartTime).TotalSeconds <= 1)
+				{
+					Info.Challenges[1].IsCompleted = true;
+					storage.SetChallengeCompleted(Info.Challenges[1].Id);
+				}
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -98,7 +175,7 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
-			if (Player.IsStationary && playerInfo.GotMovesLeft)
+			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);
 				playerInfo.Move();

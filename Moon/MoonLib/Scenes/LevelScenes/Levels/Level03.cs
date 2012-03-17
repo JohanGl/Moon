@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -16,6 +17,18 @@ namespace MoonLib.Scenes.Levels
 		private float timeScalar;
 		private float movementAngle;
 
+		public LevelInfo Info
+		{
+			get
+			{
+				return new LevelInfo()
+				{
+					Name = "Level 3",
+					Overview = "Scenes/LevelSelect/Level03",
+				};
+			}
+		}
+
 		public bool Completed
 		{
 			get
@@ -28,6 +41,21 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
+				if (Player.IsStationary && starHandler.Stars.Count > 0)
+				{
+					for (int angle = 0; angle <= 360; angle += 10)
+					{
+						float x = Device.HalfWidth + 160 * (float)Math.Cos(MathHelper.ToRadians(angle));
+						float y = (140 + 128) + 160 * (float)Math.Sin(MathHelper.ToRadians(angle));
+						var starPosition = new Vector2(x, y);
+
+						if (Vector2.Distance(Player.Center, starPosition) < (Player.CollisionRadius + (starHandler.Stars[0] as Entity).CollisionRadius))
+						{
+							return false;
+						}
+					}
+				}
+
 				return (Player.IsStationary && !playerInfo.GotMovesLeft);
 			}
 		}
@@ -127,7 +155,7 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
-			if (Player.IsStationary && playerInfo.GotMovesLeft)
+			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);
 				playerInfo.Move();

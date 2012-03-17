@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MoonLib.Scenes
+namespace MoonLib.Scenes.LevelSelectScenes
 {
-	public class LevelInfo
+	public class LevelInfoPresentation
 	{
 		public Vector2 Position { get; set; }
 		public Rectangle Bounds { get; set; }
@@ -12,11 +12,11 @@ namespace MoonLib.Scenes
 		public Texture2D Texture { get; set; }
 		public int? StarRating { get; set; }
 
-		public List<LevelChallenge> Challenges { get; set; }
+		public List<LevelChallengePresentation> Challenges { get; set; }
 
-		public LevelInfo()
+		public LevelInfoPresentation()
 		{
-			Challenges = new List<LevelChallenge>();
+			Challenges = new List<LevelChallengePresentation>();
 		}
 	}
 }

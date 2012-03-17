@@ -19,6 +19,14 @@ namespace MoonLib.Scenes.Levels
 			}
 		}
 
+		public int UsedMoves
+		{
+			get
+			{
+				return totalMoves - moves;
+			}
+		}
+
 		public void Initialize(GameContext context, int totalMoves)
 		{
 			this.totalMoves = totalMoves;

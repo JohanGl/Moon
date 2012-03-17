@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -6,6 +7,8 @@ namespace MoonLib.Scenes.Levels
 {
 	public interface ILevel
 	{
+		LevelInfo Info { get; }
+
 		bool Completed { get; }
 		bool Failed { get; }
 		int Score { get; }

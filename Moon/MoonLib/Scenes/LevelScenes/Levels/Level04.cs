@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -15,6 +16,18 @@ namespace MoonLib.Scenes.Levels
 		private PlayerInfo playerInfo;
 		private float timeScalar;
 		private float movementAngle;
+
+		public LevelInfo Info
+		{
+			get
+			{
+				return new LevelInfo()
+				{
+					Name = "Level 4",
+					Overview = "Scenes/LevelSelect/Level04",
+				};
+			}
+		}
 
 		public bool Completed
 		{
@@ -36,7 +49,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
-				return playerInfo.CalculateRating();
+				return Math.Min(6, playerInfo.CalculateRating() + 1);
 			}
 		}
 
@@ -52,7 +65,7 @@ namespace MoonLib.Scenes.Levels
 			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(context, 3);
+			playerInfo.Initialize(context, 4);
 
 			Reset();
 		}
@@ -159,7 +172,7 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
-			if (Player.IsStationary && playerInfo.GotMovesLeft)
+			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);
 				playerInfo.Move();

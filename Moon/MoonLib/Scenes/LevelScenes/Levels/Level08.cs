@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -14,6 +15,18 @@ namespace MoonLib.Scenes.Levels
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
+
+		public LevelInfo Info
+		{
+			get
+			{
+				return new LevelInfo()
+				{
+					Name = "Level 8",
+					Overview = "Scenes/LevelSelect/Level08",
+				};
+			}
+		}
 
 		public bool Completed
 		{
@@ -102,7 +115,7 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
-			if (Player.IsStationary && playerInfo.GotMovesLeft)
+			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);
 				playerInfo.Move();
