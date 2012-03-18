@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
 using MoonLib.Helpers;
+using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -16,16 +17,36 @@ namespace MoonLib.Scenes.Levels
 		private PlayerInfo playerInfo;
 		private float timeScalar;
 		private float movementAngle;
+		private int starsLeftBeforeLastMove;
+		private StorageHandler storage;
 
+		private LevelInfo info;
 		public LevelInfo Info
 		{
 			get
 			{
-				return new LevelInfo()
+				if (info == null)
 				{
-					Name = "Level 4",
-					TexturePath = "Scenes/LevelSelect/Level04",
-				};
+					info = new LevelInfo()
+					{
+						Id = 4001,
+						Name = "Level 4",
+						Score = storage.GetLevelScore(4001),
+						TexturePath = "Scenes/LevelSelect/Level04",
+						Challenges =
+						{
+							new LevelChallenge()
+							{
+								Id = 4001,
+								Name = "Mega combo",
+								Description = "Get 5 or more stars in one shot",
+								IsCompleted = storage.IsChallengeCompleted(4001)
+							},
+						}
+					};
+				}
+
+				return info;
 			}
 		}
 
@@ -51,6 +72,11 @@ namespace MoonLib.Scenes.Levels
 			{
 				return Math.Min(6, playerInfo.CalculateRating() + 1);
 			}
+		}
+
+		public Level04()
+		{
+			storage = new StorageHandler();
 		}
 
 		public void Initialize(GameContext context)
@@ -105,6 +131,26 @@ namespace MoonLib.Scenes.Levels
 
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
+
+			CheckChallenges();
+		}
+
+		private void CheckChallenges()
+		{
+			if (!Player.IsAllowedToMove)
+			{
+				return;
+			}
+
+			// First challenge
+			if (!Info.Challenges[0].IsCompleted)
+			{
+				if (starsLeftBeforeLastMove - starHandler.Stars.Count >= 5)
+				{
+					Info.Challenges[0].IsCompleted = true;
+					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+				}
+			}
 		}
 
 		private void moveStars(GameTimerEventArgs e)
@@ -174,6 +220,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
+				starsLeftBeforeLastMove = starHandler.Stars.Count;
 				Player.SetVelocity(velocity);
 				playerInfo.Move();
 			}

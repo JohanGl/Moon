@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-  <App xmlns="" ProductID="{68c2b3e8-b710-4917-89d2-8dc7ec26c304}" Title="Moon" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="Moon author" Description="Sample description" Publisher="Moon">
+  <App xmlns="" ProductID="{68c2b3e8-b710-4917-89d2-8dc7ec26c304}" Title="Moon Swipe" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="Moon author" Description="Sample description" Publisher="Moon">
     <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
     <Capabilities>
       <!--<Capability Name="ID_CAP_APPOINTMENTS" />-->
@@ -27,7 +27,7 @@
         <TemplateType5>
           <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
           <Count>0</Count>
-          <Title>Moon</Title>
+          <Title>Moon Swipe</Title>
         </TemplateType5>
       </PrimaryToken>
     </Tokens>

@@ -29,6 +29,8 @@ namespace MoonLib.Scenes.Levels
 		private bool initializeLevelFailed;
 		private LevelFailed levelFailed;
 
+		private ChallengeCompleted challengeCompleted;
+
 		private bool tapToContinue;
 		private Texture2D backgroundFadeOut;
 		private AnimationHandler<AnimationType> animationHandler;
@@ -36,12 +38,15 @@ namespace MoonLib.Scenes.Levels
 		private GameContext gameContext;
 		private StorageHandler storage;
 
+		private List<int> completedChallenges;
+
 		public ILevel Level { get; set; }
 		public List<ISceneMessage> Messages { get; set; }
 
 		public LevelScene(int currentLevel)
 		{
 			Messages = new List<ISceneMessage>();
+			completedChallenges = new List<int>();
 			this.currentLevel = currentLevel + 1;
 		}
 
@@ -70,7 +75,25 @@ namespace MoonLib.Scenes.Levels
 			levelFailed = new LevelFailed();
 			levelFailed.Initialize(gameContext);
 
+			challengeCompleted = new ChallengeCompleted();
+			challengeCompleted.Initialize(gameContext);
+
 			LoadLevel();
+		}
+
+		private void InitializeCompletedChallenges()
+		{
+			completedChallenges.Clear();
+
+			for (int i = 0; i < Level.Info.Challenges.Count; i++)
+			{
+				var challenge = Level.Info.Challenges[i];
+
+				if (challenge.IsCompleted)
+				{
+					completedChallenges.Add(challenge.Id);
+				}
+			}
 		}
 
 		public void Unload()
@@ -103,6 +126,42 @@ namespace MoonLib.Scenes.Levels
 			}
 
 			Level.Update(e);
+
+			challengeCompleted.Update(e);
+
+			CheckForNewlyCompletedChallenges();
+		}
+
+		private void CheckForNewlyCompletedChallenges()
+		{
+			for (int i = 0; i < Level.Info.Challenges.Count; i++)
+			{
+				var challenge = Level.Info.Challenges[i];
+
+				if (challenge.IsCompleted)
+				{
+					bool isNew = true;
+
+					for (int j = 0; j < completedChallenges.Count; j++)
+					{
+						if (completedChallenges[j] == challenge.Id)
+						{
+							isNew = false;
+							break;
+						}
+					}
+
+					if (isNew)
+					{
+						if (!challengeCompleted.IsAnimating)
+						{
+							challengeCompleted.Start();
+						}
+
+						completedChallenges.Add(challenge.Id);
+					}
+				}
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -117,6 +176,8 @@ namespace MoonLib.Scenes.Levels
 			{
 				DrawLevelFailed(spriteBatch);
 			}
+
+			challengeCompleted.Draw(spriteBatch);
 		}
 
 		private void HandleLevelCompleted(GameTimerEventArgs e)
@@ -211,6 +272,8 @@ namespace MoonLib.Scenes.Levels
 
 			// Update the currently selected level in the level-select scene
 			LevelSelectScene.LevelIndex = currentLevel - 1;
+
+			InitializeCompletedChallenges();
 
 			tapToContinue = false;
 		}

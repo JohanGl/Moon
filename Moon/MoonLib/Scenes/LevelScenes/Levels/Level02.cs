@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
 using MoonLib.Helpers;
+using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -13,16 +15,36 @@ namespace MoonLib.Scenes.Levels
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
+		private StorageHandler storage;
+		private bool hitWalls;
 
+		private LevelInfo info;
 		public LevelInfo Info
 		{
 			get
 			{
-				return new LevelInfo()
+				if (info == null)
 				{
-					Name = "Level 2",
-					TexturePath = "Scenes/LevelSelect/Level02",
-				};
+					info = new LevelInfo()
+					{
+						Id = 2001,
+						Name = "Level 2",
+						Score = storage.GetLevelScore(2001),
+						TexturePath = "Scenes/LevelSelect/Level02",
+						Challenges =
+						{
+							new LevelChallenge()
+							{
+								Id = 2001,
+								Name = "Super accuracy",
+								Description = "Get all stars without hitting any walls",
+								IsCompleted = storage.IsChallengeCompleted(2001)
+							},
+						}
+					};
+				}
+
+				return info;
 			}
 		}
 
@@ -48,6 +70,11 @@ namespace MoonLib.Scenes.Levels
 			{
 				return playerInfo.CalculateRating();
 			}
+		}
+
+		public Level02()
+		{
+			storage = new StorageHandler();
 		}
 
 		public void Initialize(GameContext context)
@@ -114,6 +141,21 @@ namespace MoonLib.Scenes.Levels
 
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
+
+			CheckChallenges();
+		}
+
+		private void CheckChallenges()
+		{
+			if (Completed && !hitWalls)
+			{
+				// First challenge
+				if (!Info.Challenges[0].IsCompleted)
+				{
+					Info.Challenges[0].IsCompleted = true;
+					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+				}
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -127,6 +169,11 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
+			if (Player.BouncesDuringLastMove > 0)
+			{
+				hitWalls = true;
+			}
+
 			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);

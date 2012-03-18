@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
 using MoonLib.Helpers;
+using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -16,16 +17,44 @@ namespace MoonLib.Scenes.Levels
 		private PlayerInfo playerInfo;
 		private float timeScalar;
 		private float movementAngle;
+		private DateTime levelStartTime;
+		private bool checkPlayerInCenter;
+		private StorageHandler storage;
 
+		private LevelInfo info;
 		public LevelInfo Info
 		{
 			get
 			{
-				return new LevelInfo()
+				if (info == null)
 				{
-					Name = "Level 3",
-					TexturePath = "Scenes/LevelSelect/Level03",
-				};
+					info = new LevelInfo()
+					{
+						Id = 3001,
+						Name = "Level 3",
+						Score = storage.GetLevelScore(3001),
+						TexturePath = "Scenes/LevelSelect/Level03",
+						Challenges =
+						{
+							new LevelChallenge()
+							{
+								Id = 3001,
+								Name = "Circular stress",
+								Description = "Complete the level within 2.5 seconds",
+								IsCompleted = storage.IsChallengeCompleted(3001)
+							},
+							new LevelChallenge()
+							{
+								Id = 3002,
+								Name = "Center of attention",
+								Description = "Stop in the center of the circle without hitting any stars",
+								IsCompleted = storage.IsChallengeCompleted(3002)
+							}
+						}
+					};
+				}
+
+				return info;
 			}
 		}
 
@@ -68,6 +97,11 @@ namespace MoonLib.Scenes.Levels
 			}
 		}
 
+		public Level03()
+		{
+			storage = new StorageHandler();
+		}
+
 		public void Initialize(GameContext context)
 		{
 			// Initialize the background
@@ -94,6 +128,8 @@ namespace MoonLib.Scenes.Levels
 			Player.Velocity = Vector2.Zero;
 			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
 			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 64);
+
+			levelStartTime = DateTime.Now;
 		}
 
 		private void InitializeStars()
@@ -120,6 +156,38 @@ namespace MoonLib.Scenes.Levels
 
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
+
+			CheckChallenges();
+		}
+
+		private void CheckChallenges()
+		{
+			// First challenge
+			if (Completed && !Info.Challenges[0].IsCompleted)
+			{
+				if ((DateTime.Now - levelStartTime).TotalSeconds <= 2.5d)
+				{
+					Info.Challenges[0].IsCompleted = true;
+					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+				}
+			}
+
+			// Second challenge
+			if (!Info.Challenges[1].IsCompleted)
+			{
+				if (checkPlayerInCenter && Player.IsStationary && starHandler.Stars.Count == 8)
+				{
+					if (Vector2.Distance(Player.Center, new Vector2(Device.HalfWidth, (140 + 128))) <= 108)
+					{
+						System.Diagnostics.Debug.WriteLine(Vector2.Distance(Player.Center, new Vector2(Device.HalfWidth, (140 + 128))));
+
+						Info.Challenges[1].IsCompleted = true;
+						storage.SetChallengeCompleted(Info.Challenges[1].Id);
+					}
+
+					checkPlayerInCenter = false;
+				}
+			}
 		}
 
 		private void rotateStars(GameTimerEventArgs e)
@@ -157,6 +225,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
+				checkPlayerInCenter = true;
 				Player.SetVelocity(velocity);
 				playerInfo.Move();
 			}

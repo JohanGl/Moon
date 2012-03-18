@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Framework.Audio;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Items;

@@ -73,7 +73,6 @@ namespace MoonLib.Scenes.Levels
 					starRatings[i].SetSingleStarRatingByIndex(i, rating);
 					starRatings[i].IsVisible = true;
 					gameContext.AudioHandler.PlaySound("Star" + (i + 1));
-					System.Diagnostics.Debug.WriteLine("Rating: " + starRatings[i].Rating + ", total: " + rating);
 				}
 			}
 		}

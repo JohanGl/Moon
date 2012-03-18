@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -5,6 +6,7 @@ using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
 using MoonLib.Entities.Items;
 using MoonLib.Helpers;
+using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -15,16 +17,14 @@ namespace MoonLib.Scenes.Levels
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
+		private StorageHandler storage;
 
+		private LevelInfo info;
 		public LevelInfo Info
 		{
 			get
 			{
-				return new LevelInfo()
-				{
-					Name = "Level 8",
-					TexturePath = "Scenes/LevelSelect/Level08",
-				};
+				throw new NotImplementedException();
 			}
 		}
 
@@ -50,6 +50,11 @@ namespace MoonLib.Scenes.Levels
 			{
 				return playerInfo.CalculateRating();
 			}
+		}
+
+		public Level08()
+		{
+			storage = new StorageHandler();
 		}
 
 		public void Initialize(GameContext context)

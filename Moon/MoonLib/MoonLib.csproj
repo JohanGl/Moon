@@ -71,6 +71,7 @@
     <Compile Include="IsolatedStorage\Entities\ChallengesInfo.cs" />
     <Compile Include="IsolatedStorage\Entities\LevelsInfo.cs" />
     <Compile Include="IsolatedStorage\StorageHandler.cs" />
+    <Compile Include="Scenes\LevelScenes\Levels\Gui\ChallengeCompleted.cs" />
     <Compile Include="Scenes\Messages\ISceneMessage.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level04.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level03.cs" />
