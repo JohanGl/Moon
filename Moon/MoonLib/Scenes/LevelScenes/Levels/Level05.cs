@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -9,16 +8,18 @@ using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
-	public class Level04 : ILevel
+	public class Level05 : ILevel
 	{
 		private StarHandler starHandler { get; set; }
 		private Player Player { get; set; }
 		private DefaultBackground background;
 		private PlayerInfo playerInfo;
-		private float timeScalar;
 		private float movementAngle;
-		private int starsLeftBeforeLastMove;
 		private StorageHandler storage;
+		private Texture2D rails;
+		private bool challengeFailed;
+		private bool checkChallenge;
+		private int challengeBounceCount;
 
 		private LevelInfo info;
 		public LevelInfo Info
@@ -29,19 +30,19 @@ namespace MoonLib.Scenes.Levels
 				{
 					info = new LevelInfo()
 					{
-						Id = 4001,
-						Name = "Level 4",
-						Score = storage.GetLevelScore(4001),
-						TexturePath = "Scenes/LevelSelect/Level04",
+						Id = 5001,
+						Name = "Level 5",
+						Score = storage.GetLevelScore(5001),
+						TexturePath = "Scenes/LevelSelect/Level05",
 						Challenges =
 						{
 							new LevelChallenge()
 							{
-								Id = 4001,
-								Name = "Mega combo",
-								Description = "Get 5 or more stars in one shot",
-								IsCompleted = storage.IsChallengeCompleted(4001)
-							},
+								Id = 5001,
+								Name = "Dodgeball",
+								Description = "Bounce against the top and bottom walls in one shot|without hitting any stars... Twice!",
+								IsCompleted = storage.IsChallengeCompleted(5001)
+							}
 						}
 					};
 				}
@@ -74,7 +75,7 @@ namespace MoonLib.Scenes.Levels
 			}
 		}
 
-		public Level04()
+		public Level05()
 		{
 			storage = new StorageHandler();
 		}
@@ -84,6 +85,8 @@ namespace MoonLib.Scenes.Levels
 			// Initialize the background
 			background = new DefaultBackground();
 			background.Initialize(context);
+
+			rails = context.Content.Load<Texture2D>("Scenes/Levels/Custom/Rails");
 
 			starHandler = new StarHandler(context);
 
@@ -98,13 +101,16 @@ namespace MoonLib.Scenes.Levels
 
 		public void Reset()
 		{
+			challengeFailed = false;
+			challengeBounceCount = 0;
+
 			// Stars
 			InitializeStars();
 
 			// Player
 			Player.Velocity = Vector2.Zero;
 			EntityHelper.HorizontalAlign(Player, HorizontalAlignment.Center);
-			EntityHelper.VerticalAlign(Player, VerticalAlignment.Center);
+			EntityHelper.VerticalAlign(Player, VerticalAlignment.Bottom, 32);
 		}
 
 		private void InitializeStars()
@@ -114,7 +120,7 @@ namespace MoonLib.Scenes.Levels
 
 			movementAngle = 0;
 
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				starHandler.CreateStar(new Vector2(-32, -32), 0);
 				starHandler.Stars[starHandler.Stars.Count - 1].Id = i;
@@ -132,12 +138,39 @@ namespace MoonLib.Scenes.Levels
 			// Remove stars that collide with the player
 			starHandler.CheckPlayerCollisions(Player);
 
+			var removedStars = starHandler.StarsRemovedThisUpdate;
+
+			if (removedStars.Count > 0)
+			{
+				challengeFailed = true;
+			}
+
+			for (int i = 0; i < removedStars.Count; i++)
+			{
+				if (removedStars[i].Id >= 3)
+				{
+					continue;
+				}
+
+				starHandler.CreateStar(new Vector2(-32, -32), 0);
+				starHandler.Stars[starHandler.Stars.Count - 1].Id = removedStars[i].Id + 3;
+
+				if (Player.Center.X < Device.HalfWidth)
+				{
+					(starHandler.Stars[starHandler.Stars.Count - 1] as Entity).Tag = 0;
+				}
+				else
+				{
+					(starHandler.Stars[starHandler.Stars.Count - 1] as Entity).Tag = 180;
+				}
+			}
+
 			CheckChallenges();
 		}
 
 		private void CheckChallenges()
 		{
-			if (!Player.IsAllowedToMove)
+			if (challengeFailed || !checkChallenge)
 			{
 				return;
 			}
@@ -145,19 +178,27 @@ namespace MoonLib.Scenes.Levels
 			// First challenge
 			if (!Info.Challenges[0].IsCompleted)
 			{
-				if (starsLeftBeforeLastMove - starHandler.Stars.Count >= 5)
+				if (Player.IsAllowedToMove &&
+					Player.BouncesDuringLastMove > 1 &&
+					Player.HitTopWallDuringLastMove &&
+					Player.HitBottomWallDuringLastMove)
 				{
-					Info.Challenges[0].IsCompleted = true;
-					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+					challengeBounceCount++;
+					checkChallenge = false;
+
+					if (challengeBounceCount >= 2)
+					{
+						Info.Challenges[0].IsCompleted = true;
+						storage.SetChallengeCompleted(Info.Challenges[0].Id);
+					}
 				}
 			}
 		}
 
 		private void MoveStars(GameTimerEventArgs e)
 		{
-			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 0.05f);
-
-			movementAngle += timeScalar;
+			var playerSpeed = Math.Min(0.3f, Player.Velocity.Length());
+			movementAngle += playerSpeed * 3.5f;
 
 			if (movementAngle >= 360f)
 			{
@@ -169,47 +210,63 @@ namespace MoonLib.Scenes.Levels
 				var star = starHandler.Stars[i];
 				float x = 0;
 				float y = 0;
-				int margin = 40;
-				int margin2 = 64;
+
+				var entity = (Entity)star;
 
 				if (star.Id == 0)
 				{
-					x = margin;
-					y = Device.HalfHeight + 270 * (float)Math.Sin(MathHelper.ToRadians(movementAngle));
+					x = Device.HalfWidth + 185 * (float)Math.Cos(MathHelper.ToRadians(movementAngle));
+					y = 58;
 				}
 				else if (star.Id == 1)
 				{
-					x = Device.Width - margin;
-					y = Device.HalfHeight + 270 * (float)Math.Sin(MathHelper.ToRadians(movementAngle + 180));
+					x = Device.HalfWidth + 185 * (float)Math.Cos(MathHelper.ToRadians(movementAngle + 180));
+					y = 269;
 				}
 				else if (star.Id == 2)
 				{
-					x = margin + margin2;
-					y = Device.HalfHeight + 200 * (float)Math.Cos(MathHelper.ToRadians(movementAngle));
+					x = Device.HalfWidth + 185 * (float)Math.Cos(MathHelper.ToRadians(movementAngle + 90));
+					y = 480;
 				}
-				else if (star.Id == 3)
+				else
 				{
-					x = Device.Width - margin - margin2;
-					y = Device.HalfHeight + 200 * (float)Math.Cos(MathHelper.ToRadians(movementAngle + 180));
+					var angle = (float)Convert.ToDouble(entity.Tag);
+
+					angle += playerSpeed * 3.5f;
+
+					if (angle >= 360f)
+					{
+						angle -= 360f;
+					}
+
+					entity.Tag = angle;
+
+					// New stars
+					if (star.Id == 3)
+					{
+						x = Device.HalfWidth + 185 * (float)Math.Cos(MathHelper.ToRadians(angle));
+						y = 58;
+					}
+					else if (star.Id == 4)
+					{
+						x = Device.HalfWidth + 185 * (float)Math.Cos(MathHelper.ToRadians(angle));
+						y = 269;
+					}
+					else if (star.Id == 5)
+					{
+						x = Device.HalfWidth + 185 * (float)Math.Cos(MathHelper.ToRadians(angle));
+						y = 480;
+					}
 				}
-				else if (star.Id == 4)
-				{
-					x = Device.HalfWidth + 100 * (float)Math.Sin(MathHelper.ToRadians(movementAngle));
-					y = margin;
-				}
-				else if (star.Id == 5)
-				{
-					x = Device.HalfWidth + 100 * (float)Math.Cos(MathHelper.ToRadians(movementAngle));
-					y = Device.Height - margin;
-				}
-				
-				(star as Entity).Position = new Vector2(x - 16, y - 16);
+
+				entity.Position = new Vector2(x - 16, y - 16);
 			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			background.Draw(spriteBatch);
+			spriteBatch.Draw(rails, Vector2.Zero, Color.White);
 			Player.Draw(spriteBatch);
 			starHandler.Draw(spriteBatch);
 
@@ -220,9 +277,9 @@ namespace MoonLib.Scenes.Levels
 		{
 			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
-				starsLeftBeforeLastMove = starHandler.Stars.Count;
 				Player.SetVelocity(velocity);
 				playerInfo.Move();
+				checkChallenge = true;
 			}
 		}
 	}

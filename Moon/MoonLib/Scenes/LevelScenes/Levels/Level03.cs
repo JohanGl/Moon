@@ -148,7 +148,7 @@ namespace MoonLib.Scenes.Levels
 
 		public void Update(GameTimerEventArgs e)
 		{
-			rotateStars(e);
+			RotateStars(e);
 
 			background.Update(e);
 			Player.Update(e);
@@ -190,7 +190,7 @@ namespace MoonLib.Scenes.Levels
 			}
 		}
 
-		private void rotateStars(GameTimerEventArgs e)
+		private void RotateStars(GameTimerEventArgs e)
 		{
 			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 0.075f);
 

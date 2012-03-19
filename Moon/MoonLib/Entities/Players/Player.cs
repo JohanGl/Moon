@@ -26,19 +26,28 @@ namespace MoonLib
 		}
 
 		public int BouncesDuringLastMove { get; private set; }
+		public bool HitTopWallDuringLastMove { get; private set; }
+		public bool HitBottomWallDuringLastMove { get; private set; }
 
 		public void Initialize(GameContext context)
 		{
 			Texture = context.Content.Load<Texture2D>("Player/Moon");
 			HalfSize = new Vector2(Texture.Width / 2f, Texture.Height / 2f);
 			CollisionRadius = Texture.Width / 2f;
+			ResetBounces();
+		}
+
+		private void ResetBounces()
+		{
 			BouncesDuringLastMove = 0;
+			HitTopWallDuringLastMove = false;
+			HitBottomWallDuringLastMove = false;
 		}
 
 		public void SetVelocity(Vector2 velocity)
 		{
-			BouncesDuringLastMove = 0;
 			Velocity = velocity;
+			ResetBounces();
 		}
 
 		public void Update(GameTimerEventArgs e)
@@ -76,12 +85,14 @@ namespace MoonLib
 				Position += new Vector2(0, -Position.Y);
 				Velocity = new Vector2(Velocity.X, -Velocity.Y);
 				BouncesDuringLastMove++;
+				HitTopWallDuringLastMove = true;
 			}
 			else if (Position.Y + Texture.Height > Device.Height)
 			{
 				Position -= new Vector2(0, (Position.Y + Texture.Height) - Device.Height);
 				Velocity = new Vector2(Velocity.X, -Velocity.Y);
 				BouncesDuringLastMove++;
+				HitBottomWallDuringLastMove = true;
 			}
 		}
 

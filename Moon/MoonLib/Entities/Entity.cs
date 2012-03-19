@@ -9,6 +9,7 @@ namespace MoonLib
 		public Vector2 Velocity { get; set; }
 		public float Angle { get; set; }
 		public float CollisionRadius { get; set; }
+		public object Tag { get; set; }
 
 		public Vector2 Center
 		{

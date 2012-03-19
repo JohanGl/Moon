@@ -22,6 +22,14 @@ namespace MoonLib.Scenes.Levels
 
 		private GameContext gameContext;
 
+		public List<IStar> StarsRemovedThisUpdate
+		{
+			get
+			{
+				return starsToRemove;
+			}
+		}
+
 		public StarHandler(GameContext context)
 		{
 			gameContext = context;
@@ -31,7 +39,7 @@ namespace MoonLib.Scenes.Levels
 			ResetStarPitch();
 
 			emitters = new IParticleEmitter[3];
-	
+
 			emitters[0] = new StarParticleEmitter();
 			emitters[0].Initialize(gameContext, 200);
 
@@ -60,7 +68,7 @@ namespace MoonLib.Scenes.Levels
 					if (EntityHelper.Instersects(player, (Entity)star))
 					{
 						starsToRemove.Add(Stars[i]);
-					}					
+					}
 				}
 				else if (star is IceStar)
 				{
@@ -137,7 +145,7 @@ namespace MoonLib.Scenes.Levels
 		private void BreakIceStar(IceStar star, Vector2 velocity)
 		{
 			Stars.Remove(star);
-			
+
 			CreateStar(star.Position + new Vector2(star.HalfSize.X, star.HalfSize.Y), star.Angle);
 			(Stars[Stars.Count - 1] as Star).Velocity = velocity;
 
@@ -195,11 +203,11 @@ namespace MoonLib.Scenes.Levels
 
 				if (star is Star)
 				{
-					(star as Star).Angle = starAngle;	
+					(star as Star).Angle = starAngle;
 				}
 				else if (star is IceStar)
 				{
-					(star as IceStar).Angle = iceStarAngle;					
+					(star as IceStar).Angle = iceStarAngle;
 				}
 			}
 

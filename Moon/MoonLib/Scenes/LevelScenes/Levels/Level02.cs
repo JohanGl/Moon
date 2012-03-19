@@ -147,6 +147,11 @@ namespace MoonLib.Scenes.Levels
 
 		private void CheckChallenges()
 		{
+			if (Player.BouncesDuringLastMove > 0)
+			{
+				hitWalls = true;
+			}
+
 			if (Completed && !hitWalls)
 			{
 				// First challenge
@@ -169,11 +174,6 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
-			if (Player.BouncesDuringLastMove > 0)
-			{
-				hitWalls = true;
-			}
-
 			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);
