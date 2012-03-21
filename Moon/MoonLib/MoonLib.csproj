@@ -107,14 +107,14 @@
     <Compile Include="Services\ServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ContentLib\ContentLib.csproj">
-      <Project>{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}</Project>
-      <Name>ContentLib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MoonLibContent\MoonLibContent.contentproj">
       <Name>MoonLibContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
       <Project>{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ShakeGestures\ShakeGestures.csproj">
+      <Project>{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}</Project>
+      <Name>ShakeGestures</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

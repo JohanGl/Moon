@@ -72,32 +72,38 @@ namespace MoonLib.Scenes.Levels
 				}
 				else if (star is IceStar)
 				{
-					if (EntityHelper.IntersectsWithBallBounceResolve(player, (Entity)star))
+					if (EntityHelper.Instersects(player, (Entity)star))
 					{
-						HandleIceStarImpact((IceStar)star);
+						BreakIceStar((IceStar)star, player.Velocity * 0.05f);
+						player.Velocity *= 0.01f;
 					}
-					else
-					{
-						for (int j = 0; j < Stars.Count; j++)
-						{
-							var secondStar = Stars[j];
 
-							if (i != j && secondStar is IceStar)
-							{
-								if (EntityHelper.IntersectsWithBallBounceResolve((Entity)star, (Entity)secondStar))
-								{
-									HandleIceStarImpact((IceStar)secondStar);
+					//if (EntityHelper.IntersectsWithBallBounceResolve(player, (Entity)star))
+					//{
+					//    HandleIceStarImpact((IceStar)star);
+					//}
+					//else
+					//{
+					//    for (int j = 0; j < Stars.Count; j++)
+					//    {
+					//        var secondStar = Stars[j];
 
-									bool wasDestroyed = HandleIceStarImpact((IceStar)star);
+					//        if (i != j && secondStar is IceStar)
+					//        {
+					//            if (EntityHelper.IntersectsWithBallBounceResolve((Entity)star, (Entity)secondStar))
+					//            {
+					//                HandleIceStarImpact((IceStar)secondStar);
 
-									if (wasDestroyed)
-									{
-										break;
-									}
-								}
-							}
-						}
-					}
+					//                bool wasDestroyed = HandleIceStarImpact((IceStar)star);
+
+					//                if (wasDestroyed)
+					//                {
+					//                    break;
+					//                }
+					//            }
+					//        }
+					//    }
+					//}
 				}
 			}
 
@@ -142,7 +148,7 @@ namespace MoonLib.Scenes.Levels
 			return star.IsCracked;
 		}
 
-		private void BreakIceStar(IceStar star, Vector2 velocity)
+		public void BreakIceStar(IceStar star, Vector2 velocity)
 		{
 			Stars.Remove(star);
 

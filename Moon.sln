@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonLib", "Moon\MoonLib\Moo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonLibContent", "Moon\MoonLibContent\MoonLibContent.contentproj", "{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentLib", "Moon\ContentLib\ContentLib.csproj", "{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShakeGestures", "Moon\ShakeGestures\ShakeGestures.csproj", "{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,16 +49,16 @@ Global
 		{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}.Release|Any CPU.ActiveCfg = Release|Windows Phone
 		{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}.Release|Mixed Platforms.ActiveCfg = Release|Windows Phone
 		{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Debug|Any CPU.ActiveCfg = Debug|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Debug|Mixed Platforms.ActiveCfg = Debug|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Debug|Mixed Platforms.Build.0 = Debug|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Debug|Windows Phone.ActiveCfg = Debug|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Debug|Windows Phone.Build.0 = Debug|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Release|Any CPU.ActiveCfg = Release|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Release|Mixed Platforms.ActiveCfg = Release|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Release|Mixed Platforms.Build.0 = Release|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Release|Windows Phone.ActiveCfg = Release|Windows Phone
-		{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}.Release|Windows Phone.Build.0 = Release|Windows Phone
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Windows Phone.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

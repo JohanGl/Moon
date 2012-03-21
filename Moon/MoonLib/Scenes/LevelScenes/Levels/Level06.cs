@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
+using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 using MoonLib.IsolatedStorage;
+using MoonLib.Services;
+using ShakeGestures;
+using HorizontalAlignment = MoonLib.Helpers.HorizontalAlignment;
+using VerticalAlignment = MoonLib.Helpers.VerticalAlignment;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -22,7 +28,28 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
-				throw new NotImplementedException();
+				if (info == null)
+				{
+					info = new LevelInfo()
+					{
+						Id = 6001,
+						Name = "Level 6",
+						Score = storage.GetLevelScore(6001),
+						TexturePath = "Scenes/LevelSelect/Level06",
+						Challenges =
+						{
+							new LevelChallenge()
+							{
+								Id = 6001,
+								Name = "Icebreaker",
+								Description = "Shaken, not stirred",
+								IsCompleted = storage.IsChallengeCompleted(6001)
+							}
+						}
+					};
+				}
+
+				return info;
 			}
 		}
 
@@ -67,9 +94,80 @@ namespace MoonLib.Scenes.Levels
 			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(context, 8);
+			playerInfo.Initialize(context, 5);
+
+			InitializeShakeGestures();
 
 			Reset();
+		}
+
+		private void InitializeShakeGestures()
+		{
+			// register shake event
+			ShakeGesturesHelper.Instance.ShakeGesture += Instance_ShakeGesture;
+
+			// optional, set parameters
+			ShakeGesturesHelper.Instance.MinimumShakeVectorsNeededForShake = 30;
+			ShakeGesturesHelper.Instance.MinimumRequiredMovesForShake = 5;
+
+			// start shake detection
+			ShakeGesturesHelper.Instance.Active = true;
+		}
+
+		private void Instance_ShakeGesture(object sender, ShakeGestureEventArgs e)
+		{
+			Deployment.Current.Dispatcher.BeginInvoke(() => { Shake(); });  
+		}
+
+		public void Shake()
+		{
+			bool affectedStars = false;
+			bool cracked = false;
+
+			for (int i = starHandler.Stars.Count - 1; i >= 0; i--)
+			{
+				var star = starHandler.Stars[i];
+
+				if (star is IceStar)
+				{
+					var iceStar = (star as IceStar);
+
+					if (!iceStar.IsCracked)
+					{
+						iceStar.IsCracked = true;
+						cracked = true;
+						affectedStars = true;
+					}
+					else
+					{
+						starHandler.BreakIceStar(iceStar, Vector2.Zero);
+						affectedStars = true;
+					}
+				}
+			}
+
+			if (affectedStars)
+			{
+				if (cracked)
+				{
+					ServiceLocator.Get<GameContext>().AudioHandler.PlaySound("Star16");
+					ServiceLocator.Get<GameContext>().AudioHandler.PlaySound("Star16");
+					ServiceLocator.Get<GameContext>().AudioHandler.PlaySound("Star16");
+				}
+				else
+				{
+					ServiceLocator.Get<GameContext>().AudioHandler.PlaySound("Star16");
+					ServiceLocator.Get<GameContext>().AudioHandler.PlaySound("Star14");
+					ServiceLocator.Get<GameContext>().AudioHandler.PlaySound("Star12");
+
+					// First challenge
+					if (!Info.Challenges[0].IsCompleted)
+					{
+						Info.Challenges[0].IsCompleted = true;
+						storage.SetChallengeCompleted(Info.Challenges[0].Id);
+					}
+				}
+			}
 		}
 
 		public void Reset()

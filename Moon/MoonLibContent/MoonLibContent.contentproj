@@ -262,19 +262,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Levels.xml">
-      <Name>Levels</Name>
-      <Importer>XmlImporter</Importer>
-      <Processor>PassThroughProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ContentLib\ContentLib.csproj">
-      <Project>{7F4E2AAD-F977-4CF7-B59B-2626197A2FD3}</Project>
-      <Name>ContentLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Scenes\LevelSelect\Level06.png">
       <Name>Level06</Name>
       <Importer>TextureImporter</Importer>

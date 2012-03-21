@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ContentLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -86,7 +85,7 @@ namespace MoonLib.Scenes
 		{
 			var result = new List<LevelInfo>();
 
-			for (int i = 1; i <= 5; i++)
+			for (int i = 1; i <= 6; i++)
 			{
 				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i));
 				var level = (ILevel)Activator.CreateInstance(type);

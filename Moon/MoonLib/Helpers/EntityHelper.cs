@@ -93,7 +93,7 @@ namespace MoonLib.Helpers
 					}
 				}
 
-				var power = a.Velocity.Length();
+				var power = a.Velocity.Length() * 0.2f;
 
 				var direction = b.Center - a.Center;
 				direction = Vector2.Normalize(direction);
@@ -108,7 +108,7 @@ namespace MoonLib.Helpers
 					a.Velocity = new Vector2(-b.Velocity.X, b.Velocity.Y);
 				}
 
-				a.Velocity *= power;
+				a.Velocity *= 0.25f;
 			}
 
 			return intersects;
