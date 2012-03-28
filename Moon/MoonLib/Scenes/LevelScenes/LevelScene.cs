@@ -21,7 +21,7 @@ namespace MoonLib.Scenes.Levels
 		}
 
 		private int currentLevel = 1;
-		private const int totalLevels = 6;
+		private const int totalLevels = LevelSelectScene.TotalLevels;
 
 		private bool initializeLevelCompleted;
 		private LevelCompleted levelCompleted;

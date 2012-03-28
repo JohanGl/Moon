@@ -11,7 +11,8 @@ namespace MoonLib.Scenes
 {
 	public class LevelSelectScene : IScene
 	{
-		public static int LevelIndex = 0;
+		public static int LevelIndex = 6;
+		public const int TotalLevels = 7;
 		
 		private Vector2 offset;
 		private Vector2 targetOffset;
@@ -85,7 +86,7 @@ namespace MoonLib.Scenes
 		{
 			var result = new List<LevelInfo>();
 
-			for (int i = 1; i <= 6; i++)
+			for (int i = 1; i <= TotalLevels; i++)
 			{
 				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i));
 				var level = (ILevel)Activator.CreateInstance(type);

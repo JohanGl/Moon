@@ -241,11 +241,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Scenes\LevelSelect\Level08.png">
-      <Name>Level08</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fonts\DefaultBold.spritefont">
@@ -264,13 +259,6 @@
   <ItemGroup>
     <Compile Include="Scenes\LevelSelect\Level06.png">
       <Name>Level06</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Scenes\LevelSelect\LevelTemplate.png">
-      <Name>LevelTemplate</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -306,6 +294,13 @@
   <ItemGroup>
     <Compile Include="Scenes\LevelSelect\Level05.png">
       <Name>Level05</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scenes\LevelSelect\Level07.png">
+      <Name>Level07</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

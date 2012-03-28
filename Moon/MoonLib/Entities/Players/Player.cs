@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -28,6 +29,11 @@ namespace MoonLib
 		public int BouncesDuringLastMove { get; private set; }
 		public bool HitTopWallDuringLastMove { get; private set; }
 		public bool HitBottomWallDuringLastMove { get; private set; }
+
+		private bool isShaking;
+		private double shakeTime;
+		private Vector2 shakeOffset;
+		private Random shakeRandom;
 
 		public void Initialize(GameContext context)
 		{
@@ -61,7 +67,30 @@ namespace MoonLib
 			// Decrease the velocity for a slowdown effect
 			Velocity *= 0.99f;
 
+			UpdateShake(e);
+
 			BoundsCheck();
+		}
+
+		private void UpdateShake(GameTimerEventArgs e)
+		{
+			if (isShaking)
+			{
+				if (shakeTime == 0)
+				{
+					shakeTime = e.TotalTime.TotalMilliseconds;
+				}
+				else
+				{
+					if (e.TotalTime.TotalMilliseconds > shakeTime + 500)
+					{
+						isShaking = false;
+					}
+				}
+
+				shakeOffset.X = shakeRandom.Next(-5, 5);
+				shakeOffset.Y = shakeRandom.Next(-5, 5);
+			}
 		}
 
 		private void BoundsCheck()
@@ -98,7 +127,25 @@ namespace MoonLib
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.Draw(Texture, new Vector2((int)Position.X, (int)Position.Y), Color.White);
+			if (isShaking)
+			{
+				spriteBatch.Draw(Texture, new Vector2((int)(Position.X + shakeOffset.X), (int)(Position.Y + shakeOffset.Y)), Color.White);
+			}
+			else
+			{
+				spriteBatch.Draw(Texture, new Vector2((int)Position.X, (int)Position.Y), Color.White);
+			}
+		}
+
+		public void Shake()
+		{
+			if (shakeRandom == null)
+			{
+				shakeRandom = new Random();
+			}
+
+			isShaking = true;
+			shakeTime = 0;
 		}
 	}
 }
