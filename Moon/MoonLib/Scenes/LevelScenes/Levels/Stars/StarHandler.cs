@@ -183,6 +183,17 @@ namespace MoonLib.Scenes.Levels
 			Stars.Add(star);
 		}
 
+		public void CreateIceStar(Vector2 position, float angle, int type)
+		{
+			var star = new IceStar();
+			star.Initialize(gameContext, type);
+			star.Position = new Vector2((int)(position.X - star.HalfSize.X), (int)(position.Y - star.HalfSize.Y));
+			star.Angle = angle;
+			star.CollisionRadius = 30;
+
+			Stars.Add(star);
+		}
+
 		public void Update(GameTimerEventArgs e)
 		{
 			for (int i = 0; i < Stars.Count; i++)

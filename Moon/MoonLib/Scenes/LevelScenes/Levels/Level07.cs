@@ -63,7 +63,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
-				return playerInfo.CalculateRating();
+				return Math.Min(6, playerInfo.CalculateRating() + 2);
 			}
 		}
 

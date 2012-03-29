@@ -11,8 +11,8 @@ namespace MoonLib.Scenes
 {
 	public class LevelSelectScene : IScene
 	{
-		public static int LevelIndex = 6;
-		public const int TotalLevels = 7;
+		public static int LevelIndex = 7;
+		public const int TotalLevels = 8;
 		
 		private Vector2 offset;
 		private Vector2 targetOffset;

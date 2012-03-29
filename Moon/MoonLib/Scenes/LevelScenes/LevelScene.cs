@@ -102,6 +102,8 @@ namespace MoonLib.Scenes.Levels
 
 		public void Update(GameTimerEventArgs e)
 		{
+			animationHandler.Update();
+
 			if (Level.Completed)
 			{
 				HandleLevelCompleted(e);
@@ -182,7 +184,6 @@ namespace MoonLib.Scenes.Levels
 
 		private void HandleLevelCompleted(GameTimerEventArgs e)
 		{
-			animationHandler.Update();
 			levelCompleted.Update(e);
 
 			if (initializeLevelCompleted)
@@ -220,7 +221,6 @@ namespace MoonLib.Scenes.Levels
 
 		private void HandleLevelFailed(GameTimerEventArgs e)
 		{
-			animationHandler.Update();
 			levelFailed.Update(e);
 
 			if (initializeLevelFailed)
@@ -280,7 +280,8 @@ namespace MoonLib.Scenes.Levels
 
 		private void DrawLevelCompleted(SpriteBatch spriteBatch)
 		{
-			float opacity = (animationHandler.Animations[AnimationType.LevelCompletedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelCompletedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelCompletedFade].To;
+			var animation = animationHandler.Animations[AnimationType.LevelCompletedFade];
+			float opacity = (animation.IsRunning) ? animation.CurrentValue : animation.To;
 			spriteBatch.Draw(backgroundFadeOut, Device.Size, null, Color.White * opacity);
 
 			levelCompleted.Draw(spriteBatch);
@@ -288,7 +289,8 @@ namespace MoonLib.Scenes.Levels
 
 		private void DrawLevelFailed(SpriteBatch spriteBatch)
 		{
-			float opacity = (animationHandler.Animations[AnimationType.LevelFailedFade].IsRunning) ? animationHandler.Animations[AnimationType.LevelFailedFade].CurrentValue : animationHandler.Animations[AnimationType.LevelFailedFade].To;
+			var animation = animationHandler.Animations[AnimationType.LevelFailedFade];
+			float opacity = (animation.IsRunning) ? animation.CurrentValue : animation.To;
 			spriteBatch.Draw(backgroundFadeOut, Device.Size, null, Color.White * opacity);
 
 			levelFailed.Draw(spriteBatch);
