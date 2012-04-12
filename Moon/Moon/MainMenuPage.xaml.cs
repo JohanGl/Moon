@@ -8,13 +8,13 @@ using MoonLib.Services;
 
 namespace Moon
 {
-	public partial class LevelSelectPage
+	public partial class MainMenuPage
 	{
 		private IScene scene;
 		private GameContext gameContext;
 		private GameTimer timer;
 
-		public LevelSelectPage()
+		public MainMenuPage()
 		{
 			InitializeComponent();
 
@@ -35,8 +35,8 @@ namespace Moon
 		{
 			FrameworkDispatcher.Update();
 
-			var audioHandler = gameContext.AudioHandler;
-			audioHandler.LoadSong("BGM2", "Audio/BGM02");
+			//var audioHandler = gameContext.AudioHandler;
+			//audioHandler.LoadSong("BGM2", "Audio/BGM02");
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -48,7 +48,7 @@ namespace Moon
 
 			var audioHandler = gameContext.AudioHandler;
 			audioHandler.StopSong();
-			audioHandler.PlaySong("BGM2", true);
+			//audioHandler.PlaySong("BGM2", true);
 			audioHandler.MusicVolume = 1f;
 			audioHandler.SoundVolume = 1f;
 		}
@@ -86,7 +86,7 @@ namespace Moon
 
 		private void InitializeScene()
 		{
-			scene = new LevelSelectScene();
+			scene = new MainMenuScene();
 			scene.Initialize(gameContext);
 		}
 
@@ -101,12 +101,11 @@ namespace Moon
 			{
 				var message = scene.Messages[i];
 
-				if (scene is LevelSelectScene)
+				if (scene is MainMenuScene)
 				{
-					if (message is LevelSelectedMessage)
+					if (message is TapMessage)
 					{
-						int levelIndex = (message as LevelSelectedMessage).LevelIndex;
-						var uri = new Uri(string.Format("/GamePage.xaml?level={0}", levelIndex), UriKind.Relative);
+						var uri = new Uri("/LevelSelectPage.xaml", UriKind.Relative);
 						NavigationService.Navigate(uri);
 					}
 				}
