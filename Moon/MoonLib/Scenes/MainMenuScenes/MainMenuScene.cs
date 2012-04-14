@@ -28,7 +28,7 @@ namespace MoonLib.Scenes
 		private double tapToPlayCounter;
 		private bool showTapToPlay;
 
-		private float angle = 270;
+		private float angle = 320;
 
 		public List<ISceneMessage> Messages { get; set; }
 
@@ -49,7 +49,7 @@ namespace MoonLib.Scenes
 
 			yellowMoonPosition = new Vector2(-276, 287);
 			greenMoonPosition = new Vector2(200, -47);
-			titlePosition = new Vector2(Device.HalfWidth - (title.Width / 2), 203);
+			titlePosition = new Vector2((Device.HalfWidth - (title.Width / 2)), 203);
 			tapToPlayPosition = new Vector2(Device.HalfWidth - (tapToPlay.Width / 2), 718);
 		}
 
@@ -68,7 +68,7 @@ namespace MoonLib.Scenes
 		{
 			angle += (float)(e.ElapsedTime.TotalMilliseconds * 0.01d);
 
-			titleOffset = new Vector2(265f * (float)Math.Sin(MathHelper.ToRadians(angle)), 0);
+			titleOffset = new Vector2(255f * (float)Math.Sin(MathHelper.ToRadians(angle * 2f)), 0);
 			yellowMoonOffset = new Vector2(30f * (float)Math.Sin(MathHelper.ToRadians(angle * 2f)), 0);
 		}
 

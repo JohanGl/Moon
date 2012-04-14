@@ -55,7 +55,7 @@ namespace MoonLib.Scenes.Levels
 			currentStarPitch = 1;
 		}
 
-		public void CheckPlayerCollisions(Player player)
+		public void CheckPlayerCollisions(Entity player)
 		{
 			starsToRemove.Clear();
 
@@ -77,33 +77,6 @@ namespace MoonLib.Scenes.Levels
 						BreakIceStar((IceStar)star, player.Velocity * 0.05f);
 						player.Velocity *= 0.01f;
 					}
-
-					//if (EntityHelper.IntersectsWithBallBounceResolve(player, (Entity)star))
-					//{
-					//    HandleIceStarImpact((IceStar)star);
-					//}
-					//else
-					//{
-					//    for (int j = 0; j < Stars.Count; j++)
-					//    {
-					//        var secondStar = Stars[j];
-
-					//        if (i != j && secondStar is IceStar)
-					//        {
-					//            if (EntityHelper.IntersectsWithBallBounceResolve((Entity)star, (Entity)secondStar))
-					//            {
-					//                HandleIceStarImpact((IceStar)secondStar);
-
-					//                bool wasDestroyed = HandleIceStarImpact((IceStar)star);
-
-					//                if (wasDestroyed)
-					//                {
-					//                    break;
-					//                }
-					//            }
-					//        }
-					//    }
-					//}
 				}
 			}
 
@@ -127,25 +100,6 @@ namespace MoonLib.Scenes.Levels
 					currentStarPitch++;
 				}
 			}
-		}
-
-		/// <summary>
-		/// Handles ice star collision logic
-		/// </summary>
-		/// <param name="star"></param>
-		/// <returns>True if the star was destroyed, false if cracked</returns>
-		private bool HandleIceStarImpact(IceStar star)
-		{
-			if (!star.IsCracked)
-			{
-				star.IsCracked = true;
-			}
-			else
-			{
-				BreakIceStar(star, star.Velocity * 0.5f);
-			}
-
-			return star.IsCracked;
 		}
 
 		public void BreakIceStar(IceStar star, Vector2 velocity)

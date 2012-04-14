@@ -9,16 +9,34 @@ using MoonLib.Scenes.Levels;
 
 namespace MoonLib.Scenes
 {
+	public class Chapter
+	{
+		public string Title { get; set; }
+		public int LevelIndex { get; set; }
+		public int TotalLevels { get; set; }
+		public List<LevelInfoPresentation> Levels { get; set; }
+
+		public Vector2 Offset { get; set; }
+		public Vector2 TargetOffset { get; set; }
+
+		public Chapter()
+		{
+			Levels = new List<LevelInfoPresentation>();
+		}
+	}
+
 	public class LevelSelectScene : IScene
 	{
-		public static int LevelIndex = 0;
-		public const int TotalLevels = 8;
-		
-		private Vector2 offset;
-		private Vector2 targetOffset;
-		private List<LevelInfoPresentation> levels;
+		public static int ChapterIndex = 0;
+		public const int TotalChapters = 2;
+
+		public static List<Chapter> Chapters { get; set; }
+		public static Chapter CurrentChapter { get { return Chapters[ChapterIndex]; } }
+
+		private SpriteFont fontTitle;
 		private SpriteFont fontDefault;
 		private SpriteFont fontChallenges;
+		private Texture2D chapterArrows;
 		private float timeScalar;
 		private Color challengeDescriptionColor = Color.FromNonPremultiplied(140, 140, 140, 255);
 		private StarRating rating;
@@ -36,30 +54,58 @@ namespace MoonLib.Scenes
 		{
 			gameContext = context;
 
-			InitializeLevels();
+			if (Chapters == null)
+			{
+				Chapters = new List<Chapter>();
+				Chapters.Add(new Chapter() { Title = "Chapter 1", TotalLevels = 8 });
+				Chapters.Add(new Chapter() { Title = "Chapter 2", TotalLevels = 1 });
 
-			SetIndex(LevelIndex);
-			offset = targetOffset;
+				InitializeChapter1Levels();
+				InitializeChapter2Levels();
+				InitializeChapterScrollOffsets();
+			}
 
 			rating = new StarRating();
 			rating.Initialize(context);
 			rating.IsVisible = true;
 
+			chapterArrows = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/ChapterArrows");
+
+			fontTitle = gameContext.Content.Load<SpriteFont>("Fonts/Title");
 			fontDefault = gameContext.Content.Load<SpriteFont>("Fonts/DefaultBold");
 			fontChallenges = gameContext.Content.Load<SpriteFont>("Fonts/Challenges");
+		}
+
+		private void InitializeChapterScrollOffsets()
+		{
+			int previousChapterIndex = ChapterIndex;
+
+			// Initialize all chapter scroll offsets
+			for (ChapterIndex = 0; ChapterIndex < Chapters.Count; ChapterIndex++)
+			{
+				SetIndex(CurrentChapter.LevelIndex);
+				CurrentChapter.Offset = CurrentChapter.TargetOffset;
+			}
+
+			// Select the first chapter
+			ChapterIndex = previousChapterIndex;
+			SetIndex(CurrentChapter.LevelIndex);
+			CurrentChapter.Offset = CurrentChapter.TargetOffset;
 		}
 
 		public void Unload()
 		{
 		}
 
-		private void InitializeLevels()
+		private void InitializeChapter1Levels()
 		{
-			levels = new List<LevelInfoPresentation>();
+			var chapter = Chapters[0];
 
-			var currentPosition = new Vector2(0, 45);
+			chapter.Levels = new List<LevelInfoPresentation>();
 
-			foreach (var info in GetLevelInfo())
+			var currentPosition = new Vector2(0, 105);
+
+			foreach (var info in GetLevelInfoChapter1())
 			{
 				var level = new LevelInfoPresentation();
 				level.Name = info.Name;
@@ -77,16 +123,47 @@ namespace MoonLib.Scenes
 					level.Challenges.Add(challenge);
 				}
 
-				levels.Add(level);
+				chapter.Levels.Add(level);
 				currentPosition += new Vector2(192 + 10, 0);
 			}
 		}
 
-		private List<LevelInfo> GetLevelInfo()
+		private void InitializeChapter2Levels()
+		{
+			var chapter = Chapters[1];
+
+			chapter.Levels = new List<LevelInfoPresentation>();
+
+			var currentPosition = new Vector2(0, 105);
+
+			foreach (var info in GetLevelInfoChapter2())
+			{
+				var level = new LevelInfoPresentation();
+				level.Name = info.Name;
+				level.Score = info.Score;
+				level.Texture = gameContext.Content.Load<Texture2D>(info.TexturePath);
+				level.Position = currentPosition;
+				level.Bounds = new Rectangle((int)level.Position.X, (int)level.Position.Y, level.Texture.Width, level.Texture.Height);
+
+				foreach (var challengeContent in info.Challenges)
+				{
+					var challenge = new LevelChallengePresentation();
+					challenge.Name = challengeContent.Name;
+					challenge.Description = challengeContent.Description;
+					challenge.IsCompleted = challengeContent.IsCompleted;
+					level.Challenges.Add(challenge);
+				}
+
+				chapter.Levels.Add(level);
+				currentPosition += new Vector2(192 + 10, 0);
+			}
+		}
+
+		private List<LevelInfo> GetLevelInfoChapter1()
 		{
 			var result = new List<LevelInfo>();
 
-			for (int i = 1; i <= TotalLevels; i++)
+			for (int i = 1; i <= Chapters[0].TotalLevels; i++)
 			{
 				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i));
 				var level = (ILevel)Activator.CreateInstance(type);
@@ -97,30 +174,45 @@ namespace MoonLib.Scenes
 			return result;
 		}
 
+		private List<LevelInfo> GetLevelInfoChapter2()
+		{
+			var result = new List<LevelInfo>();
+
+			for (int i = 1; i <= Chapters[1].TotalLevels; i++)
+			{
+				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i + 20));
+				var level = (ILevel)Activator.CreateInstance(type);
+
+				result.Add(level.Info);
+			}
+
+			return result;
+		}
+
 		private void MoveIndex(int direction)
 		{
-			if (LevelIndex + direction < 0)
+			if (CurrentChapter.LevelIndex + direction < 0)
 			{
 				SetIndex(0);
 			}
-			else if (LevelIndex + direction > levels.Count - 1)
+			else if (CurrentChapter.LevelIndex + direction > CurrentChapter.Levels.Count - 1)
 			{
-				SetIndex(levels.Count - 1);
+				SetIndex(CurrentChapter.Levels.Count - 1);
 			}
 			else
 			{
-				SetIndex(LevelIndex + direction);
+				SetIndex(CurrentChapter.LevelIndex + direction);
 			}
 		}
 
 		private void SetIndex(int newIndex)
 		{
-			LevelIndex = newIndex;
+			CurrentChapter.LevelIndex = newIndex;
 
 			float x = (192 + 10) * newIndex;
 			x -= 144;
 
-			targetOffset = new Vector2(x, 0);
+			CurrentChapter.TargetOffset = new Vector2(x, 0);
 		}
 
 		public void Update(GameTimerEventArgs e)
@@ -135,43 +227,67 @@ namespace MoonLib.Scenes
 				switch (gesture.GestureType)
 				{
 					case GestureType.Tap:
-						if (levels[LevelIndex].Bounds.Contains((int)(gesture.Position.X + offset.X), (int)gesture.Position.Y))
+						if (CurrentChapter.Levels[CurrentChapter.LevelIndex].Bounds.Contains((int)(gesture.Position.X + CurrentChapter.Offset.X), (int)gesture.Position.Y))
 						{
-							Messages.Add(new LevelSelectedMessage() { LevelIndex = LevelIndex });
+							Messages.Add(new LevelSelectedMessage() { LevelIndex = CurrentChapter.LevelIndex });
 						}
 						break;
 
 					case GestureType.Flick:
-						if (gesture.Delta.X > 0)
+						// Swipes horizontally
+						if (Math.Abs(gesture.Delta.X) > Math.Abs(gesture.Delta.Y))
 						{
-							// Extra power flips through multiple levels at once
-							if (gesture.Delta.X > 3500)
+							if (gesture.Delta.X > 0)
 							{
-								MoveIndex(-1);
+								// Extra power flips through multiple levels at once
+								if (gesture.Delta.X > 3500)
+								{
+									MoveIndex(-1);
+									MoveIndex(-1);
+								}
+
 								MoveIndex(-1);
 							}
+							else if (gesture.Delta.X < 0)
+							{
+								// Extra power flips through multiple levels at once
+								if (gesture.Delta.X < -3500)
+								{
+									MoveIndex(1);
+									MoveIndex(1);
+								}
 
-							MoveIndex(-1);
+								MoveIndex(1);
+							}
 						}
-						else if (gesture.Delta.X < 0)
+						// Swipes vertically
+						else
 						{
-							// Extra power flips through multiple levels at once
-							if (gesture.Delta.X < -3500)
+							if (gesture.Delta.Y > 10)
 							{
-								MoveIndex(1);
-								MoveIndex(1);
+								ChapterIndex++;
+								if (ChapterIndex >= Chapters.Count)
+								{
+									ChapterIndex = 0;
+								}
 							}
-
-							MoveIndex(1);
+							else if (gesture.Delta.Y < -10)
+							{
+								ChapterIndex--;
+								if (ChapterIndex < 0)
+								{
+									ChapterIndex = Chapters.Count - 1;
+								}
+							}
 						}
 						break;
 				}
 			}
 
-			if (offset.X != targetOffset.X)
+			if (CurrentChapter.Offset.X != CurrentChapter.TargetOffset.X)
 			{
-				var delta = new Vector2((targetOffset.X - offset.X) * 0.01f, 0);
-				offset += delta * timeScalar;
+				var delta = new Vector2((CurrentChapter.TargetOffset.X - CurrentChapter.Offset.X) * 0.01f, 0);
+				CurrentChapter.Offset += delta * timeScalar;
 			}
 		}
 
@@ -179,12 +295,15 @@ namespace MoonLib.Scenes
 		{
 			gameContext.GraphicsDevice.Clear(Color.Black);
 
-			for (int i = 0; i < levels.Count; i++)
-			{
-				var level = levels[i];
-				var position = level.Position - offset;
+			spriteBatch.DrawString(fontTitle, CurrentChapter.Title, new Vector2(40, 20), Color.White);
+			spriteBatch.Draw(chapterArrows, new Vector2(170, 17), Color.White);
 
-				spriteBatch.Draw(levels[i].Texture, position - new Vector2(-2, -24), GetLevelColor(i));
+			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
+			{
+				var level = CurrentChapter.Levels[i];
+				var position = level.Position - CurrentChapter.Offset;
+
+				spriteBatch.Draw(CurrentChapter.Levels[i].Texture, position - new Vector2(-2, -24), GetLevelColor(i));
 				spriteBatch.DrawString(fontDefault, level.Name, position, Color.White);
 			}
 
@@ -196,9 +315,9 @@ namespace MoonLib.Scenes
 		{
 			float alpha = 1f;
 
-			if (index != LevelIndex)
+			if (index != CurrentChapter.LevelIndex)
 			{
-				alpha = Math.Max(0f, 1f - (0.75f * Math.Abs(LevelIndex - index)));
+				alpha = Math.Max(0f, 1f - (0.75f * Math.Abs(CurrentChapter.LevelIndex - index)));
 			}
 
 			return Color.White * alpha;
@@ -206,11 +325,11 @@ namespace MoonLib.Scenes
 
 		private void DrawScore(SpriteBatch spriteBatch)
 		{
-			var position = new Vector2(40, 420);
+			var position = new Vector2(40, 480);
 			spriteBatch.DrawString(fontDefault, "Level Score", position, Color.White);
 			position += new Vector2(0, 30);
 
-			int score = levels[LevelIndex].Score;
+			int score = CurrentChapter.Levels[CurrentChapter.LevelIndex].Score;
 
 			rating.Position = position;
 			rating.SetSingleStarRatingByIndex(0, score);
@@ -228,19 +347,19 @@ namespace MoonLib.Scenes
 		private void DrawChallenges(SpriteBatch spriteBatch)
 		{
 			// Nothing to draw
-			if (levels[LevelIndex].Challenges.Count == 0)
+			if (CurrentChapter.Levels[CurrentChapter.LevelIndex].Challenges.Count == 0)
 			{
 				return;
 			}
 
 			// Challenges
-			var position = new Vector2(40, 510);
+			var position = new Vector2(40, 570);
 			spriteBatch.DrawString(fontDefault, "Level Challenges", position, Color.White);
 			position += new Vector2(0, 30);
 
-			for (int i = 0; i < levels[LevelIndex].Challenges.Count; i++)
+			for (int i = 0; i < CurrentChapter.Levels[CurrentChapter.LevelIndex].Challenges.Count; i++)
 			{
-				var challenge = levels[LevelIndex].Challenges[i];
+				var challenge = CurrentChapter.Levels[CurrentChapter.LevelIndex].Challenges[i];
 
 				// Title
 				spriteBatch.DrawString(fontDefault, challenge.Name, position + new Vector2(40, 0), Color.White);

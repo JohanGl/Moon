@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,6 +9,10 @@ using MoonLib.Entities.Backgrounds;
 using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 using MoonLib.IsolatedStorage;
+using MoonLib.Services;
+using ShakeGestures;
+using HorizontalAlignment = MoonLib.Helpers.HorizontalAlignment;
+using VerticalAlignment = MoonLib.Helpers.VerticalAlignment;
 
 namespace MoonLib.Scenes.Levels
 {
@@ -97,6 +102,40 @@ namespace MoonLib.Scenes.Levels
 			blackHoles[0].Position = new Vector2(32, 32);
 
 			Reset();
+
+			InitializeShakeGestures();
+		}
+
+		private void InitializeShakeGestures()
+		{
+			// register shake event
+			ShakeGesturesHelper.Instance.ShakeGesture += Instance_ShakeGesture;
+
+			// optional, set parameters
+			ShakeGesturesHelper.Instance.MinimumShakeVectorsNeededForShake = 30;
+			ShakeGesturesHelper.Instance.MinimumRequiredMovesForShake = 5;
+
+			// start shake detection
+			ShakeGesturesHelper.Instance.Active = true;
+		}
+
+		private void Instance_ShakeGesture(object sender, ShakeGestureEventArgs e)
+		{
+			Deployment.Current.Dispatcher.BeginInvoke(() => { Shake(); });
+		}
+
+		public void Shake()
+		{
+			if (starHandler.Stars.Count >= 5)
+			{
+				return;
+			}
+
+			float x = Device.HalfWidth + 200 * (float)Math.Sin(MathHelper.ToRadians(blackHoleAngle - 2));
+			float y = Device.HalfHeight + 200 * (float)Math.Cos(MathHelper.ToRadians(blackHoleAngle - 2));
+
+			starHandler.CreateStar(new Vector2(x, y), 0);
+			SetStarVelocity();
 		}
 
 		public void Reset()
@@ -191,7 +230,7 @@ namespace MoonLib.Scenes.Levels
 
 		private void SetStarVelocity()
 		{
-			var star = (Entity)starHandler.Stars[0];
+			var star = (Entity)starHandler.Stars[starHandler.Stars.Count - 1];
 			var velocity = new Vector2(Device.HalfWidth, Device.HalfHeight) - blackHoles[0].Position;
 			velocity.Normalize();
 			velocity *= 0.01f;

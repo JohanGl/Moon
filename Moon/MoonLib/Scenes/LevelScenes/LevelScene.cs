@@ -21,7 +21,6 @@ namespace MoonLib.Scenes.Levels
 		}
 
 		private int currentLevel = 1;
-		private const int totalLevels = LevelSelectScene.TotalLevels;
 
 		private bool initializeLevelCompleted;
 		private LevelCompleted levelCompleted;
@@ -257,7 +256,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			currentLevel++;
 
-			if (currentLevel > totalLevels)
+			if (currentLevel > LevelSelectScene.CurrentChapter.TotalLevels)
 			{
 				currentLevel = 1;
 			}
@@ -265,13 +264,20 @@ namespace MoonLib.Scenes.Levels
 
 		private void LoadLevel()
 		{
-			var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", currentLevel));
+			int levelId = currentLevel;
+
+			if (LevelSelectScene.ChapterIndex > 0)
+			{
+				levelId += 10 * (LevelSelectScene.ChapterIndex + 1);
+			}
+
+			var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", levelId));
 
 			Level = (ILevel)Activator.CreateInstance(type);
 			Level.Initialize(gameContext);
 
 			// Update the currently selected level in the level-select scene
-			LevelSelectScene.LevelIndex = currentLevel - 1;
+			LevelSelectScene.CurrentChapter.LevelIndex = currentLevel - 1;
 
 			InitializeCompletedChallenges();
 
