@@ -35,7 +35,6 @@ namespace MoonLib.Scenes.Levels
 		private AnimationHandler<AnimationType> animationHandler;
 
 		private GameContext gameContext;
-		private StorageHandler storage;
 
 		private List<int> completedChallenges;
 
@@ -52,8 +51,6 @@ namespace MoonLib.Scenes.Levels
 		public void Initialize(GameContext context)
 		{
 			gameContext = context;
-
-			storage = new StorageHandler();
 
 			animationHandler = new AnimationHandler<AnimationType>();
 			animationHandler.Animations.Add(AnimationType.LevelCompletedFade, new Animation(0f, 0.5f, TimeSpan.FromSeconds(1)));
@@ -183,14 +180,12 @@ namespace MoonLib.Scenes.Levels
 
 		private void HandleLevelCompleted(GameTimerEventArgs e)
 		{
-			levelCompleted.Update(e);
-
 			if (initializeLevelCompleted)
 			{
 				animationHandler.Animations[AnimationType.LevelCompletedPause].Start();
 				animationHandler.Animations[AnimationType.LevelCompletedFade].Start();
 				levelCompleted.Show(Level.Score);
-				storage.SetLevelScore(Level.Info.Id, Level.Score);
+				LevelSelectScene.UpdateLevelScore(Level.Info.Id, Level.Score);
 				initializeLevelCompleted = false;
 				tapToContinue = false;
 			}
@@ -216,12 +211,12 @@ namespace MoonLib.Scenes.Levels
 						break;
 				}
 			}
+
+			levelCompleted.Update(e);
 		}
 
 		private void HandleLevelFailed(GameTimerEventArgs e)
 		{
-			levelFailed.Update(e);
-
 			if (initializeLevelFailed)
 			{
 				animationHandler.Animations[AnimationType.LevelFailedPause].Start();
@@ -250,6 +245,8 @@ namespace MoonLib.Scenes.Levels
 						break;
 				}
 			}
+
+			levelFailed.Update(e);
 		}
 
 		private void NextLevel()
@@ -260,6 +257,8 @@ namespace MoonLib.Scenes.Levels
 			{
 				currentLevel = 1;
 			}
+
+			LevelSelectScene.CurrentChapter.LevelIndex = currentLevel - 1;
 		}
 
 		private void LoadLevel()

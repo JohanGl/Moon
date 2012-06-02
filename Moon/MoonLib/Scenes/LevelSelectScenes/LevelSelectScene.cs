@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
+using MoonLib.IsolatedStorage;
 using MoonLib.Scenes.LevelSelectScenes;
 using MoonLib.Scenes.Levels;
 
@@ -28,7 +29,7 @@ namespace MoonLib.Scenes
 	public class LevelSelectScene : IScene
 	{
 		public static int ChapterIndex = 0;
-		public const int TotalChapters = 2;
+		public const int TotalChapters = 1;
 
 		public static List<Chapter> Chapters { get; set; }
 		public static Chapter CurrentChapter { get { return Chapters[ChapterIndex]; } }
@@ -58,12 +59,12 @@ namespace MoonLib.Scenes
 			{
 				Chapters = new List<Chapter>();
 				Chapters.Add(new Chapter() { Title = "Chapter 1", TotalLevels = 8 });
-				Chapters.Add(new Chapter() { Title = "Chapter 2", TotalLevels = 1 });
 
 				InitializeChapter1Levels();
-				InitializeChapter2Levels();
-				InitializeChapterScrollOffsets();
+				//InitializeChapter2Levels();
 			}
+
+			InitializeChapterScrollOffsets();
 
 			rating = new StarRating();
 			rating.Initialize(context);
@@ -103,11 +104,12 @@ namespace MoonLib.Scenes
 
 			chapter.Levels = new List<LevelInfoPresentation>();
 
-			var currentPosition = new Vector2(0, 105);
+			var currentPosition = new Vector2(0, 50);
 
 			foreach (var info in GetLevelInfoChapter1())
 			{
 				var level = new LevelInfoPresentation();
+				level.Id = info.Id;
 				level.Name = info.Name;
 				level.Score = info.Score;
 				level.Texture = gameContext.Content.Load<Texture2D>(info.TexturePath);
@@ -117,6 +119,7 @@ namespace MoonLib.Scenes
 				foreach (var challengeContent in info.Challenges)
 				{
 					var challenge = new LevelChallengePresentation();
+					challenge.Id = challengeContent.Id;
 					challenge.Name = challengeContent.Name;
 					challenge.Description = challengeContent.Description;
 					challenge.IsCompleted = challengeContent.IsCompleted;
@@ -134,7 +137,7 @@ namespace MoonLib.Scenes
 
 			chapter.Levels = new List<LevelInfoPresentation>();
 
-			var currentPosition = new Vector2(0, 105);
+			var currentPosition = new Vector2(0, 50);
 
 			foreach (var info in GetLevelInfoChapter2())
 			{
@@ -261,25 +264,25 @@ namespace MoonLib.Scenes
 							}
 						}
 						// Swipes vertically
-						else
-						{
-							if (gesture.Delta.Y > 10)
-							{
-								ChapterIndex++;
-								if (ChapterIndex >= Chapters.Count)
-								{
-									ChapterIndex = 0;
-								}
-							}
-							else if (gesture.Delta.Y < -10)
-							{
-								ChapterIndex--;
-								if (ChapterIndex < 0)
-								{
-									ChapterIndex = Chapters.Count - 1;
-								}
-							}
-						}
+						//else
+						//{
+						//    if (gesture.Delta.Y > 10)
+						//    {
+						//        ChapterIndex++;
+						//        if (ChapterIndex >= Chapters.Count)
+						//        {
+						//            ChapterIndex = 0;
+						//        }
+						//    }
+						//    else if (gesture.Delta.Y < -10)
+						//    {
+						//        ChapterIndex--;
+						//        if (ChapterIndex < 0)
+						//        {
+						//            ChapterIndex = Chapters.Count - 1;
+						//        }
+						//    }
+						//}
 						break;
 				}
 			}
@@ -295,8 +298,8 @@ namespace MoonLib.Scenes
 		{
 			gameContext.GraphicsDevice.Clear(Color.Black);
 
-			spriteBatch.DrawString(fontTitle, CurrentChapter.Title, new Vector2(40, 20), Color.White);
-			spriteBatch.Draw(chapterArrows, new Vector2(170, 17), Color.White);
+			//spriteBatch.DrawString(fontTitle, CurrentChapter.Title, new Vector2(40, 20), Color.White);
+			//spriteBatch.Draw(chapterArrows, new Vector2(170, 17), Color.White);
 
 			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
 			{
@@ -325,7 +328,7 @@ namespace MoonLib.Scenes
 
 		private void DrawScore(SpriteBatch spriteBatch)
 		{
-			var position = new Vector2(40, 480);
+			var position = new Vector2(40, 440);
 			spriteBatch.DrawString(fontDefault, "Level Score", position, Color.White);
 			position += new Vector2(0, 30);
 
@@ -353,7 +356,7 @@ namespace MoonLib.Scenes
 			}
 
 			// Challenges
-			var position = new Vector2(40, 570);
+			var position = new Vector2(40, 530);
 			spriteBatch.DrawString(fontDefault, "Level Challenges", position, Color.White);
 			position += new Vector2(0, 30);
 
@@ -380,6 +383,49 @@ namespace MoonLib.Scenes
 				}
 
 				position += new Vector2(0, 20);
+			}
+		}
+
+		public static void UpdateLevelScore(int levelId, int score)
+		{
+			var storage = new StorageHandler();
+			storage.SetLevelScore(levelId, score);
+
+			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
+			{
+				var level = CurrentChapter.Levels[i];
+
+				if (level.Id == levelId)
+				{
+					level.Score = score;
+					break;
+				}
+			}
+		}
+
+		public static void SetLevelChallengeCompleted(int challengeId)
+		{
+			var storage = new StorageHandler();
+			storage.SetChallengeCompleted(challengeId);
+
+			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
+			{
+				var level = CurrentChapter.Levels[i];
+
+				if (level.Challenges != null)
+				{
+					for (int j = 0; j < level.Challenges.Count; j++)
+					{
+						var challenge = level.Challenges[j];
+
+						if (challenge.Id == challengeId)
+						{
+							challenge.IsCompleted = true;
+							i = CurrentChapter.Levels.Count;
+							break;
+						}
+					}
+				}
 			}
 		}
 	}

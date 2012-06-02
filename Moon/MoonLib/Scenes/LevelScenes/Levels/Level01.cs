@@ -149,8 +149,7 @@ namespace MoonLib.Scenes.Levels
 			{
 				if (playerInfo.UsedMoves == 1 && Player.BouncesDuringLastMove >= 2)
 				{
-					Info.Challenges[0].IsCompleted = true;
-					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+					LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 				}
 			}
 
@@ -159,8 +158,7 @@ namespace MoonLib.Scenes.Levels
 			{
 				if ((DateTime.Now - levelStartTime).TotalSeconds <= 1)
 				{
-					Info.Challenges[1].IsCompleted = true;
-					storage.SetChallengeCompleted(Info.Challenges[1].Id);
+					LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[1].Id);
 				}
 			}
 		}

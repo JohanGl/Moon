@@ -1,5 +1,6 @@
 using System.IO.IsolatedStorage;
 using MoonLib.IsolatedStorage.Entities;
+using MoonLib.Scenes;
 
 namespace MoonLib.IsolatedStorage
 {
