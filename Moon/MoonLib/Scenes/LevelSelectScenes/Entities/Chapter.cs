@@ -14,6 +14,8 @@ namespace MoonLib.Scenes
         public Vector2 Offset { get; set; }
         public Vector2 TargetOffset { get; set; }
 
+        public LevelInfoPresentation CurrentLevel { get { return Levels[LevelIndex]; } }
+
         public Chapter()
         {
             Levels = new List<LevelInfoPresentation>();

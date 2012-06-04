@@ -258,25 +258,17 @@ namespace MoonLib.Scenes.Levels
 				currentLevel = 1;
 			}
 
-			LevelSelectScene.CurrentChapter.LevelIndex = currentLevel - 1;
+			LevelSelectScene.CurrentChapter.LevelIndex = currentLevel;
 		}
 
 		private void LoadLevel()
 		{
 			int levelId = currentLevel;
 
-			if (LevelSelectScene.ChapterIndex > 0)
-			{
-				levelId += 10 * (LevelSelectScene.ChapterIndex + 1);
-			}
-
 			var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", levelId));
 
 			Level = (ILevel)Activator.CreateInstance(type);
 			Level.Initialize(gameContext);
-
-			// Update the currently selected level in the level-select scene
-			LevelSelectScene.CurrentChapter.LevelIndex = currentLevel - 1;
 
 			InitializeCompletedChallenges();
 

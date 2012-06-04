@@ -6,7 +6,9 @@ namespace MoonLib.Scenes.LevelSelectScenes
 {
 	public class LevelInfoPresentation
 	{
-		public int Id { get; set; }
+        public bool IsMrMoon { get; set; }
+
+	    public int Id { get; set; }
 		public Vector2 Position { get; set; }
 		public Rectangle Bounds { get; set; }
 		public string Name { get; set; }

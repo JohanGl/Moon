@@ -10,7 +10,7 @@ using MoonLib.Scenes.Levels;
 
 namespace MoonLib.Scenes
 {
-    public class LevelSelectScene : IScene
+	public class LevelSelectScene : IScene
 	{
 		public static int ChapterIndex = 0;
 		public const int TotalChapters = 1;
@@ -23,6 +23,12 @@ namespace MoonLib.Scenes
 		private float timeScalar;
 		private Color challengeDescriptionColor = Color.FromNonPremultiplied(140, 140, 140, 255);
 		private StarRating rating;
+
+		private float mrMoonAngle;
+		private float mrMoonFloatY;
+		private Texture2D mrMoonBackground;
+		private Texture2D mrMoonAngry;
+		private Texture2D mrMoonSurprised;
 
 		private GameContext gameContext;
 
@@ -37,6 +43,12 @@ namespace MoonLib.Scenes
 		{
 			gameContext = context;
 
+			fontDefault = gameContext.Content.Load<SpriteFont>("Fonts/DefaultBold");
+			fontChallenges = gameContext.Content.Load<SpriteFont>("Fonts/Challenges");
+			mrMoonBackground = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/MrMoon/Background");
+			mrMoonAngry = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/MrMoon/Angry");
+			mrMoonSurprised = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/MrMoon/Surprised");
+
 			if (Chapters == null)
 			{
 				Chapters = new List<Chapter>();
@@ -50,9 +62,6 @@ namespace MoonLib.Scenes
 			rating = new StarRating();
 			rating.Initialize(context);
 			rating.IsVisible = true;
-
-			fontDefault = gameContext.Content.Load<SpriteFont>("Fonts/DefaultBold");
-			fontChallenges = gameContext.Content.Load<SpriteFont>("Fonts/Challenges");
 		}
 
 		private void InitializeChapterScrollOffsets()
@@ -84,6 +93,8 @@ namespace MoonLib.Scenes
 
 			var currentPosition = new Vector2(0, 50);
 
+			int i = 0;
+
 			foreach (var info in GetLevelInfoChapter1())
 			{
 				var level = new LevelInfoPresentation();
@@ -106,6 +117,18 @@ namespace MoonLib.Scenes
 
 				chapter.Levels.Add(level);
 				currentPosition += new Vector2(192 + 10, 0);
+
+				if (i++ == 2)
+				{
+					var stopLevel = new LevelInfoPresentation();
+					stopLevel.IsMrMoon = true;
+					stopLevel.Name = string.Empty;
+					stopLevel.Texture = mrMoonBackground;
+					stopLevel.Position = currentPosition;
+					stopLevel.Bounds = new Rectangle((int)stopLevel.Position.X, (int)stopLevel.Position.Y, stopLevel.Texture.Width, stopLevel.Texture.Height);
+					chapter.Levels.Add(stopLevel);
+					currentPosition += new Vector2(192 + 10, 0);
+				}
 			}
 		}
 
@@ -116,21 +139,6 @@ namespace MoonLib.Scenes
 			for (int i = 1; i <= Chapters[0].TotalLevels; i++)
 			{
 				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i));
-				var level = (ILevel)Activator.CreateInstance(type);
-
-				result.Add(level.Info);
-			}
-
-			return result;
-		}
-
-		private List<LevelInfo> GetLevelInfoChapter2()
-		{
-			var result = new List<LevelInfo>();
-
-			for (int i = 1; i <= Chapters[1].TotalLevels; i++)
-			{
-				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i + 20));
 				var level = (ILevel)Activator.CreateInstance(type);
 
 				result.Add(level.Info);
@@ -170,6 +178,9 @@ namespace MoonLib.Scenes
 			// Calculate the time/movement scalar for this entity
 			timeScalar = (float)(e.ElapsedTime.TotalMilliseconds * 1d);
 
+			mrMoonAngle += (float)(e.ElapsedTime.TotalMilliseconds * 0.075d);
+			mrMoonFloatY = 10f * (float)Math.Sin(MathHelper.ToRadians(mrMoonAngle));
+
 			while (TouchPanel.IsGestureAvailable)
 			{
 				var gesture = TouchPanel.ReadGesture();
@@ -177,9 +188,12 @@ namespace MoonLib.Scenes
 				switch (gesture.GestureType)
 				{
 					case GestureType.Tap:
-						if (CurrentChapter.Levels[CurrentChapter.LevelIndex].Bounds.Contains((int)(gesture.Position.X + CurrentChapter.Offset.X), (int)gesture.Position.Y))
+						if (!CurrentChapter.CurrentLevel.IsMrMoon)
 						{
-							Messages.Add(new LevelSelectedMessage() { LevelIndex = CurrentChapter.LevelIndex });
+							if (CurrentChapter.CurrentLevel.Bounds.Contains((int)(gesture.Position.X + CurrentChapter.Offset.X), (int)gesture.Position.Y))
+							{
+								Messages.Add(new LevelSelectedMessage() { LevelIndex = CurrentChapter.LevelIndex });
+							}
 						}
 						break;
 
@@ -229,13 +243,39 @@ namespace MoonLib.Scenes
 			{
 				var level = CurrentChapter.Levels[i];
 				var position = level.Position - CurrentChapter.Offset;
+				var levelColor = GetLevelColor(i);
 
-				spriteBatch.Draw(CurrentChapter.Levels[i].Texture, position - new Vector2(-2, -24), GetLevelColor(i));
+				spriteBatch.Draw(CurrentChapter.Levels[i].Texture, position - new Vector2(-2, -24), levelColor);
 				spriteBatch.DrawString(fontDefault, level.Name, position, Color.White);
+
+				if (level.IsMrMoon)
+				{
+					spriteBatch.Draw(mrMoonAngry, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+				}
+			}
+
+			if (CurrentChapter.CurrentLevel.IsMrMoon)
+			{
+				DrawMrMoonContent(spriteBatch);
+				return;
 			}
 
 			DrawScore(spriteBatch);
 			DrawChallenges(spriteBatch);
+		}
+
+		private void DrawMrMoonContent(SpriteBatch spriteBatch)
+		{
+			var position = new Vector2(40, 440);
+
+			spriteBatch.DrawString(fontDefault, "Whoa! Stop right there!", position, Color.White);
+			position += new Vector2(0, 30);
+			spriteBatch.DrawString(fontDefault, "I cant let you pass that easily.", position, Color.White);
+
+			position += new Vector2(0, 60);
+			spriteBatch.DrawString(fontChallenges, "Tell you what. Bring me back 10 fine stars and i just", position, Color.White);
+			position += new Vector2(0, 30);
+			spriteBatch.DrawString(fontChallenges, "might consider letting you off... with a warning.", position, Color.White);
 		}
 
 		private Color GetLevelColor(int index)
