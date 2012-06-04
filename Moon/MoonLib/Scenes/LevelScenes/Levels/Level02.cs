@@ -35,10 +35,10 @@ namespace MoonLib.Scenes.Levels
 						{
 							new LevelChallenge()
 							{
-								Id = 2001,
+								Id = 2002,
 								Name = "Super accuracy",
 								Description = "Get all stars without hitting any walls",
-								IsCompleted = storage.IsChallengeCompleted(2001)
+								IsCompleted = storage.IsChallengeCompleted(2002)
 							},
 						}
 					};
@@ -158,7 +158,7 @@ namespace MoonLib.Scenes.Levels
 				if (!Info.Challenges[0].IsCompleted)
 				{
 					Info.Challenges[0].IsCompleted = true;
-					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+                    LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 				}
 			}
 		}

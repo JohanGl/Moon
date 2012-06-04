@@ -76,6 +76,7 @@
     <Compile Include="Scenes\LevelScenes\Levels\Level08.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level05.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Gui\ChallengeCompleted.cs" />
+    <Compile Include="Scenes\LevelSelectScenes\Entities\Chapter.cs" />
     <Compile Include="Scenes\MainMenuScenes\MainMenuScene.cs" />
     <Compile Include="Scenes\Messages\TapMessage.cs" />
     <Compile Include="Scenes\Messages\ISceneMessage.cs" />

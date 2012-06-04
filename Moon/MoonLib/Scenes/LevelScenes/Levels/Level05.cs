@@ -38,10 +38,10 @@ namespace MoonLib.Scenes.Levels
 						{
 							new LevelChallenge()
 							{
-								Id = 5001,
+								Id = 5002,
 								Name = "Dodgeball",
 								Description = "Bounce against the top and bottom walls in one shot|without hitting any stars... Twice!",
-								IsCompleted = storage.IsChallengeCompleted(5001)
+								IsCompleted = storage.IsChallengeCompleted(5002)
 							}
 						}
 					};
@@ -189,7 +189,7 @@ namespace MoonLib.Scenes.Levels
 					if (challengeBounceCount >= 2)
 					{
 						Info.Challenges[0].IsCompleted = true;
-						storage.SetChallengeCompleted(Info.Challenges[0].Id);
+                        LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 					}
 				}
 			}

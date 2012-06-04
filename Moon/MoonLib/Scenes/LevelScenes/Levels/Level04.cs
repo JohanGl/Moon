@@ -37,10 +37,10 @@ namespace MoonLib.Scenes.Levels
 						{
 							new LevelChallenge()
 							{
-								Id = 4001,
+								Id = 4002,
 								Name = "Mega combo",
 								Description = "Get 5 or more stars in one shot",
-								IsCompleted = storage.IsChallengeCompleted(4001)
+								IsCompleted = storage.IsChallengeCompleted(4002)
 							},
 						}
 					};
@@ -148,7 +148,7 @@ namespace MoonLib.Scenes.Levels
 				if (starsLeftBeforeLastMove - starHandler.Stars.Count >= 5)
 				{
 					Info.Challenges[0].IsCompleted = true;
-					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+                    LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 				}
 			}
 		}

@@ -34,17 +34,17 @@ namespace MoonLib.Scenes.Levels
 						{
 							new LevelChallenge()
 							{
-								Id = 1001,
+								Id = 1002,
 								Name = "Bouncer",
 								Description = "Get all stars in one shot with at least two wall bounces",
-								IsCompleted = storage.IsChallengeCompleted(1001)
+								IsCompleted = storage.IsChallengeCompleted(1002)
 							},
 							new LevelChallenge()
 							{
-								Id = 1002,
+								Id = 1003,
 								Name = "Speed king",
 								Description = "Complete the level within 1 second",
-								IsCompleted = storage.IsChallengeCompleted(1002)
+								IsCompleted = storage.IsChallengeCompleted(1003)
 							}
 						}
 					};
@@ -149,6 +149,7 @@ namespace MoonLib.Scenes.Levels
 			{
 				if (playerInfo.UsedMoves == 1 && Player.BouncesDuringLastMove >= 2)
 				{
+				    Info.Challenges[0].IsCompleted = true;
 					LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 				}
 			}
@@ -158,7 +159,8 @@ namespace MoonLib.Scenes.Levels
 			{
 				if ((DateTime.Now - levelStartTime).TotalSeconds <= 1)
 				{
-					LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[1].Id);
+                    Info.Challenges[1].IsCompleted = true;
+                    LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[1].Id);
 				}
 			}
 		}

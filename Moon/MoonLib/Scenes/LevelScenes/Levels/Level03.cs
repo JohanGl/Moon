@@ -38,17 +38,17 @@ namespace MoonLib.Scenes.Levels
 						{
 							new LevelChallenge()
 							{
-								Id = 3001,
+								Id = 3002,
 								Name = "Circular stress",
 								Description = "Complete the level within 2.5 seconds",
-								IsCompleted = storage.IsChallengeCompleted(3001)
+								IsCompleted = storage.IsChallengeCompleted(3002)
 							},
 							new LevelChallenge()
 							{
-								Id = 3002,
+								Id = 3003,
 								Name = "Center of attention",
 								Description = "Stop in the center of the circle without hitting any stars",
-								IsCompleted = storage.IsChallengeCompleted(3002)
+								IsCompleted = storage.IsChallengeCompleted(3003)
 							}
 						}
 					};
@@ -168,7 +168,7 @@ namespace MoonLib.Scenes.Levels
 				if ((DateTime.Now - levelStartTime).TotalSeconds <= 2.5d)
 				{
 					Info.Challenges[0].IsCompleted = true;
-					storage.SetChallengeCompleted(Info.Challenges[0].Id);
+                    LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 				}
 			}
 
@@ -179,10 +179,8 @@ namespace MoonLib.Scenes.Levels
 				{
 					if (Vector2.Distance(Player.Center, new Vector2(Device.HalfWidth, (140 + 128))) <= 108)
 					{
-						System.Diagnostics.Debug.WriteLine(Vector2.Distance(Player.Center, new Vector2(Device.HalfWidth, (140 + 128))));
-
 						Info.Challenges[1].IsCompleted = true;
-						storage.SetChallengeCompleted(Info.Challenges[1].Id);
+                        LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[1].Id);
 					}
 
 					checkPlayerInCenter = false;

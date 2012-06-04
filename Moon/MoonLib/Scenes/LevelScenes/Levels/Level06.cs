@@ -38,10 +38,10 @@ namespace MoonLib.Scenes.Levels
 						{
 							new LevelChallenge()
 							{
-								Id = 6001,
+								Id = 6002,
 								Name = "Icebreaker",
 								Description = "Shaken, not stirred",
-								IsCompleted = storage.IsChallengeCompleted(6001)
+								IsCompleted = storage.IsChallengeCompleted(6002)
 							}
 						}
 					};
@@ -162,7 +162,7 @@ namespace MoonLib.Scenes.Levels
 					if (!Info.Challenges[0].IsCompleted)
 					{
 						Info.Challenges[0].IsCompleted = true;
-						storage.SetChallengeCompleted(Info.Challenges[0].Id);
+                        LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
 					}
 				}
 			}

@@ -10,23 +10,7 @@ using MoonLib.Scenes.Levels;
 
 namespace MoonLib.Scenes
 {
-	public class Chapter
-	{
-		public string Title { get; set; }
-		public int LevelIndex { get; set; }
-		public int TotalLevels { get; set; }
-		public List<LevelInfoPresentation> Levels { get; set; }
-
-		public Vector2 Offset { get; set; }
-		public Vector2 TargetOffset { get; set; }
-
-		public Chapter()
-		{
-			Levels = new List<LevelInfoPresentation>();
-		}
-	}
-
-	public class LevelSelectScene : IScene
+    public class LevelSelectScene : IScene
 	{
 		public static int ChapterIndex = 0;
 		public const int TotalChapters = 1;
@@ -34,10 +18,8 @@ namespace MoonLib.Scenes
 		public static List<Chapter> Chapters { get; set; }
 		public static Chapter CurrentChapter { get { return Chapters[ChapterIndex]; } }
 
-		private SpriteFont fontTitle;
 		private SpriteFont fontDefault;
 		private SpriteFont fontChallenges;
-		private Texture2D chapterArrows;
 		private float timeScalar;
 		private Color challengeDescriptionColor = Color.FromNonPremultiplied(140, 140, 140, 255);
 		private StarRating rating;
@@ -61,7 +43,6 @@ namespace MoonLib.Scenes
 				Chapters.Add(new Chapter() { Title = "Chapter 1", TotalLevels = 8 });
 
 				InitializeChapter1Levels();
-				//InitializeChapter2Levels();
 			}
 
 			InitializeChapterScrollOffsets();
@@ -70,9 +51,6 @@ namespace MoonLib.Scenes
 			rating.Initialize(context);
 			rating.IsVisible = true;
 
-			chapterArrows = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/ChapterArrows");
-
-			fontTitle = gameContext.Content.Load<SpriteFont>("Fonts/Title");
 			fontDefault = gameContext.Content.Load<SpriteFont>("Fonts/DefaultBold");
 			fontChallenges = gameContext.Content.Load<SpriteFont>("Fonts/Challenges");
 		}
@@ -120,37 +98,6 @@ namespace MoonLib.Scenes
 				{
 					var challenge = new LevelChallengePresentation();
 					challenge.Id = challengeContent.Id;
-					challenge.Name = challengeContent.Name;
-					challenge.Description = challengeContent.Description;
-					challenge.IsCompleted = challengeContent.IsCompleted;
-					level.Challenges.Add(challenge);
-				}
-
-				chapter.Levels.Add(level);
-				currentPosition += new Vector2(192 + 10, 0);
-			}
-		}
-
-		private void InitializeChapter2Levels()
-		{
-			var chapter = Chapters[1];
-
-			chapter.Levels = new List<LevelInfoPresentation>();
-
-			var currentPosition = new Vector2(0, 50);
-
-			foreach (var info in GetLevelInfoChapter2())
-			{
-				var level = new LevelInfoPresentation();
-				level.Name = info.Name;
-				level.Score = info.Score;
-				level.Texture = gameContext.Content.Load<Texture2D>(info.TexturePath);
-				level.Position = currentPosition;
-				level.Bounds = new Rectangle((int)level.Position.X, (int)level.Position.Y, level.Texture.Width, level.Texture.Height);
-
-				foreach (var challengeContent in info.Challenges)
-				{
-					var challenge = new LevelChallengePresentation();
 					challenge.Name = challengeContent.Name;
 					challenge.Description = challengeContent.Description;
 					challenge.IsCompleted = challengeContent.IsCompleted;
@@ -263,26 +210,6 @@ namespace MoonLib.Scenes
 								MoveIndex(1);
 							}
 						}
-						// Swipes vertically
-						//else
-						//{
-						//    if (gesture.Delta.Y > 10)
-						//    {
-						//        ChapterIndex++;
-						//        if (ChapterIndex >= Chapters.Count)
-						//        {
-						//            ChapterIndex = 0;
-						//        }
-						//    }
-						//    else if (gesture.Delta.Y < -10)
-						//    {
-						//        ChapterIndex--;
-						//        if (ChapterIndex < 0)
-						//        {
-						//            ChapterIndex = Chapters.Count - 1;
-						//        }
-						//    }
-						//}
 						break;
 				}
 			}
@@ -297,9 +224,6 @@ namespace MoonLib.Scenes
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			gameContext.GraphicsDevice.Clear(Color.Black);
-
-			//spriteBatch.DrawString(fontTitle, CurrentChapter.Title, new Vector2(40, 20), Color.White);
-			//spriteBatch.Draw(chapterArrows, new Vector2(170, 17), Color.White);
 
 			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
 			{
