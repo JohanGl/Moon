@@ -20,8 +20,6 @@ namespace MoonLib.Scenes.Levels
 			LevelFailedPause
 		}
 
-		private int currentLevel = 1;
-
 		private bool initializeLevelCompleted;
 		private LevelCompleted levelCompleted;
 
@@ -41,11 +39,10 @@ namespace MoonLib.Scenes.Levels
 		public ILevel Level { get; set; }
 		public List<ISceneMessage> Messages { get; set; }
 
-		public LevelScene(int currentLevel)
+		public LevelScene()
 		{
 			Messages = new List<ISceneMessage>();
 			completedChallenges = new List<int>();
-			this.currentLevel = currentLevel + 1;
 		}
 
 		public void Initialize(GameContext context)
@@ -205,14 +202,18 @@ namespace MoonLib.Scenes.Levels
 						if (tapToContinue)
 						{
 							NextLevel();
-							LoadLevel();
-							initializeLevelCompleted = true;
 						}
 						break;
 				}
 			}
 
 			levelCompleted.Update(e);
+		}
+
+		private void NextLevel()
+		{
+			LevelSelectScene.CurrentChapter.NextLevel();
+			Messages.Add(new TapMessage());
 		}
 
 		private void HandleLevelFailed(GameTimerEventArgs e)
@@ -249,25 +250,11 @@ namespace MoonLib.Scenes.Levels
 			levelFailed.Update(e);
 		}
 
-		private void NextLevel()
-		{
-			currentLevel++;
-
-			if (currentLevel > LevelSelectScene.CurrentChapter.TotalLevels)
-			{
-				currentLevel = 1;
-			}
-
-			LevelSelectScene.CurrentChapter.LevelIndex = currentLevel;
-		}
-
 		private void LoadLevel()
 		{
-			int levelId = currentLevel;
+			var levelType = LevelSelectScene.CurrentChapter.CurrentLevel.LevelType;
 
-			var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", levelId));
-
-			Level = (ILevel)Activator.CreateInstance(type);
+			Level = (ILevel)Activator.CreateInstance(levelType);
 			Level.Initialize(gameContext);
 
 			InitializeCompletedChallenges();

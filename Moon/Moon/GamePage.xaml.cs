@@ -54,10 +54,10 @@ namespace Moon
 		{
 			App.InitializeGamePageGraphics(gameContext);
 
-			var level = int.Parse(NavigationContext.QueryString["level"]);
+			//var level = int.Parse(NavigationContext.QueryString["level"]);
 
 			// Initialize the level scene
-			scene = new LevelScene(level);
+			scene = new LevelScene();
 			scene.Initialize(gameContext);
 
 			base.OnNavigatedTo(e);
@@ -79,6 +79,8 @@ namespace Moon
 		/// </summary>
 		private void OnUpdate(object sender, GameTimerEventArgs e)
 		{
+			HandleSceneMessages();
+			
 			scene.Update(e);
 			gameContext.AudioHandler.Update(e);
 		}
@@ -91,6 +93,28 @@ namespace Moon
 			gameContext.SpriteBatch.Begin();
 			scene.Draw(gameContext.SpriteBatch);
 			gameContext.SpriteBatch.End();
+		}
+
+		private void HandleSceneMessages()
+		{
+			if (scene.Messages.Count == 0)
+			{
+				return;
+			}
+
+			for (int i = 0; i < scene.Messages.Count; i++)
+			{
+				var message = scene.Messages[i];
+
+				if (scene is LevelScene)
+				{
+					if (message is TapMessage)
+					{
+						var uri = new Uri("/LevelSelectPage.xaml", UriKind.Relative);
+						NavigationService.Navigate(uri);
+					}
+				}
+			}
 		}
 	}
 }

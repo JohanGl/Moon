@@ -12,11 +12,15 @@ namespace MoonLib.Scenes
 {
 	public class LevelSelectScene : IScene
 	{
-		public static int ChapterIndex = 0;
+		public static int ChapterIndex;
 		public const int TotalChapters = 1;
 
 		public static List<Chapter> Chapters { get; set; }
 		public static Chapter CurrentChapter { get { return Chapters[ChapterIndex]; } }
+
+		private double score;
+		private double challengeScore;
+		private double totalScore { get { return score + challengeScore; } }
 
 		private SpriteFont fontDefault;
 		private SpriteFont fontChallenges;
@@ -52,10 +56,28 @@ namespace MoonLib.Scenes
 			if (Chapters == null)
 			{
 				Chapters = new List<Chapter>();
-				Chapters.Add(new Chapter() { Title = "Chapter 1", TotalLevels = 8 });
+				Chapters.Add(new Chapter() { Title = "Chapter 1", TotalLevels = 9 + 2 });
 
 				InitializeChapter1Levels();
+
+				UpdateLevelScore(1001, 6);
+				UpdateLevelScore(2001, 6);
+				UpdateLevelScore(3001, 6);
+
+				UpdateLevelScore(4001, 6);
+				UpdateLevelScore(5001, 6);
+				UpdateLevelScore(6001, 6);
+
+				SetLevelChallengeCompleted(1002);
+				SetLevelChallengeCompleted(1003);
+				SetLevelChallengeCompleted(2002);
+				SetLevelChallengeCompleted(3002);
+				SetLevelChallengeCompleted(4002);
+				SetLevelChallengeCompleted(5002);
 			}
+
+			UpdateCurrentScore();
+			UpdateMrMoonStates();
 
 			InitializeChapterScrollOffsets();
 
@@ -81,6 +103,52 @@ namespace MoonLib.Scenes
 			CurrentChapter.Offset = CurrentChapter.TargetOffset;
 		}
 
+		private void UpdateCurrentScore()
+		{
+			score = 0;
+			challengeScore = 0;
+
+			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
+			{
+				var level = CurrentChapter.Levels[i];
+
+				for (int j = 0; j < level.Challenges.Count; j++)
+				{
+					var challenge = level.Challenges[j];
+
+					if (challenge.IsCompleted)
+					{
+						challengeScore++;
+					}
+				}
+
+				score += level.Score * 0.5d;
+			}
+
+			if (totalScore >= 10)
+			{
+				CurrentChapter.Levels[3].LevelInfoMrMoon.IsCompleted = true;
+			}
+		}
+
+		private void UpdateMrMoonStates()
+		{
+			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
+			{
+				var level = CurrentChapter.Levels[i];
+
+				if (level.IsMrMoon)
+				{
+					level.LevelInfoMrMoon.IsCompleted = false;
+
+					if (totalScore >= level.LevelInfoMrMoon.RequiredStars)
+					{
+						level.LevelInfoMrMoon.IsCompleted = true;
+					}
+				}
+			}
+		}
+
 		public void Unload()
 		{
 		}
@@ -99,6 +167,7 @@ namespace MoonLib.Scenes
 			{
 				var level = new LevelInfoPresentation();
 				level.Id = info.Id;
+				level.LevelType = info.LevelType;
 				level.Name = info.Name;
 				level.Score = info.Score;
 				level.Texture = gameContext.Content.Load<Texture2D>(info.TexturePath);
@@ -118,25 +187,80 @@ namespace MoonLib.Scenes
 				chapter.Levels.Add(level);
 				currentPosition += new Vector2(192 + 10, 0);
 
-				if (i++ == 2)
+				i++;
+
+				if (i == 3)
 				{
-					var stopLevel = new LevelInfoPresentation();
-					stopLevel.IsMrMoon = true;
-					stopLevel.Name = string.Empty;
-					stopLevel.Texture = mrMoonBackground;
-					stopLevel.Position = currentPosition;
-					stopLevel.Bounds = new Rectangle((int)stopLevel.Position.X, (int)stopLevel.Position.Y, stopLevel.Texture.Width, stopLevel.Texture.Height);
-					chapter.Levels.Add(stopLevel);
+					chapter.Levels.Add(GetFirstMrMoonLevel(currentPosition));
+					currentPosition += new Vector2(192 + 10, 0);
+				}
+				else if (i == 6)
+				{
+					chapter.Levels.Add(GetSecondMrMoonLevel(currentPosition));
 					currentPosition += new Vector2(192 + 10, 0);
 				}
 			}
+		}
+
+		private LevelInfoPresentation GetFirstMrMoonLevel(Vector2 currentPosition)
+		{
+			var stopLevel = new LevelInfoPresentation();
+			stopLevel.LevelInfoMrMoon = new LevelInfoMrMoon();
+			stopLevel.Name = string.Empty;
+			stopLevel.Texture = mrMoonBackground;
+			stopLevel.Position = currentPosition;
+			stopLevel.LevelInfoMrMoon.RequiredStars = 12;
+			stopLevel.Bounds = new Rectangle((int)stopLevel.Position.X, (int)stopLevel.Position.Y, stopLevel.Texture.Width, stopLevel.Texture.Height);
+
+			var script = new MrMoonScript();
+			script.Title.Add("Hey! You there!");
+			script.Title.Add("Someone has stolen all my stars!");
+			script.Description.Add("I cant let you pass that easily knowing you might be");
+			script.Description.Add(string.Format("a thief. Bring me back {0} stars and i just might let", stopLevel.LevelInfoMrMoon.RequiredStars));
+			script.Description.Add("you off... with a warning.");
+			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
+
+			script = new MrMoonScript();
+			script.Title.Add("Amazing! Splendid work my friend.");
+			script.Description.Add("I didnt think you would make it, least not this quick.");
+			script.Description.Add("Please proceed. I guess you didnt steal my stars after all.");
+			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
+
+			return stopLevel;
+		}
+
+		private LevelInfoPresentation GetSecondMrMoonLevel(Vector2 currentPosition)
+		{
+			var stopLevel = new LevelInfoPresentation();
+			stopLevel.LevelInfoMrMoon = new LevelInfoMrMoon();
+			stopLevel.Name = string.Empty;
+			stopLevel.Texture = mrMoonBackground;
+			stopLevel.Position = currentPosition;
+			stopLevel.LevelInfoMrMoon.RequiredStars = 20;
+			stopLevel.Bounds = new Rectangle((int)stopLevel.Position.X, (int)stopLevel.Position.Y, stopLevel.Texture.Width, stopLevel.Texture.Height);
+
+			var script = new MrMoonScript();
+			script.Title.Add("Thieves! Everywhere!");
+			script.Description.Add("I cant believe this happened to me again. When i woke up");
+			script.Description.Add("this morning, they were all gone. Would you please");
+			script.Description.Add(string.Format("help me bring {0} stars back here?", stopLevel.LevelInfoMrMoon.RequiredStars));
+			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
+
+			script = new MrMoonScript();
+			script.Title.Add("Great work!");
+			script.Description.Add("You sure saved the day once again my friend.");
+			script.Description.Add("Please proceed. If you find that thief, wont you");
+			script.Description.Add("bring him to me?");
+			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
+
+			return stopLevel;
 		}
 
 		private List<LevelInfo> GetLevelInfoChapter1()
 		{
 			var result = new List<LevelInfo>();
 
-			for (int i = 1; i <= Chapters[0].TotalLevels; i++)
+			for (int i = 1; i <= Chapters[0].TotalLevels - 2; i++)
 			{
 				var type = Type.GetType(string.Format("MoonLib.Scenes.Levels.Level{0:00}, MoonLib", i));
 				var level = (ILevel)Activator.CreateInstance(type);
@@ -149,6 +273,14 @@ namespace MoonLib.Scenes
 
 		private void MoveIndex(int direction)
 		{
+			// Block the player from moving if the current level is mr moon and his task isnt completed
+			if (direction > 0 &&
+				CurrentChapter.CurrentLevel.IsMrMoon &&
+				!CurrentChapter.CurrentLevel.LevelInfoMrMoon.IsCompleted)
+			{
+				return;
+			}
+
 			if (CurrentChapter.LevelIndex + direction < 0)
 			{
 				SetIndex(0);
@@ -250,7 +382,14 @@ namespace MoonLib.Scenes
 
 				if (level.IsMrMoon)
 				{
-					spriteBatch.Draw(mrMoonAngry, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+					if (level.LevelInfoMrMoon.IsCompleted)
+					{
+						spriteBatch.Draw(mrMoonSurprised, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+					}
+					else
+					{
+						spriteBatch.Draw(mrMoonAngry, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+					}
 				}
 			}
 
@@ -266,16 +405,36 @@ namespace MoonLib.Scenes
 
 		private void DrawMrMoonContent(SpriteBatch spriteBatch)
 		{
+			int scriptIndex = CurrentChapter.CurrentLevel.LevelInfoMrMoon.IsCompleted ? 1 : 0;
+
 			var position = new Vector2(40, 440);
 
-			spriteBatch.DrawString(fontDefault, "Whoa! Stop right there!", position, Color.White);
-			position += new Vector2(0, 30);
-			spriteBatch.DrawString(fontDefault, "I cant let you pass that easily.", position, Color.White);
+			for (int i = 0; i < CurrentChapter.CurrentLevel.LevelInfoMrMoon.Scripts[scriptIndex].Title.Count; i++)
+			{
+				var text = CurrentChapter.CurrentLevel.LevelInfoMrMoon.Scripts[scriptIndex].Title[i];
+				spriteBatch.DrawString(fontDefault, text, position, Color.White);
+				position += new Vector2(0, 30);
+			}
 
-			position += new Vector2(0, 60);
-			spriteBatch.DrawString(fontChallenges, "Tell you what. Bring me back 10 fine stars and i just", position, Color.White);
 			position += new Vector2(0, 30);
-			spriteBatch.DrawString(fontChallenges, "might consider letting you off... with a warning.", position, Color.White);
+
+			for (int i = 0; i < CurrentChapter.CurrentLevel.LevelInfoMrMoon.Scripts[scriptIndex].Description.Count; i++)
+			{
+				var text = CurrentChapter.CurrentLevel.LevelInfoMrMoon.Scripts[scriptIndex].Description[i];
+				spriteBatch.DrawString(fontChallenges, text, position, Color.White);
+				position += new Vector2(0, 25);
+			}
+
+			position += new Vector2(0, 30);
+
+			if ((int)totalScore == 1)
+			{
+				spriteBatch.DrawString(fontChallenges, "You currently have 1 star.", position, Color.White);
+			}
+			else
+			{
+				spriteBatch.DrawString(fontChallenges, string.Format("You currently have {0} stars.", (int)totalScore), position, Color.White);
+			}
 		}
 
 		private Color GetLevelColor(int index)
@@ -352,16 +511,20 @@ namespace MoonLib.Scenes
 
 		public static void UpdateLevelScore(int levelId, int score)
 		{
-			var storage = new StorageHandler();
-			storage.SetLevelScore(levelId, score);
-
 			for (int i = 0; i < CurrentChapter.Levels.Count; i++)
 			{
 				var level = CurrentChapter.Levels[i];
 
 				if (level.Id == levelId)
 				{
-					level.Score = score;
+					if (level.Score < score)
+					{
+						level.Score = score;
+
+						var storage = new StorageHandler();
+						storage.SetLevelScore(levelId, score);
+					}
+
 					break;
 				}
 			}

@@ -1,14 +1,16 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
 using MoonLib.Entities.Backgrounds;
+using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 using MoonLib.IsolatedStorage;
 
 namespace MoonLib.Scenes.Levels
 {
-	public class Level01 : ILevel
+	public class Level09 : ILevel
 	{
 		private StarHandler starHandler { get; set; }
 		private Player Player { get; set; }
@@ -16,6 +18,10 @@ namespace MoonLib.Scenes.Levels
 		private PlayerInfo playerInfo;
 		private DateTime levelStartTime;
 		private StorageHandler storage;
+		private Texture2D rail;
+		private Vector2 railPosition;
+		private float timeScalar;
+		private bool missedStars;
 
 		private LevelInfo info;
 		public LevelInfo Info
@@ -26,28 +32,12 @@ namespace MoonLib.Scenes.Levels
 				{
 					info = new LevelInfo()
 					{
-						Id = 1001,
-						LevelType = typeof(Level01),
-						Name = "Level 1",
-						Score = storage.GetLevelScore(1001),
+						Id = 9001,
+						LevelType = typeof(Level09),
+						Name = "Level 9",
+						Score = storage.GetLevelScore(9001),
 						TexturePath = "Scenes/LevelSelect/Level01",
-						Challenges =
-						{
-							new LevelChallenge()
-							{
-								Id = 1002,
-								Name = "Bouncer",
-								Description = "Get all stars in one shot with at least two wall bounces",
-								IsCompleted = storage.IsChallengeCompleted(1002)
-							},
-							new LevelChallenge()
-							{
-								Id = 1003,
-								Name = "Speed king",
-								Description = "Complete the level within 1 second",
-								IsCompleted = storage.IsChallengeCompleted(1003)
-							}
-						}
+						Challenges = new List<LevelChallenge>()
 					};
 				}
 
@@ -67,7 +57,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
-				return (Player.IsStationary && !playerInfo.GotMovesLeft);
+				return (Player.IsStationary && !playerInfo.GotMovesLeft) || missedStars;
 			}
 		}
 
@@ -79,7 +69,7 @@ namespace MoonLib.Scenes.Levels
 			}
 		}
 
-		public Level01()
+		public Level09()
 		{
 			storage = new StorageHandler();
 		}
@@ -92,17 +82,23 @@ namespace MoonLib.Scenes.Levels
 
 			starHandler = new StarHandler(context);
 
+			rail = context.Content.Load<Texture2D>("Scenes/Levels/Custom/Rail");
+
 			Player = new Player();
 			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(context, 5);
+			playerInfo.Initialize(context, 10);
 
 			Reset();
+
+			railPosition = new Vector2(0, Player.Position.Y + 40 - 8);
 		}
 
 		public void Reset()
 		{
+			missedStars = false;
+
 			// Stars
 			InitializeStars();
 
@@ -119,10 +115,39 @@ namespace MoonLib.Scenes.Levels
 			starHandler.ResetStarPitch();
 			starHandler.Stars.Clear();
 
-			int x = Device.HalfWidth;
-			for (int y = 0; y < 8; y++)
+			int x = Device.HalfWidth / 2;
+			for (int y = 0; y < 3; y++)
 			{
-				starHandler.CreateStar(new Vector2(x, (y * 64) + 96), 0);
+				starHandler.CreateStar(new Vector2(x, (y * 64)), 0);
+			}
+
+			// Bridge
+			x = Device.Width / 2;
+			starHandler.CreateStar(new Vector2(x, 64 - 200), 0);
+			starHandler.CreateStar(new Vector2(x - 96, 64 - 200), 0);
+			starHandler.CreateStar(new Vector2(x + 96, 64 - 200), 0);
+
+			x = Device.HalfWidth + (Device.HalfWidth / 2);
+			for (int y = 0; y < 3; y++)
+			{
+				starHandler.CreateStar(new Vector2(x, (y * 64) - 400), 0);
+			}
+
+			// Bridge
+			x = Device.Width / 2;
+			starHandler.CreateStar(new Vector2(x, 64 - 600), 0);
+			starHandler.CreateStar(new Vector2(x - 96, 64 - 600), 0);
+			starHandler.CreateStar(new Vector2(x + 96, 64 - 600), 0);
+
+			x = Device.HalfWidth / 2;
+			for (int y = 0; y < 3; y++)
+			{
+				starHandler.CreateStar(new Vector2(x, (y * 64) - 800), 0);
+			}
+
+			for (int i = 0; i < starHandler.Stars.Count; i++)
+			{
+				(starHandler.Stars[i] as Star).OverrideBoundsCheck = true;
 			}
 		}
 
@@ -132,43 +157,37 @@ namespace MoonLib.Scenes.Levels
 			Player.Update(e);
 			starHandler.Update(e);
 
-			// Remove stars that collide with the player
-			starHandler.CheckPlayerCollisions(Player);
-
-			CheckChallenges();
-		}
-
-		private void CheckChallenges()
-		{
-			if (!Completed)
+			if (missedStars)
 			{
 				return;
 			}
 
-			// First challenge
-			if (!Info.Challenges[0].IsCompleted)
+			timeScalar = (float)e.ElapsedTime.TotalMilliseconds;
+
+			for (int i = 0; i < starHandler.Stars.Count; i++)
 			{
-				if (playerInfo.UsedMoves == 1 && Player.BouncesDuringLastMove >= 2)
+				var star = (Star)starHandler.Stars[i];
+
+				if (star.Position.Y < 900)
 				{
-				    Info.Challenges[0].IsCompleted = true;
-					LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[0].Id);
+					star.Position += new Vector2(0, 0.1f * timeScalar);
+				}
+				else
+				{
+					missedStars = true;
 				}
 			}
 
-			// Second challenge
-			if (!Info.Challenges[1].IsCompleted)
-			{
-				if ((DateTime.Now - levelStartTime).TotalSeconds <= 1)
-				{
-                    Info.Challenges[1].IsCompleted = true;
-                    LevelSelectScene.SetLevelChallengeCompleted(Info.Challenges[1].Id);
-				}
-			}
+			// Remove stars that collide with the player
+			starHandler.CheckPlayerCollisions(Player);
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
 			background.Draw(spriteBatch);
+
+			spriteBatch.Draw(rail, railPosition, Color.White);
+
 			Player.Draw(spriteBatch);
 			starHandler.Draw(spriteBatch);
 
@@ -177,6 +196,8 @@ namespace MoonLib.Scenes.Levels
 
 		public void Move(Vector2 velocity)
 		{
+			velocity = new Vector2(velocity.X, 0);
+
 			if (Player.IsAllowedToMove && playerInfo.GotMovesLeft)
 			{
 				Player.SetVelocity(velocity);

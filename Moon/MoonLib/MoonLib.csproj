@@ -72,11 +72,13 @@
     <Compile Include="IsolatedStorage\Entities\ChallengesInfo.cs" />
     <Compile Include="IsolatedStorage\Entities\LevelsInfo.cs" />
     <Compile Include="IsolatedStorage\StorageHandler.cs" />
-    <Compile Include="Scenes\LevelScenes\Levels\Level21.cs" />
+    <Compile Include="Scenes\LevelScenes\Levels\Level09.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level08.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Level05.cs" />
     <Compile Include="Scenes\LevelScenes\Levels\Gui\ChallengeCompleted.cs" />
     <Compile Include="Scenes\LevelSelectScenes\Entities\Chapter.cs" />
+    <Compile Include="Scenes\LevelSelectScenes\Entities\LevelInfoMrMoon.cs" />
+    <Compile Include="Scenes\LevelSelectScenes\Entities\MrMoonScript.cs" />
     <Compile Include="Scenes\MainMenuScenes\MainMenuScene.cs" />
     <Compile Include="Scenes\Messages\TapMessage.cs" />
     <Compile Include="Scenes\Messages\ISceneMessage.cs" />

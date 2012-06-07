@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -9,7 +8,6 @@ using MoonLib.Entities.Backgrounds;
 using MoonLib.Entities.Items;
 using MoonLib.Helpers;
 using MoonLib.IsolatedStorage;
-using MoonLib.Services;
 using ShakeGestures;
 using HorizontalAlignment = MoonLib.Helpers.HorizontalAlignment;
 using VerticalAlignment = MoonLib.Helpers.VerticalAlignment;
@@ -40,6 +38,7 @@ namespace MoonLib.Scenes.Levels
 					info = new LevelInfo()
 					{
 						Id = 8001,
+						LevelType = typeof(Level08),
 						Name = "Level 8",
 						Score = storage.GetLevelScore(8001),
 						TexturePath = "Scenes/LevelSelect/Level08",

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MoonLib.Contexts;
@@ -30,6 +29,7 @@ namespace MoonLib.Scenes.Levels
 					info = new LevelInfo()
 					{
 						Id = 4001,
+						LevelType = typeof(Level04),
 						Name = "Level 4",
 						Score = storage.GetLevelScore(4001),
 						TexturePath = "Scenes/LevelSelect/Level04",

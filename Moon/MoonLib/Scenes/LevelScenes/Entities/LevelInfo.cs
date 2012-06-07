@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace MoonLib.Scenes.Levels
@@ -9,6 +10,7 @@ namespace MoonLib.Scenes.Levels
 		public string TexturePath { get; set; }
 		public int Score { get; set; }
 		public List<LevelChallenge> Challenges { get; set; }
+		public Type LevelType { get; set; }
 
 		public LevelInfo()
 		{

@@ -8,6 +8,7 @@ namespace MoonLib.Entities.Items
 	public class Star : Entity, IStar
 	{
 		public int Id { get; set; }
+		public bool OverrideBoundsCheck { get; set; }
 
 		private float timeScalar;
 		private Vector2 fixedHalfSize;
@@ -35,6 +36,11 @@ namespace MoonLib.Entities.Items
 
 		private void BoundsCheck()
 		{
+			if (OverrideBoundsCheck)
+			{
+				return;
+			}
+
 			// Keep the player within the bounds of the screen
 			if (Position.X < 0)
 			{

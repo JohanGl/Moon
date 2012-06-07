@@ -20,5 +20,15 @@ namespace MoonLib.Scenes
         {
             Levels = new List<LevelInfoPresentation>();
         }
+
+    	public void NextLevel()
+    	{
+			LevelIndex++;
+
+			if (LevelIndex >= TotalLevels)
+			{
+				LevelIndex = TotalLevels - 1;
+			}
+    	}
     }
 }

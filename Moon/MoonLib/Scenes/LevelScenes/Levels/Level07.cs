@@ -32,6 +32,7 @@ namespace MoonLib.Scenes.Levels
 					info = new LevelInfo()
 					{
 						Id = 7001,
+						LevelType = typeof(Level07),
 						Name = "Level 7",
 						Score = storage.GetLevelScore(7001),
 						TexturePath = "Scenes/LevelSelect/Level07",
