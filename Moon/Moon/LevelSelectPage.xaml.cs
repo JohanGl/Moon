@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Navigation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -60,6 +61,14 @@ namespace Moon
 
 			App.UnInitializeGamePageGraphics(gameContext);
 			base.OnNavigatedFrom(e);
+		}
+
+		protected override void OnBackKeyPress(CancelEventArgs e)
+		{
+			base.OnBackKeyPress(e);
+
+			var uri = new Uri("/MainMenuPage.xaml", UriKind.Relative);
+			NavigationService.Navigate(uri);
 		}
 
 		/// <summary>
