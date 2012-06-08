@@ -33,6 +33,8 @@ namespace MoonLib.Scenes
 		private Texture2D mrMoonBackground;
 		private Texture2D mrMoonAngry;
 		private Texture2D mrMoonSurprised;
+		private Texture2D evilMoonDefault;
+		private Texture2D evilMoonLost;
 
 		private GameContext gameContext;
 
@@ -53,6 +55,9 @@ namespace MoonLib.Scenes
 			mrMoonAngry = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/MrMoon/Angry");
 			mrMoonSurprised = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/MrMoon/Surprised");
 
+			evilMoonDefault = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/BadMoon/Default");
+			evilMoonLost = gameContext.Content.Load<Texture2D>("Scenes/LevelSelect/BadMoon/Lost");
+
 			if (Chapters == null)
 			{
 				Chapters = new List<Chapter>();
@@ -60,20 +65,24 @@ namespace MoonLib.Scenes
 
 				InitializeChapter1Levels();
 
-				UpdateLevelScore(1001, 6);
-				UpdateLevelScore(2001, 6);
-				UpdateLevelScore(3001, 6);
+				//UpdateLevelScore(1001, 6);
+				//UpdateLevelScore(2001, 6);
+				//UpdateLevelScore(3001, 6);
 
-				UpdateLevelScore(4001, 6);
-				UpdateLevelScore(5001, 6);
-				UpdateLevelScore(6001, 6);
+				//UpdateLevelScore(4001, 6);
+				//UpdateLevelScore(5001, 6);
+				//UpdateLevelScore(6001, 6);
 
-				SetLevelChallengeCompleted(1002);
-				SetLevelChallengeCompleted(1003);
-				SetLevelChallengeCompleted(2002);
-				SetLevelChallengeCompleted(3002);
-				SetLevelChallengeCompleted(4002);
-				SetLevelChallengeCompleted(5002);
+				//UpdateLevelScore(7001, 6);
+				//UpdateLevelScore(8001, 6);
+				//UpdateLevelScore(9001, 6);
+
+				//SetLevelChallengeCompleted(1002);
+				//SetLevelChallengeCompleted(1003);
+				//SetLevelChallengeCompleted(2002);
+				//SetLevelChallengeCompleted(3002);
+				//SetLevelChallengeCompleted(4002);
+				//SetLevelChallengeCompleted(5002);
 			}
 
 			UpdateCurrentScore();
@@ -199,6 +208,11 @@ namespace MoonLib.Scenes
 					chapter.Levels.Add(GetSecondMrMoonLevel(currentPosition));
 					currentPosition += new Vector2(192 + 10, 0);
 				}
+				else if (i == 9)
+				{
+					chapter.Levels.Add(GetThirdMrMoonLevel(currentPosition));
+					currentPosition += new Vector2(192 + 10, 0);
+				}
 			}
 		}
 
@@ -247,10 +261,38 @@ namespace MoonLib.Scenes
 			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
 
 			script = new MrMoonScript();
-			script.Title.Add("Great work!");
+			script.Title.Add("Fantastic!");
 			script.Description.Add("You sure saved the day once again my friend.");
 			script.Description.Add("Please proceed. If you find that thief, wont you");
 			script.Description.Add("bring him to me?");
+			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
+
+			return stopLevel;
+		}
+
+		private LevelInfoPresentation GetThirdMrMoonLevel(Vector2 currentPosition)
+		{
+			var stopLevel = new LevelInfoPresentation();
+			stopLevel.Name = string.Empty;
+			stopLevel.Texture = mrMoonBackground;
+			stopLevel.Position = currentPosition;
+			stopLevel.Bounds = new Rectangle((int)stopLevel.Position.X, (int)stopLevel.Position.Y, stopLevel.Texture.Width, stopLevel.Texture.Height);
+			stopLevel.LevelInfoMrMoon = new LevelInfoMrMoon();
+			stopLevel.LevelInfoMrMoon.IsEvil = true;
+			stopLevel.LevelInfoMrMoon.RequiredStars = 32;
+
+			var script = new MrMoonScript();
+			script.Title.Add("Been looking for me?");
+			script.Description.Add("I wont give up my precious stars that easily.");
+			script.Description.Add("Im always up for a challenge though, so ill tell you what.");
+			script.Description.Add(string.Format("If you can collect {0} stars i will leave your friend alone.", stopLevel.LevelInfoMrMoon.RequiredStars));
+			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
+
+			script = new MrMoonScript();
+			script.Title.Add("Grrr!");
+			script.Description.Add("I cant believe i lost! How did you manage to collect all");
+			script.Description.Add("those stars!? Im a moon of my words so ive sent all stars");
+			script.Description.Add("back to where they belong.");
 			stopLevel.LevelInfoMrMoon.Scripts.Add(script);
 
 			return stopLevel;
@@ -382,13 +424,27 @@ namespace MoonLib.Scenes
 
 				if (level.IsMrMoon)
 				{
-					if (level.LevelInfoMrMoon.IsCompleted)
+					if (level.LevelInfoMrMoon.IsEvil)
 					{
-						spriteBatch.Draw(mrMoonSurprised, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+						if (level.LevelInfoMrMoon.IsCompleted)
+						{
+							spriteBatch.Draw(evilMoonLost, position + new Vector2(3, 80 + mrMoonFloatY), levelColor);
+						}
+						else
+						{
+							spriteBatch.Draw(evilMoonDefault, position + new Vector2(3, 80 + mrMoonFloatY), levelColor);
+						}
 					}
 					else
 					{
-						spriteBatch.Draw(mrMoonAngry, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+						if (level.LevelInfoMrMoon.IsCompleted)
+						{
+							spriteBatch.Draw(mrMoonSurprised, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+						}
+						else
+						{
+							spriteBatch.Draw(mrMoonAngry, position + new Vector2(3, 60 + mrMoonFloatY), levelColor);
+						}
 					}
 				}
 			}
@@ -407,6 +463,7 @@ namespace MoonLib.Scenes
 		{
 			int scriptIndex = CurrentChapter.CurrentLevel.LevelInfoMrMoon.IsCompleted ? 1 : 0;
 
+			// Title
 			var position = new Vector2(40, 440);
 
 			for (int i = 0; i < CurrentChapter.CurrentLevel.LevelInfoMrMoon.Scripts[scriptIndex].Title.Count; i++)
@@ -416,7 +473,8 @@ namespace MoonLib.Scenes
 				position += new Vector2(0, 30);
 			}
 
-			position += new Vector2(0, 30);
+			// Description
+			position += new Vector2(0, 15);
 
 			for (int i = 0; i < CurrentChapter.CurrentLevel.LevelInfoMrMoon.Scripts[scriptIndex].Description.Count; i++)
 			{
@@ -425,7 +483,7 @@ namespace MoonLib.Scenes
 				position += new Vector2(0, 25);
 			}
 
-			position += new Vector2(0, 30);
+			position += new Vector2(0, 15);
 
 			if ((int)totalScore == 1)
 			{

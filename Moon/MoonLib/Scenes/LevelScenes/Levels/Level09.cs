@@ -36,7 +36,7 @@ namespace MoonLib.Scenes.Levels
 						LevelType = typeof(Level09),
 						Name = "Level 9",
 						Score = storage.GetLevelScore(9001),
-						TexturePath = "Scenes/LevelSelect/Level01",
+						TexturePath = "Scenes/LevelSelect/Level09",
 						Challenges = new List<LevelChallenge>()
 					};
 				}
@@ -57,7 +57,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
-				return (Player.IsStationary && !playerInfo.GotMovesLeft) || missedStars;
+				return missedStars;
 			}
 		}
 
@@ -65,7 +65,7 @@ namespace MoonLib.Scenes.Levels
 		{
 			get
 			{
-				return playerInfo.CalculateRating();
+				return Math.Min(6, playerInfo.CalculateRating() + 3);
 			}
 		}
 
@@ -88,7 +88,7 @@ namespace MoonLib.Scenes.Levels
 			Player.Initialize(context);
 
 			playerInfo = new PlayerInfo();
-			playerInfo.Initialize(context, 10);
+			playerInfo.Initialize(context, 4);
 
 			Reset();
 
@@ -168,7 +168,7 @@ namespace MoonLib.Scenes.Levels
 			{
 				var star = (Star)starHandler.Stars[i];
 
-				if (star.Position.Y < 900)
+				if (star.Position.Y < 816)
 				{
 					star.Position += new Vector2(0, 0.1f * timeScalar);
 				}

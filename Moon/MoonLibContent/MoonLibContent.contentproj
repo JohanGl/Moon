@@ -335,20 +335,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Player\Moon2.png">
-      <Name>Moon2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Scenes\LevelSelect\Level21.png">
-      <Name>Level21</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Scenes\LevelSelect\MrMoon\Angry.png">
       <Name>Angry</Name>
       <Importer>TextureImporter</Importer>
@@ -368,6 +354,25 @@
   <ItemGroup>
     <Compile Include="Scenes\Levels\Custom\Rail.png">
       <Name>Rail</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scenes\LevelSelect\Level09.png">
+      <Name>Level09</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Scenes\LevelSelect\BadMoon\Default.png">
+      <Name>Default</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Scenes\LevelSelect\BadMoon\Lost.png">
+      <Name>Lost</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
