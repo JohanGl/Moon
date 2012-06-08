@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Navigation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -41,6 +42,14 @@ namespace Moon
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
+			if (NavigationService.CanGoBack)
+			{
+				while (NavigationService.RemoveBackEntry() != null)
+				{
+					NavigationService.RemoveBackEntry();
+				}
+			}
+
 			App.InitializeGamePageGraphics(gameContext);
 			InitializeScene();
 			base.OnNavigatedTo(e);
