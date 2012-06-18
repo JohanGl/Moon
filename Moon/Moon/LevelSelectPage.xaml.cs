@@ -1,9 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Navigation;
+using Microsoft.Advertising;
+using Microsoft.Advertising.Mobile.Xna;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
+using MoonLib.Helpers;
 using MoonLib.Scenes;
 using MoonLib.Services;
 
@@ -11,6 +14,7 @@ namespace Moon
 {
 	public partial class LevelSelectPage
 	{
+		private DrawableAd drawableAd;
 		private IScene scene;
 		private GameContext gameContext;
 		private GameTimer timer;
@@ -52,6 +56,25 @@ namespace Moon
 			audioHandler.PlaySong("BGM2", true);
 			audioHandler.MusicVolume = 1f;
 			audioHandler.SoundVolume = 1f;
+
+			#if DEBUG
+				AdComponent.Initialize("test_client");
+				drawableAd = AdComponent.Current.CreateAd("Image480_80", new Rectangle(0, Device.Height - 80, 480, 80), true);
+			#else
+				AdComponent.Initialize("41af360b-5268-4cee-ac68-5825d51962c0");
+				drawableAd = AdComponent.Current.CreateAd("90977", new Rectangle(0, 0, 480, 80), true);
+			#endif
+
+			drawableAd.AdRefreshed += DrawableAdOnAdRefreshed;
+			drawableAd.ErrorOccurred += DrawableAdOnErrorOccurred;
+		}
+
+		private void DrawableAdOnErrorOccurred(object sender, AdErrorEventArgs adErrorEventArgs)
+		{
+		}
+
+		private void DrawableAdOnAdRefreshed(object sender, EventArgs eventArgs)
+		{
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -81,6 +104,8 @@ namespace Moon
 
 			scene.Update(e);
 			gameContext.AudioHandler.Update(e);
+
+			AdComponent.Current.Update(e.ElapsedTime);
 		}
 
 		/// <summary>
@@ -91,6 +116,8 @@ namespace Moon
 			gameContext.SpriteBatch.Begin();
 			scene.Draw(gameContext.SpriteBatch);
 			gameContext.SpriteBatch.End();
+
+			AdComponent.Current.Draw();
 		}
 
 		private void InitializeScene()

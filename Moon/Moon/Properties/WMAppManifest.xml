@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-	<App xmlns="" ProductID="{68c2b3e8-b710-4917-89d2-8dc7ec26c304}" Title="Moon Swipe" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal"  Author="Moon author" Description="Sample description" Publisher="Moon">
+	<App xmlns="" ProductID="{68c2b3e8-b710-4917-89d2-8dc7ec26c304}" Title="Moon Swipe" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Johan Glysing" Description="Moon Swipe game" Publisher="Johan Glysing">
 		<IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
 		<Capabilities>
 			<!--<Capability Name="ID_CAP_APPOINTMENTS" />-->
@@ -11,17 +11,20 @@
 			<Capability Name="ID_CAP_IDENTITY_USER"/>
 			<!--<Capability Name="ID_CAP_ISV_CAMERA" />-->
 			<!--<Capability Name="ID_CAP_LOCATION"/>-->
-			<Capability Name="ID_CAP_MEDIALIB"/>
 			<!--<Capability Name="ID_CAP_MICROPHONE"/>-->
 			<Capability Name="ID_CAP_NETWORKING"/>
 			<!--<Capability Name="ID_CAP_PHONEDIALER"/>-->
 			<!--<Capability Name="ID_CAP_PUSH_NOTIFICATION"/>-->
 			<Capability Name="ID_CAP_SENSORS"/>
-			<!--<Capability Name="ID_CAP_WEBBROWSERCOMPONENT"/>-->
+
+			<!-- Ads control require these -->
+			<Capability Name="ID_CAP_WEBBROWSERCOMPONENT"/>
+			<Capability Name="ID_CAP_PHONEDIALER"/>
+			<Capability Name="ID_CAP_IDENTITY_USER"/>
+			<Capability Name="ID_CAP_MEDIALIB"/>
 		</Capabilities>
 		<Tasks>
 			<DefaultTask  Name ="_default" NavigationPage="MainMenuPage.xaml"/>
-			<!--<DefaultTask  Name ="_default" NavigationPage="LevelSelectPage.xaml"/>-->
 		</Tasks>
 		<Tokens>
 			<PrimaryToken TokenID="MoonToken" TaskName="_default">
