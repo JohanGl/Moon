@@ -10,5 +10,6 @@ namespace MoonLib.Contexts
 		public GraphicsDevice GraphicsDevice { get; set; }
 		public IAudioHandler AudioHandler { get; set; }
 		public SpriteBatch SpriteBatch { get; set; }
+		public GameSettings Settings { get; set; }
 	}
 }

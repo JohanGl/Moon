@@ -81,6 +81,11 @@ namespace Moon
 			var context = new GameContext();
 			context.Content = Content;
 			context.AudioHandler = new DefaultAudioHandler(Content, "");
+    		context.Settings = new GameSettings()
+    		{
+				MusicVolume = 0f,
+				SoundVolume = 1f
+    		};
 
 			ServiceLocator.Register(context);
     	}

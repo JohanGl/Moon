@@ -62,6 +62,7 @@
     <Compile Include="Audio\Entities\FadeCancelOptions.cs" />
     <Compile Include="Audio\IAudioHandler.cs" />
     <Compile Include="Contexts\GameContext.cs" />
+    <Compile Include="Contexts\GameSettings.cs" />
     <Compile Include="Entities\Backgrounds\DefaultBackground.cs" />
     <Compile Include="Entities\Items\BlackHole.cs" />
     <Compile Include="Entities\Items\IceStar.cs" />

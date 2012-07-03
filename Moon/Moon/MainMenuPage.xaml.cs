@@ -1,9 +1,13 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Navigation;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using Microsoft.Xna.Framework.Media;
 using MoonLib.Contexts;
+using MoonLib.Helpers;
 using MoonLib.Scenes;
 using MoonLib.Services;
 
@@ -14,6 +18,9 @@ namespace Moon
 		private IScene scene;
 		private GameContext gameContext;
 		private GameTimer timer;
+		private Popup popupAudioSettings;
+
+		private static bool hasInitializedAudio;
 
 		public MainMenuPage()
 		{
@@ -27,17 +34,50 @@ namespace Moon
 			timer.Update += OnUpdate;
 			timer.Draw += OnDraw;
 
-			InitializeAudio();
-
 			TouchPanel.EnabledGestures = GestureType.Flick | GestureType.Tap;
+			Loaded += OnLoaded;
 		}
 
-		private void InitializeAudio()
+		private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
 		{
-			FrameworkDispatcher.Update();
+			if (hasInitializedAudio)
+			{
+				return;
+			}
 
-			//var audioHandler = gameContext.AudioHandler;
-			//audioHandler.LoadSong("BGM2", "Audio/BGM02");
+			if (!MediaPlayer.GameHasControl)
+			{
+				timer.Stop();
+				SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(false);
+
+				var settingsControl = new SettingsControl
+				{
+				    Width = Device.Width,
+				    Height = Device.Height
+				};
+
+				settingsControl.Closed += (o, args) =>
+				{
+				    popupAudioSettings.IsOpen = false;
+					hasInitializedAudio = true;
+					SharedGraphicsDeviceManager.Current.GraphicsDevice.SetSharingMode(true);
+					timer.Start();
+				};
+
+				popupAudioSettings = new Popup
+				{
+				    Child = settingsControl,
+				    IsOpen = true
+				};
+			}
+			else if (MediaPlayer.GameHasControl)
+			{
+				var settings = ServiceLocator.Get<GameContext>().Settings;
+				settings.MusicVolume = 0.5f;
+				settings.SoundVolume = 0.5f;
+				
+				hasInitializedAudio = true;
+			}
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -55,11 +95,15 @@ namespace Moon
 			base.OnNavigatedTo(e);
 			timer.Start();
 
+			var settings = ServiceLocator.Get<GameContext>().Settings;
 			var audioHandler = gameContext.AudioHandler;
-			audioHandler.StopSong();
-			//audioHandler.PlaySong("BGM2", true);
-			audioHandler.MusicVolume = 1f;
-			audioHandler.SoundVolume = 1f;
+
+			if (settings.MusicVolume > 0.0d)
+			{
+				audioHandler.StopSong();
+				audioHandler.MusicVolume = (float)settings.MusicVolume;
+				audioHandler.SoundVolume = (float)settings.SoundVolume;
+			}
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)

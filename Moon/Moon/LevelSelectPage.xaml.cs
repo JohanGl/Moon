@@ -6,7 +6,6 @@ using Microsoft.Advertising.Mobile.Xna;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using MoonLib.Contexts;
-using MoonLib.Helpers;
 using MoonLib.Scenes;
 using MoonLib.Services;
 
@@ -51,11 +50,19 @@ namespace Moon
 			base.OnNavigatedTo(e);
 			timer.Start();
 
+			// Initialize audio
+			var settings = ServiceLocator.Get<GameContext>().Settings;
+
 			var audioHandler = gameContext.AudioHandler;
 			audioHandler.StopSong();
-			audioHandler.PlaySong("BGM2", true);
-			audioHandler.MusicVolume = 1f;
-			audioHandler.SoundVolume = 1f;
+
+			if (settings.MusicVolume > 0.0d)
+			{
+				audioHandler.PlaySong("BGM2", true);
+			}
+	
+			audioHandler.MusicVolume = (float)settings.MusicVolume;
+			audioHandler.SoundVolume = (float)settings.SoundVolume;
 
 			#if DEBUG
 				AdComponent.Initialize("test_client");

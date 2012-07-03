@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Navigation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -35,6 +36,7 @@ namespace Moon
 		private void InitializeAudio()
 		{
 			FrameworkDispatcher.Update();
+	
 			var audioHandler = gameContext.AudioHandler;
 			audioHandler.LoadSong("BGM1", "Audio/BGM01");
 
@@ -45,16 +47,20 @@ namespace Moon
 
 			audioHandler.LoadSound("IceStar", "Audio/IceStar");
 
-			audioHandler.PlaySong("BGM1", true);
-			audioHandler.MusicVolume = 1f;
-			audioHandler.SoundVolume = 1f;
+			var settings = ServiceLocator.Get<GameContext>().Settings;
+
+			if (settings.MusicVolume > 0.0d)
+			{
+				audioHandler.PlaySong("BGM1", true);
+			}
+
+			audioHandler.MusicVolume = (float)settings.MusicVolume;
+			audioHandler.SoundVolume = (float)settings.SoundVolume;
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
 		{
 			App.InitializeGamePageGraphics(gameContext);
-
-			//var level = int.Parse(NavigationContext.QueryString["level"]);
 
 			// Initialize the level scene
 			scene = new LevelScene();
@@ -80,7 +86,7 @@ namespace Moon
 		private void OnUpdate(object sender, GameTimerEventArgs e)
 		{
 			HandleSceneMessages();
-			
+
 			scene.Update(e);
 			gameContext.AudioHandler.Update(e);
 		}

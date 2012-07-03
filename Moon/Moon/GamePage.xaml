@@ -14,5 +14,5 @@
     shell:SystemTray.IsVisible="False">
 		
 	<!--No XAML content is required as the page is rendered entirely with the XNA Framework-->
-
+	
 </phone:PhoneApplicationPage>
