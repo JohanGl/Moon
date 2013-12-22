@@ -129,12 +129,17 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="SplashRateMyApp.png" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MoonLib\MoonLib.csproj">
       <Project>{64D87B9C-F07A-42DF-883A-4866B5CFAE93}</Project>
       <Name>MoonLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RateMyApp\RateMyApp.csproj">
+      <Project>{83C47431-2793-48E3-A2FB-CC6702523314}</Project>
+      <Name>RateMyApp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+# Visual Studio 2010 Express for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moon", "Moon\Moon\Moon.csproj", "{68C2B3E8-B710-4917-89D2-8DC7EC26C304}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonLib", "Moon\MoonLib\MoonLib.csproj", "{64D87B9C-F07A-42DF-883A-4866B5CFAE93}"
@@ -8,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoonLibContent", "Moon\MoonLibContent\MoonLibContent.contentproj", "{09DA3C4E-3AC0-4FD1-84A6-DB5CFA9ABDA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShakeGestures", "Moon\ShakeGestures\ShakeGestures.csproj", "{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RateMyApp", "Moon\RateMyApp\RateMyApp.csproj", "{83C47431-2793-48E3-A2FB-CC6702523314}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,16 @@ Global
 		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F5CE25E6-CF76-43AE-BBB2-2C98B21BCCD8}.Release|Windows Phone.ActiveCfg = Release|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{83C47431-2793-48E3-A2FB-CC6702523314}.Release|Windows Phone.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

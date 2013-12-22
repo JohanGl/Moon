@@ -66,8 +66,8 @@ namespace Moon
 
 			#if DEBUG
 				AdComponent.Initialize("test_client");
-				drawableAd = AdComponent.Current.CreateAd("Image480_80", new Rectangle(0, Device.Height - 80, 480, 80), true);
-			#else
+                drawableAd = AdComponent.Current.CreateAd("Image480_80", new Rectangle(0, (int)RenderSize.Height - 80, 480, 80), true);
+            #else
 				AdComponent.Initialize("41af360b-5268-4cee-ac68-5825d51962c0");
 				drawableAd = AdComponent.Current.CreateAd("90977", new Rectangle(0, 0, 480, 80), true);
 			#endif

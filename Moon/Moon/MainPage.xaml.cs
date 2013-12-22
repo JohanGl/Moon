@@ -1,21 +1,44 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Phone.Controls;
+using System.Windows.Threading;
 
 namespace Moon
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private DispatcherTimer timer { get; set; }
+
         // Constructor
         public MainPage()
         {
             InitializeComponent();
+
+            timer = new DispatcherTimer();
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Interval = TimeSpan.FromMilliseconds(500);
+            timer.Start();
         }
 
-        // Simple button Click event handler to take us to the second page
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void timer_Tick(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/GamePage.xaml", UriKind.Relative));
+            if (FeedBackOverlay.Visibility != System.Windows.Visibility.Visible)
+            {
+                NavigationService.Navigate(new Uri("/MainMenuPage.xaml", UriKind.Relative));
+            }
+
+            timer.Stop();
+        }
+
+        private void FeedBackOverlay_VisibilityChanged(object sender, EventArgs e)
+        {
+            if (FeedBackOverlay.Visibility == System.Windows.Visibility.Collapsed)
+            {
+                timer = new DispatcherTimer();
+                timer.Tick += new EventHandler(timer_Tick);
+                timer.Interval = TimeSpan.FromMilliseconds(500);
+                timer.Start();
+            }
         }
     }
 }
